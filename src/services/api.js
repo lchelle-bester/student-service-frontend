@@ -1,6 +1,5 @@
 // src/services/api.js
-const API_URL = 'https://web-production-f1ba5.up.railway.app'
-
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://web-production-f1ba5.up.railway.app';
 
 const apiCall = async (endpoint, options = {}) => {
     // Log the complete request details
