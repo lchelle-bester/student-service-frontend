@@ -1,0 +1,64 @@
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    background-color: #f5f5f5;
+  }
+  
+  .logo-section {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  
+  .logo-section h1 {
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .selection-section {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  
+  .login-button {
+    padding: 15px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .login-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-button.organization {
+    background-color: #7dcea0 ;
+    color: white;
+  }
+  
+  .login-button.teacher {
+    background-color: #229954;
+    color: white;
+  }
+  
+  .login-button.student {
+    background-color: #145a32;
+    color: white;
+  }
