@@ -12,6 +12,10 @@ function StudentLogin() {
     const [isLoading, setIsLoading] = useState(false);
 
 const handleSubmit = async (e) => {
+    console.log('Attempting login with:', {
+        studentId: studentId,
+        password: password
+    });
     e.preventDefault();
     setIsLoading(true);
     setError('');
