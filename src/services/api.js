@@ -3,6 +3,7 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://web-production-f1
 
 const apiCall = async (endpoint, options = {}) => {
     // Log the complete request details
+    const fullUrl = `${API_BASE_URL}/api${endpoint}`;
     console.log('Making API call to:', `${API_BASE_URL}${endpoint}`);
     console.log('Request options:', {
         ...options,
@@ -10,7 +11,7 @@ const apiCall = async (endpoint, options = {}) => {
     });
 
     try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        const response = await fetch(fullUrl, {
             ...options,
             headers: {
                 'Content-Type': 'application/json',
