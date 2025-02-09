@@ -13,7 +13,7 @@ function StudentLogin() {
 
 const handleSubmit = async (e) => {
     console.log('Attempting login with:', {
-        studentId: studentId,
+        email: studentId,
         password: password
     });
     e.preventDefault();

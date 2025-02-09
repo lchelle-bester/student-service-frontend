@@ -48,11 +48,11 @@ export const authService = {
         });
     },
     
-    studentLogin: async (studentId, password) => {
-        console.log('Starting student login process with ID:', studentId);
+    studentLogin: async (email, password) => {
+        console.log('Starting student login process with email:', email);
         return apiCall('/auth/login/student', {
             method: 'POST',
-            body: JSON.stringify({ studentId, password })
+            body: JSON.stringify({ email, password })
         });
     }
 };
