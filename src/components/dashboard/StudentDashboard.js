@@ -26,22 +26,29 @@ function StudentDashboard() {
     const fetchStudentData = async () => {
       try {
         const userData = JSON.parse(localStorage.getItem("userData"));
+        console.log('Stored user data:', userData); // Add this
+
         if (!userData?.id) {
           setError("Please log in again");
           return;
         }
 
-        const response = await fetch(
-          `${API_URL}/api/service/student-details/${userData.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-              'Content-Type': 'application/json'
-            },
-          }
-        );
+        const token = localStorage.getItem("authToken");
+        console.log('Auth token:', token); // Add this
 
+        const fullUrl = `${API_URL}/api/service/student-details/${userData.id}`;
+        console.log('Making request to:', fullUrl); // Add this
+
+        const response = await fetch(fullUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+        });
+
+        console.log('Response status:', response.status); // Add this
         const data = await response.json();
+        console.log('Response data:', data); // Add this
 
         if (response.ok) {
           setStudentData({
@@ -89,8 +96,8 @@ function StudentDashboard() {
       <div className="student-info-section">
         <div className="info-grid">
           <div className="info-card">
-            <label>Student ID:</label>
-            <span>{studentData.studentId}</span>
+            <label>Name:</label>
+            <span>{studentData.name}</span>
           </div>
           <div className="info-card">
             <label>Grade:</label>
