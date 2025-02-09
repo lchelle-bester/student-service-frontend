@@ -1,8 +1,9 @@
-// src/components/dashboard/StudentDashboard.js
 import React, { useState, useEffect } from "react";
 import "../../styles/Dashboard.css";
 
 function StudentDashboard() {
+  const API_URL = process.env.REACT_APP_API_URL || 'https://web-production-f1ba5.up.railway.app';
+  
   const [studentData, setStudentData] = useState({
     name: "",
     studentId: "",
@@ -16,15 +17,11 @@ function StudentDashboard() {
   const [error, setError] = useState("");
 
   const handleLogout = () => {
-    // Clear all stored data
     localStorage.removeItem('authToken');
     localStorage.removeItem('userData');
-    // Redirect to home page
     window.location.href = '/';
-};
+  };
 
-
-  // src/components/dashboard/StudentDashboard.js
   useEffect(() => {
     const fetchStudentData = async () => {
       try {
@@ -35,10 +32,11 @@ function StudentDashboard() {
         }
 
         const response = await fetch(
-          `http://localhost:5000/api/service/student-details/${userData.id}`,
+          `${API_URL}/api/service/student-details/${userData.id}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+              'Content-Type': 'application/json'
             },
           }
         );
@@ -48,7 +46,7 @@ function StudentDashboard() {
         if (response.ok) {
           setStudentData({
             name: userData.name,
-            studentId: userData.studentId,
+            studentId: userData.id, // Changed from studentId to id
             grade: userData.grade,
             totalHours: data.student?.total_hours || 0,
             schoolHours: data.student?.schoolHours || 0,
@@ -67,29 +65,28 @@ function StudentDashboard() {
     };
 
     fetchStudentData();
-  }, []);
+  }, [API_URL]);
 
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error-message">{error}</div>;
+
   const REQUIRED_HOURS = {
     8: 25,
-    9: 25,  // Grade 9 needs 25 hours
-    10: 25, // Grade 10 needs 25 hours
-    11: 25, // Grade 11 needs 25 hours
-    12: 20  // Grade 12 needs 25 hours
-};
+    9: 25,
+    10: 25,
+    11: 25,
+    12: 20
+  };
+
   return (
     <div className="dashboard-container">
-    <div className="dashboard-header">
+      <div className="dashboard-header">
         <h1>{studentData.name}'s Dashboard</h1>
         <button className="logout-button" onClick={handleLogout}>
-            Log Out
+          Log Out
         </button>
-    </div>
+      </div>
       <div className="student-info-section">
-      
-        <h1>{studentData.name}'s Dashboard</h1>
-                
         <div className="info-grid">
           <div className="info-card">
             <label>Student ID:</label>
