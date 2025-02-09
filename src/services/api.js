@@ -40,24 +40,19 @@ const apiCall = async (endpoint, options = {}) => {
 };
 
 export const authService = {
+    studentLogin: async (email, password) => {
+        console.log('Starting student login process with email:', email);
+        return apiCall('/auth/login/student', {
+            method: 'POST',
+            body: JSON.stringify({ email, password })
+        });
+    },
+    
     teacherLogin: async (email, password) => {
         console.log('Starting teacher login process with email:', email);
         return apiCall('/auth/login/teacher', {
             method: 'POST',
             body: JSON.stringify({ email, password })
         });
-    },
-    
-    studentLogin: async (email, password) => {
-        console.log('Sending data:', { email, password });
-        const requestOptions = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
-        };
-        console.log('Request options:', requestOptions);
-        return apiCall('/auth/login/student', requestOptions);
     }
 };
