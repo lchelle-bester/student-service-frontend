@@ -2,12 +2,14 @@
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://web-production-f1ba5.up.railway.app';
 
 const apiCall = async (endpoint, options = {}) => {
-    // Log the complete request details
     const fullUrl = `${API_BASE_URL}/api${endpoint}`;
-    console.log('Making API call to:', fullUrl); 
-    console.log('Request options:', {
-        ...options,
-        body: options.body ? JSON.parse(options.body) : undefined
+    const parsedBody = options.body ? JSON.parse(options.body) : undefined;
+    
+    console.log('Full request details:', {
+        url: fullUrl,
+        method: options.method,
+        body: parsedBody,
+        headers: options.headers
     });
 
     try {
@@ -19,11 +21,10 @@ const apiCall = async (endpoint, options = {}) => {
             }
         });
 
-        // Log the complete response
         console.log('Response status:', response.status);
         const data = await response.json();
         console.log('Response data:', data);
-
+        
         if (!response.ok) {
             throw new Error(data.message || 'An error occurred during login. Please try again.');
         }
