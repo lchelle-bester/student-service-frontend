@@ -5,29 +5,6 @@ import { useNavigate } from 'react-router-dom';
 
 
 function TeacherDashboard() {
-    const API_URL = process.env.REACT_APP_API_URL || 'https://web-production-f1ba5.up.railway.app';
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        const userData = localStorage.getItem('userData');
-        
-        if (!token || !userData) {
-            navigate('/teacher-login');  // Change this from '/login' to '/teacher-login'
-            return;
-        }
-        try {
-            const user = JSON.parse(userData);
-            if (user.type !== 'teacher') {
-                navigate('/teacher-login');  // Change this too
-            }
-        } catch (error) {
-            navigate('/teacher-login');  // And this
-        }
-    }, [navigate]);
-
-
-
 
     const [serviceForm, setServiceForm] = useState({
         studentName: '',
@@ -50,6 +27,32 @@ function TeacherDashboard() {
         }));
     };
 
+    const API_URL = process.env.REACT_APP_API_URL || 'https://web-production-f1ba5.up.railway.app';
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem('authToken');
+        const userData = localStorage.getItem('userData');
+        
+        if (!token || !userData) {
+            navigate('/teacher-login');  // Change this from '/login' to '/teacher-login'
+            return;
+        }
+        try {
+            const user = JSON.parse(userData);
+            if (user.type !== 'teacher') {
+                navigate('/teacher-login');  // Change this too
+                console.log('Teacher authenticated:', user);
+
+            }
+        } catch (error) {
+            console.error('Error parsing user data:', error);
+            navigate('/teacher-login');  // And this
+        }
+    }, [navigate]);
+
+
+    
     const TOKEN_KEY = 'authToken';
 
     const handleSubmitService = async (e) => {

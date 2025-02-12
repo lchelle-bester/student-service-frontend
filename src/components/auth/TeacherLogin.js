@@ -11,25 +11,28 @@ function TeacherLogin() {
     const [isLoading, setIsLoading] = useState(false);
 
     // TeacherLogin.js
-const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError('');
-    
-    try {
-        const response = await authService.teacherLogin(email, password);
-        if (response.token && response.user) {
-            localStorage.setItem('authToken', response.token);
-            localStorage.setItem('userData', JSON.stringify(response.user)); // Store user data
-            navigate('/teacher-dashboard');
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError('');
+        
+        try {
+            const response = await authService.teacherLogin(email, password);
+            if (response.token && response.user) {
+                localStorage.setItem('authToken', response.token);
+                localStorage.setItem('userData', JSON.stringify({
+                    ...response.user,
+                    type: 'teacher'  // Make sure to store the user type
+                }));
+                navigate('/teacher-dashboard');
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            setError(error.message || 'Login failed');
+        } finally {
+            setIsLoading(false);
         }
-    } catch (error) {
-        console.error('Login error:', error);
-        setError(error.message || 'Login failed');
-    } finally {
-        setIsLoading(false);
-    }
-};  
+    };
 
     return (
         <div className="login-form-container">
