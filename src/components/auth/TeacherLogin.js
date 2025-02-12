@@ -12,17 +12,26 @@ function TeacherLogin() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
+        setError('');
+        
         try {
+            console.log('Attempting teacher login with:', { email });
             const response = await authService.teacherLogin(email, password);
+            console.log('Login response:', response);
+            
             if (response.token) {
                 localStorage.setItem('authToken', response.token);
+                localStorage.setItem('userData', JSON.stringify(response.user));
                 navigate('/teacher-dashboard');
             }
         } catch (error) {
-            setError(error.message);
+            console.error('Login error:', error);
+            setError(error.message || 'Login failed');
+        } finally {
+            setIsLoading(false);
         }
-    };
-    
+    };   
 
     return (
         <div className="login-form-container">
