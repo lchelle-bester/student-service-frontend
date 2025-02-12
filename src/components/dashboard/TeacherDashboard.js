@@ -1,10 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import StudentDetailsModal from './StudentDetailsModal';
 import '../../styles/TeacherDashboard.css';
+import { useNavigate } from 'react-router-dom';
+
 
 function TeacherDashboard() {
     const API_URL = process.env.REACT_APP_API_URL || 'https://web-production-f1ba5.up.railway.app';
-    
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem('authToken');
+        const userData = localStorage.getItem('userData');
+        
+        if (!token || !userData) {
+            navigate('/login');
+            return;
+        }
+        try {
+            const user = JSON.parse(userData);
+            if (user.type !== 'teacher') {
+                navigate('/login');
+            }
+        } catch (error) {
+            navigate('/login');
+        }
+    }, [navigate]);
+
+
+
+
     const [serviceForm, setServiceForm] = useState({
         studentName: '',
         numberOfHours: '',
@@ -17,7 +41,7 @@ function TeacherDashboard() {
     const [error, setError] = useState('');
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [studentDetails, setStudentDetails] = useState(null);
-
+        
     const handleServiceFormChange = (e) => {
         const { name, value } = e.target;
         setServiceForm(prev => ({
