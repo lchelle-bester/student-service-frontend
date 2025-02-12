@@ -11,6 +11,7 @@ function TeacherDashboard() {
         dateCompleted: '',
         description: ''
     });
+
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -130,40 +131,129 @@ function TeacherDashboard() {
         window.location.href = '/';
     };
 
-    return (
-        <div className="dashboard-container">
-            <header className="dashboard-header">
-                <h1>Teacher Dashboard</h1>
-                <button className="logout-button" onClick={handleLogout}>
-                    Log Out
-                </button>
-            </header>
+ // ... Keep all the code above the return statement the same ...
 
-            {/* Rest of your JSX remains the same */}
-            <div className="dashboard-content">
-                <section className="log-hours-section">
-                    {/* Your existing form JSX */}
-                    {/* ... */}
-                </section>
+ return (
+    <div className="dashboard-container">
+        <header className="dashboard-header">
+            <h1>Teacher Dashboard</h1>
+            <button className="logout-button" onClick={handleLogout}>
+                Log Out
+            </button>
+        </header>
 
-                <section className="search-section">
-                    {/* Your existing search section JSX */}
-                    {/* ... */}
-                </section>
-            </div>
+        <div className="dashboard-content">
+            {/* Left section: Log Service Hours */}
+            <section className="log-hours-section">
+                <h2>Log School Service Hours</h2>
+                <form onSubmit={handleSubmitService} className="service-form">
+                    <div className="form-group">
+                        <label htmlFor="studentName">Student Full Name:</label>
+                        <input
+                            type="text"
+                            id="studentName"
+                            name="studentName"
+                            value={serviceForm.studentName}
+                            onChange={handleServiceFormChange}
+                            required
+                        />
+                    </div>
 
-            {selectedStudent && studentDetails && (
-                <StudentDetailsModal
-                    student={selectedStudent}
-                    serviceRecords={studentDetails.serviceRecords}
-                    onClose={() => {
-                        setSelectedStudent(null);
-                        setStudentDetails(null);
-                    }}
-                />
-            )}
+                    <div className="form-group">
+                        <label htmlFor="numberOfHours">Number of Hours:</label>
+                        <input
+                            type="number"
+                            id="numberOfHours"
+                            name="numberOfHours"
+                            value={serviceForm.numberOfHours}
+                            onChange={handleServiceFormChange}
+                            min="0"
+                            max="24"
+                            required
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="dateCompleted">Date Completed:</label>
+                        <input
+                            type="date"
+                            id="dateCompleted"
+                            name="dateCompleted"
+                            value={serviceForm.dateCompleted}
+                            onChange={handleServiceFormChange}
+                            required
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="description">Description:</label>
+                        <textarea
+                            id="description"
+                            name="description"
+                            value={serviceForm.description}
+                            onChange={handleServiceFormChange}
+                            rows="4"
+                            required
+                        />
+                    </div>
+
+                    <button type="submit" className="submit-button">
+                        Submit Hours
+                    </button>
+                </form>
+            </section>
+
+            {/* Right section: Search Students */}
+            <section className="search-section">
+                <h2>Search For Students</h2>
+                <div className="search-container">
+                    <input
+                        type="text"
+                        placeholder="Search by name or ID..."
+                        value={searchQuery}
+                        onChange={handleSearch}
+                        className="search-input"
+                    />
+                </div>
+
+                {isLoading && <div className="loading">Searching...</div>}
+                {error && <div className="error-message">{error}</div>}
+
+                <div className="search-results">
+                    {searchResults.map(student => (
+                        <div key={student.id} className="student-card">
+                            <div className="student-info">
+                                <h3>{student.full_name}</h3>
+                                <p>Grade: {student.grade}</p>
+                                <p>Total Hours: {student.total_hours || 0}</p>
+                            </div>
+                            <button 
+                                className="view-details-button"
+                                onClick={() => fetchStudentDetails(student.id)}
+                            >
+                                View Details
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            </section>
         </div>
-    );
+
+        {selectedStudent && studentDetails && (
+            <StudentDetailsModal
+                student={selectedStudent}
+                serviceRecords={studentDetails.serviceRecords}
+                onClose={() => {
+                    setSelectedStudent(null);
+                    setStudentDetails(null);
+                }}
+            />
+        )}
+    </div>
+);
 }
+
+
+
 
 export default TeacherDashboard;
