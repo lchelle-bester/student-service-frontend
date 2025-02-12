@@ -13,16 +13,16 @@ function TeacherDashboard() {
         const userData = localStorage.getItem('userData');
         
         if (!token || !userData) {
-            navigate('/login');
+            navigate('/teacher-login');  // Change this from '/login' to '/teacher-login'
             return;
         }
         try {
             const user = JSON.parse(userData);
             if (user.type !== 'teacher') {
-                navigate('/login');
+                navigate('/teacher-login');  // Change this too
             }
         } catch (error) {
-            navigate('/login');
+            navigate('/teacher-login');  // And this
         }
     }, [navigate]);
 
