@@ -1,12 +1,22 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../../styles/Login.css'; // Using the same styling as login forms for consistency
+import '../../styles/Login.css';
 
 function OrganizationForm() {
     const API_URL = process.env.REACT_APP_API_URL || 'https://web-production-f1ba5.up.railway.app';
     const navigate = useNavigate();
     const [orgKey, setOrgKey] = useState('');
     const [error, setError] = useState('');
+    const [isVerified, setIsVerified] = useState(false);
+    const [organizationData, setOrganizationData] = useState(null);
+    
+    // State for service hours form
+    const [serviceForm, setServiceForm] = useState({
+        studentName: '',
+        hours: '',
+        dateCompleted: '',
+        description: ''
+    });
 
     const handleVerify = async () => {
         try {
@@ -21,9 +31,9 @@ function OrganizationForm() {
             const data = await response.json();
 
             if (response.ok && data.success) {
+                setIsVerified(true);
+                setOrganizationData(data.organization);
                 localStorage.setItem('authToken', data.token);
-                localStorage.setItem('orgData', JSON.stringify(data.organization));
-                navigate('/organization-dashboard');
             } else {
                 setError(data.message || 'Failed to verify organization key');
             }
@@ -33,39 +43,156 @@ function OrganizationForm() {
         }
     };
 
+    const handleServiceFormChange = (e) => {
+        const { name, value } = e.target;
+        setServiceForm(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleSubmitHours = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(`${API_URL}/api/service/log-community`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                },
+                body: JSON.stringify({
+                    studentName: serviceForm.studentName,
+                    hours: parseInt(serviceForm.hours),
+                    dateCompleted: serviceForm.dateCompleted,
+                    description: serviceForm.description
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert('Service hours logged successfully!');
+                setServiceForm({
+                    studentName: '',
+                    hours: '',
+                    dateCompleted: '',
+                    description: ''
+                });
+            } else {
+                setError(data.message || 'Failed to log service hours');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            setError('Failed to submit service hours');
+        }
+    };
+
     return (
         <div className="login-form-container">
-            <h2>Organization Verification</h2>
+            <h2>Community Service Verification</h2>
             {error && <div className="error-message">{error}</div>}
             
-            <form className="login-form" onSubmit={(e) => {
-                e.preventDefault();
-                handleVerify();
-            }}>
-                <div className="form-group">
-                    <label htmlFor="orgKey">Organization Key:</label>
-                    <input
-                        type="text"
-                        id="orgKey"
-                        value={orgKey}
-                        onChange={(e) => setOrgKey(e.target.value)}
-                        placeholder="Enter organization key"
-                        required
-                    />
-                </div>
+            {!isVerified ? (
+                <form className="login-form" onSubmit={(e) => {
+                    e.preventDefault();
+                    handleVerify();
+                }}>
+                    <div className="form-group">
+                        <label htmlFor="orgKey">Organization Key:</label>
+                        <input
+                            type="text"
+                            id="orgKey"
+                            value={orgKey}
+                            onChange={(e) => setOrgKey(e.target.value)}
+                            placeholder="Enter organization key"
+                            required
+                        />
+                    </div>
 
-                <button type="submit" className="submit-button">
-                    Verify
-                </button>
-                
-                <button 
-                    type="button" 
-                    className="back-button"
-                    onClick={() => navigate('/')}
-                >
-                    Back
-                </button>
-            </form>
+                    <button type="submit" className="submit-button">
+                        Verify
+                    </button>
+                    
+                    <button 
+                        type="button" 
+                        className="back-button"
+                        onClick={() => navigate('/')}
+                    >
+                        Back
+                    </button>
+                </form>
+            ) : (
+                <form className="login-form" onSubmit={handleSubmitHours}>
+                    <h3>Log Community Service Hours</h3>
+                    <p>Organization: {organizationData.name}</p>
+                    
+                    <div className="form-group">
+                        <label htmlFor="studentName">Student Full Name:</label>
+                        <input
+                            type="text"
+                            id="studentName"
+                            name="studentName"
+                            value={serviceForm.studentName}
+                            onChange={handleServiceFormChange}
+                            required
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="hours">Number of Hours:</label>
+                        <input
+                            type="number"
+                            id="hours"
+                            name="hours"
+                            value={serviceForm.hours}
+                            onChange={handleServiceFormChange}
+                            min="0"
+                            max="24"
+                            required
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="dateCompleted">Date Completed:</label>
+                        <input
+                            type="date"
+                            id="dateCompleted"
+                            name="dateCompleted"
+                            value={serviceForm.dateCompleted}
+                            onChange={handleServiceFormChange}
+                            required
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="description">Description:</label>
+                        <textarea
+                            id="description"
+                            name="description"
+                            value={serviceForm.description}
+                            onChange={handleServiceFormChange}
+                            rows="4"
+                            required
+                        />
+                    </div>
+
+                    <button type="submit" className="submit-button">
+                        Submit Hours
+                    </button>
+                    
+                    <button 
+                        type="button" 
+                        className="back-button"
+                        onClick={() => {
+                            setIsVerified(false);
+                            setOrganizationData(null);
+                            setOrgKey('');
+                        }}
+                    >
+                        Verify Different Organization
+                    </button>
+                </form>
+            )}
         </div>
     );
 }
