@@ -108,7 +108,6 @@ function StudentDashboard() {
             <span>{studentData.totalHours}</span>
           </div>
         </div>
-        // In StudentDashboard.js, update the progress bar section
 <div className="progress-section">
     <h3>Progress Towards Required Hours</h3>
     <div className="progress-bar-container">
