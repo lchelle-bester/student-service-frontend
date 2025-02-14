@@ -161,7 +161,8 @@ function TeacherDashboard() {
         <div className="dashboard-container">
             <header className="dashboard-header">
                 <h1>Teacher Dashboard</h1>
-                <button className="logout-button" onClick={handleLogout}>
+                <button className="logout-button" 
+                onClick={handleLogout}>
                 localStorage.removeItem('authToken');
                     localStorage.removeItem('userData');
                     navigate('/');
