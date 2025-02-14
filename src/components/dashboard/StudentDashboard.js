@@ -108,42 +108,34 @@ function StudentDashboard() {
             <span>{studentData.totalHours}</span>
           </div>
         </div>
-        <div className="progress-section">
-          <h3>Progress Towards Required Hours</h3>
-          <div className="progress-bar-container">
-            <div
-              className="progress-bar"
-              style={{
+        // In StudentDashboard.js, update the progress bar section
+<div className="progress-section">
+    <h3>Progress Towards Required Hours</h3>
+    <div className="progress-bar-container">
+        <div
+            className="progress-bar-school"  // Changed from progress-bar to progress-bar-school
+            style={{
                 width: `${Math.min(
-                  (studentData.totalHours /
-                    (REQUIRED_HOURS[studentData.grade] || 25)) *
-                    100,
-                  100
+                    (studentData.schoolHours /
+                        (REQUIRED_HOURS[studentData.grade] || 25)) *
+                        100,
+                    100
                 )}%`,
-              }}
-            />
-          </div>
-          <div className="progress-labels">
-            <span>{`${studentData.totalHours} / ${
-              REQUIRED_HOURS[studentData.grade] || 25
-            } hours`}</span>
-            <span>{`${Math.round(
-              (studentData.totalHours /
-                (REQUIRED_HOURS[studentData.grade] || 25)) *
-                100
-            )}%`}</span>
-          </div>
-          <div className="progress-breakdown">
-            <div className="progress-item">
-              <span className="dot school"></span>
-              <span>School: {studentData.schoolHours || 0} hours</span>
-            </div>
-            <div className="progress-item">
-              <span className="dot community"></span>
-              <span>Community: {studentData.communityHours || 0} hours</span>
-            </div>
-          </div>
-        </div>
+            }}
+        />
+        <div
+            className="progress-bar-community"  // Add community progress bar
+            style={{
+                width: `${Math.min(
+                    (studentData.communityHours /
+                        (REQUIRED_HOURS[studentData.grade] || 25)) *
+                        100,
+                    100
+                )}%`,
+            }}
+        />
+    </div>
+</div>
       </div>
 
       <div className="service-records">

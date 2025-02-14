@@ -354,6 +354,28 @@
     margin-right: 8px;
 }
 
+.progress-bar-school {
+    height: 100%;
+    background-color: #3B82F6;  /* Blue for school hours */
+    transition: width 0.3s ease;
+    border-radius: 4px;
+}
+
+.progress-bar-community {
+    height: 100%;
+    background-color: #22C55E;  /* Green for community hours */
+    transition: width 0.3s ease;
+    border-radius: 4px;
+}
+
+.progress-breakdown .dot.school {
+    background-color: #3B82F6;  /* Blue dot for school */
+}
+
+.progress-breakdown .dot.community {
+    background-color: #22C55E;  /* Green dot for community */
+}
+
 .progress-section {
     margin: 20px 0;
     padding: 20px;
