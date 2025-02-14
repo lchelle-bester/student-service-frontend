@@ -124,7 +124,7 @@ function OrganizationForm() {
             ) : (
                 <form className="login-form" onSubmit={handleSubmitHours}>
                     <h3>Log Community Service Hours</h3>
-                    <p>Organization: {organizationData.name}</p>
+                    <p>Organisation: {organizationData.name}</p>
                     
                     <div className="form-group">
                         <label htmlFor="studentName">Student Full Name:</label>
@@ -189,7 +189,7 @@ function OrganizationForm() {
                             setOrgKey('');
                         }}
                     >
-                        Verify Different Organization
+                        Back
                     </button>
                 </form>
             )}
