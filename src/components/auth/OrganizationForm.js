@@ -89,7 +89,7 @@ function OrganizationForm() {
 
     return (
         <div className="login-form-container">
-            <h2>Community Service Verification</h2>
+            <h2>Student Service Diary</h2>
             {error && <div className="error-message">{error}</div>}
             
             {!isVerified ? (
@@ -98,7 +98,7 @@ function OrganizationForm() {
                     handleVerify();
                 }}>
                     <div className="form-group">
-                        <label htmlFor="orgKey">Organization Key:</label>
+                        <label htmlFor="orgKey">Organisation Key:</label>
                         <input
                             type="text"
                             id="orgKey"
@@ -127,7 +127,7 @@ function OrganizationForm() {
                     <p>Organisation: {organizationData.name}</p>
                     
                     <div className="form-group">
-                        <label htmlFor="studentName">Student Full Name:</label>
+                        <label htmlFor="studentName">Student's Full Name:</label>
                         <input
                             type="text"
                             id="studentName"
