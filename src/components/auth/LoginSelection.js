@@ -35,7 +35,7 @@ function LoginSelection() {
                 <div className="button-group">
                     {/* Each button calls its respective handler when clicked */}
                     <button 
-                        className="login-button organisation"
+                        className="login-button organization"
                         onClick={handleOrganizationClick}
                     >
                         Organisation
@@ -60,5 +60,4 @@ function LoginSelection() {
     );
 }
 
-// Make this component available to other parts of our application
 export default LoginSelection;
