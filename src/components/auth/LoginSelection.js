@@ -35,10 +35,10 @@ function LoginSelection() {
                 <div className="button-group">
                     {/* Each button calls its respective handler when clicked */}
                     <button 
-                        className="login-button organization"
+                        className="login-button organisation"
                         onClick={handleOrganizationClick}
                     >
-                        Organization
+                        Organisation
                     </button>
 
                     <button 
