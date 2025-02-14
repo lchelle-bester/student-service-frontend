@@ -51,6 +51,7 @@ function OrganizationForm() {
         }));
     };
 
+    
     const handleSubmitHours = async (e) => {
         e.preventDefault();
         try {
@@ -124,7 +125,10 @@ function OrganizationForm() {
             ) : (
                 <form className="login-form" onSubmit={handleSubmitHours}>
                     <h3>Log Community Service Hours</h3>
-                    <p>Organisation: {organizationData.name}</p>
+                    <div className="organization-info">
+    <h3>Verified Organisation</h3>
+    <p className="organization-name">{organizationData.name}</p>
+</div>
                     
                     <div className="form-group">
                         <label htmlFor="studentName">Student's Full Name:</label>
