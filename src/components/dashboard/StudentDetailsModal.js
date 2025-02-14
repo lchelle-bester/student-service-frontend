@@ -14,8 +14,8 @@ function StudentDetailsModal({ student, serviceRecords, onClose }) {
                 <div className="student-details">
                     <div className="info-grid">
                         <div className="info-item">
-                            <label>Student ID:</label>
-                            <span>{student.student_id}</span>
+                            <label>Name:</label>
+                            <span>{student.full_name}</span>
                         </div>
                         <div className="info-item">
                             <label>Grade:</label>
