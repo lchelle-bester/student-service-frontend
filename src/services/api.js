@@ -51,5 +51,19 @@ export const authService = {
         };
         console.log('Request options:', requestOptions);
         return apiCall('/auth/login/teacher', requestOptions);
+
+    },
+
+    studentLogin: async (email, password) => {
+        console.log('Starting student login with:', { email });
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        };
+        console.log('Request options:', requestOptions);
+        return apiCall('/auth/login/student', requestOptions);
     }
 };
