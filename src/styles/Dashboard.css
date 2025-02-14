@@ -195,7 +195,6 @@
     font-weight: 600;
 }
 
-/* styles/Dashboard.css */
 .dashboard-container {
     max-width: 1200px;
     margin: 40px auto;
@@ -307,7 +306,6 @@
     text-align: center;
 }
 
-/* Add styles for the hours summary */
 .hours-summary {
     margin: 20px 0;
     padding: 20px;
@@ -348,6 +346,13 @@
     color: #333;
 }
 
+.dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
 
 .progress-section {
     margin: 20px 0;
@@ -374,7 +379,7 @@
 
 .progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, #4CAF50, #45a049);
+    background-color: #3B82F6;
     transition: width 0.3s ease;
     border-radius: 10px;
 }
@@ -406,11 +411,11 @@
 }
 
 .dot.school {
-    background-color: #2196F3;
+    background-color: #3B82F6;
 }
 
 .dot.community {
-    background-color: #4CAF50;
+    background-color: #22C55E;
 }
 
 @media (max-width: 768px) {
