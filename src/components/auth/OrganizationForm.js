@@ -1,6 +1,6 @@
-// OrganizationForm.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import '../../styles/Login.css'; // Using the same styling as login forms for consistency
 
 function OrganizationForm() {
     const API_URL = process.env.REACT_APP_API_URL || 'https://web-production-f1ba5.up.railway.app';
@@ -21,7 +21,6 @@ function OrganizationForm() {
             const data = await response.json();
 
             if (response.ok && data.success) {
-                // Store the organization token
                 localStorage.setItem('authToken', data.token);
                 localStorage.setItem('orgData', JSON.stringify(data.organization));
                 navigate('/organization-dashboard');
@@ -35,21 +34,38 @@ function OrganizationForm() {
     };
 
     return (
-        <div className="organization-form">
+        <div className="login-form-container">
             <h2>Organization Verification</h2>
             {error && <div className="error-message">{error}</div>}
-            <div className="form-group">
-                <label htmlFor="orgKey">Organization Key:</label>
-                <input
-                    type="text"
-                    id="orgKey"
-                    value={orgKey}
-                    onChange={(e) => setOrgKey(e.target.value)}
-                    placeholder="Enter organization key"
-                />
-            </div>
-            <button onClick={handleVerify}>Verify</button>
-            <button onClick={() => navigate('/')}>Back</button>
+            
+            <form className="login-form" onSubmit={(e) => {
+                e.preventDefault();
+                handleVerify();
+            }}>
+                <div className="form-group">
+                    <label htmlFor="orgKey">Organization Key:</label>
+                    <input
+                        type="text"
+                        id="orgKey"
+                        value={orgKey}
+                        onChange={(e) => setOrgKey(e.target.value)}
+                        placeholder="Enter organization key"
+                        required
+                    />
+                </div>
+
+                <button type="submit" className="submit-button">
+                    Verify
+                </button>
+                
+                <button 
+                    type="button" 
+                    className="back-button"
+                    onClick={() => navigate('/')}
+                >
+                    Back
+                </button>
+            </form>
         </div>
     );
 }
