@@ -11,6 +11,7 @@ function OrganizationForm() {
   const [error, setError] = useState("");
   const [isVerified, setIsVerified] = useState(false);
   const [organizationData, setOrganizationData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // State for service hours form
   const [serviceForm, setServiceForm] = useState({
@@ -21,6 +22,7 @@ function OrganizationForm() {
   });
 
   const handleVerify = async () => {
+    setIsLoading(true);
     try {
       const response = await fetch(`${API_URL}/api/auth/verify/organization`, {
         method: "POST",
@@ -42,6 +44,8 @@ function OrganizationForm() {
     } catch (error) {
       console.error("Verification error:", error);
       setError("Failed to verify organization key");
+    } finally {
+      setIsLoading(false); // Add this
     }
   };
 
@@ -148,8 +152,8 @@ function OrganizationForm() {
             />
           </div>
 
-          <button type="submit" className="submit-button">
-            Verify
+          <button type="submit" className="submit-button" disabled={isLoading}>
+            {isLoading ? "Verifying..." : "Verify"}
           </button>
 
           <button
@@ -168,9 +172,8 @@ function OrganizationForm() {
             <p className="organization-name">{organizationData.name}</p>
           </div>
 
-
           <div className="form-group">
-          {error && <div className="error-message">{error}</div>}
+            {error && <div className="error-message">{error}</div>}
 
             <label htmlFor="studentName">Student's Full Name:</label>
             <input
