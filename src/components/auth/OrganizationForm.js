@@ -51,9 +51,45 @@ function OrganizationForm() {
         }));
     };
 
+    const validateForm = () => {
+        const errors = [];
+        
+        // Check for empty fields
+        if (!serviceForm.studentName.trim()) errors.push('Student name is required');
+        if (!serviceForm.hours) errors.push('Number of hours is required');
+        if (!serviceForm.dateCompleted) errors.push('Date is required');
+        if (!serviceForm.description.trim()) errors.push('Description is required');
+    
+        // Validate date
+        const selectedDate = new Date(serviceForm.dateCompleted);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        if (selectedDate > today) {
+            errors.push('Service date cannot be in the future');
+        }
+    
+        // Validate hours
+        const hours = parseInt(serviceForm.hours);
+        if (isNaN(hours) || hours <= 0 || hours > 10) {
+            errors.push('Hours must be between 1 and 10');
+        }
+    
+        return errors;
+    };
+    
+
     
     const handleSubmitHours = async (e) => {
         e.preventDefault();
+        setError('');
+
+        const validationErrors = validateForm();
+        if (validationErrors.length > 0) {
+            setError(validationErrors.join('\n'));
+            return;
+        }
+
         try {
             const response = await fetch(`${API_URL}/api/service/log-community`, {
                 method: 'POST',
@@ -143,18 +179,18 @@ function OrganizationForm() {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="hours">Number of Hours:</label>
-                        <input
-                            type="number"
-                            id="hours"
-                            name="hours"
-                            value={serviceForm.hours}
-                            onChange={handleServiceFormChange}
-                            min="0"
-                            max="24"
-                            required
-                        />
-                    </div>
+    <label htmlFor="hours">Number of Hours:</label>
+    <input
+        type="number"
+        id="hours"
+        name="hours"
+        value={serviceForm.hours}
+        onChange={handleServiceFormChange}
+        min="1"
+        max="10"
+        required
+    />
+</div>
 
                     <div className="form-group">
                         <label htmlFor="dateCompleted">Date Completed:</label>
