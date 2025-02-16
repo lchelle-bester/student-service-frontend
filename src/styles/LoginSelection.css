@@ -49,16 +49,16 @@
   }
   
   .login-button.organization {
-    background-color: #7dcea0 ;
+    background-color: #64acea ;
     color: white;
   }
   
   .login-button.teacher {
-    background-color: #229954;
+    background-color: #0566ba;
     color: white;
   }
   
   .login-button.student {
-    background-color: #145a32;
+    background-color: #003c70;
     color: white;
   }

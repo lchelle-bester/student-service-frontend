@@ -25,7 +25,7 @@
 }
 
 .logout-button {
-    background-color: #dc3545;
+    background-color: #dc2626c0;
     color: white;
     border: none;
     padding: 8px 16px;
@@ -74,7 +74,7 @@
 
 .progress-fill {
     height: 100%;
-    background-color: #28a745;
+    background-color: #53a352;
     transition: width 0.3s ease;
 }
 
@@ -118,7 +118,6 @@
     background-color: #f8f9fa;
 }
 
-/* src/styles/Dashboard.css */
 .dashboard-container {
     padding: 20px;
     max-width: 1200px;
@@ -143,7 +142,7 @@
 }
 
 .logout-button {
-    background-color: #dc3545;
+    background-color: #dc2626c0;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -154,7 +153,7 @@
 }
 
 .logout-button:hover {
-    background-color: #c82333;
+    background-color: #dc2626c0;
 }
 
 .info-grid {
@@ -299,7 +298,7 @@
 
 .error-message {
     background-color: #ffebee;
-    color: #c62828;
+    color: #dc2626c0;
     padding: 15px;
     border-radius: 4px;
     margin: 20px 0;
@@ -356,9 +355,6 @@
 
 
 
-
-
-
 .progress-section {
     margin: 20px 0;
     padding: 20px;
@@ -396,21 +392,21 @@
 }
 
 .progress-bar.school {
-    background-color: #3B82F6;  /* Blue for school */
+    background-color: #003c70;  /* Blue for school */
     z-index: 2;
 }
 
 .progress-bar.community {
-    background-color: #22C55E;  /* Green for community */
+    background-color: #53a352;  /* Green for community */
     z-index: 1;
 }
 
 .progress-breakdown .dot.school {
-    background-color: #3B82F6;
+    background-color: #003c70;
 }
 
 .progress-breakdown .dot.community {
-    background-color: #22C55E;
+    background-color: #53a352;
 }
 
 .progress-labels {
