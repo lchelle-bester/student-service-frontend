@@ -167,10 +167,11 @@ function OrganizationForm() {
             <h3>Verified Organisation</h3>
             <p className="organization-name">{organizationData.name}</p>
           </div>
-          {error && <div className="error-message">{error}</div>}
 
 
           <div className="form-group">
+          {error && <div className="error-message">{error}</div>}
+
             <label htmlFor="studentName">Student's Full Name:</label>
             <input
               type="text"
