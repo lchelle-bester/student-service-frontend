@@ -1,4 +1,72 @@
-/* Add to or update in your Login.css */
+
+.error-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #FEE2E2;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #FECACA;
+    margin-bottom: 1rem;
+}
+
+.error-message {
+    color: #DC2626;
+    margin: 0;
+}
+
+.help-button {
+    background-color: #DC2626;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.25rem 0.75rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+.help-button:hover {
+    background-color: #B91C1C;
+}
+
+.help-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    max-width: 400px;
+    width: 90%;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.close-modal {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: #374151;
+}
+
+
+
+
 .login-form-container {
     max-width: 600px;  
     margin: 2rem auto; 

@@ -12,6 +12,8 @@ function OrganizationForm() {
   const [isVerified, setIsVerified] = useState(false);
   const [organizationData, setOrganizationData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+
 
   // State for service hours form
   const [serviceForm, setServiceForm] = useState({
@@ -140,6 +142,42 @@ function OrganizationForm() {
             handleVerify();
           }}
         >
+
+{!isVerified && error && (
+            <div className="error-container">
+                <div className="error-message">{error}</div>
+                <button 
+                    className="help-button"
+                    onClick={() => setShowHelp(true)}
+                >
+                    Help
+                </button>
+            </div>
+        )}
+        
+        {showHelp && (
+            <>
+                <div className="modal-overlay" onClick={() => setShowHelp(false)} />
+                <div className="help-modal">
+                    <button 
+                        className="close-modal"
+                        onClick={() => setShowHelp(false)}
+                    >
+                        ×
+                    </button>
+                    <h3>Organization Key Help</h3>
+                    <p>If your organization key is not working:</p>
+                    <ul>
+                        <li>Check that you've entered the key exactly as provided</li>
+                        <li>Keys are case-sensitive</li>
+                        <li>Make sure there are no extra spaces</li>
+                        <li>Contact your organization administrator if you need a new key</li>
+                    </ul>
+                    <p>For additional help, please contact support at support@school.com</p>
+                </div>
+            </>
+        )}
+
           <div className="form-group">
             <label htmlFor="orgKey">Organisation Key:</label>
             <input
