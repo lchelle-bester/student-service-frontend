@@ -165,15 +165,14 @@ function OrganizationForm() {
                     >
                         ×
                     </button>
-                    <h3>Organization Key Help</h3>
-                    <p>If your organization key is not working:</p>
+                    <h3>Organisation Key Help</h3>
+                    <p>If your organisation key is not working:</p>
                     <ul>
                         <li>Check that you've entered the key exactly as provided</li>
                         <li>Keys are case-sensitive</li>
                         <li>Make sure there are no extra spaces</li>
-                        <li>Contact your organization administrator if you need a new key</li>
                     </ul>
-                    <p>For additional help, please contact support at support@school.com</p>
+                    <p>For additional help or a new key, please contact support at lchelle.best@gmail.com</p>
                 </div>
             </>
         )}
