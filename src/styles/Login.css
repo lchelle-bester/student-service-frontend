@@ -1,11 +1,24 @@
 /* Add to or update in your Login.css */
 .login-form-container {
-    max-width: 600px;  /* Increased from 400px */
-    margin: 3rem auto;
-    padding: 2.5rem;
+    max-width: 600px;  
+    margin: 2rem auto; 
+    padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     background-color: white;
+}
+
+h2 {
+    margin: 0 0 1.5rem 0; /* Reduced margin */
+    font-size: 1.75rem; /* Slightly smaller */
+    text-align: center;
+}
+
+
+h3 {
+    margin: 0 0 1rem 0; /* Reduced margin */
+    font-size: 1.25rem;
+    text-align: center;
 }
 
 .login-form {
@@ -84,28 +97,33 @@
 /* Add these new styles for the organization info */
 .organization-info {
     background-color: #F3F4F6;
-    padding: 1rem;
+    padding: 0.75rem; /* Reduced padding */
     border-radius: 8px;
     margin-bottom: 1.5rem;
+    text-align: center;
 }
 
 .organization-info h3 {
     color: #374151;
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.25rem 0; 
+    font-size: 1rem; 
 }
 
 .organization-name {
     font-weight: 500;
     color: #22C55E;
+    margin: 0;
 }
 
 
 .error-message {
-    color: #d32f2f;
-    background-color: #ffebee;
-    padding: 10px;
-    border-radius: 4px;
-    margin-bottom: 20px;
+    color: #DC2626;
+    padding: 0.75rem; /* Reduced padding */
+    margin-bottom: 1rem; /* Reduced margin */
+    border-radius: 8px;
+    background-color: #FEE2E2;
+    border: 1px solid #FECACA;
+    text-align: center;
 }
 
 .submit-button {
