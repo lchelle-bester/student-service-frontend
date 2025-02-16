@@ -126,9 +126,7 @@ function OrganizationForm() {
 
     return (
         <div className="login-form-container">
-            <h2>Student Service Diary</h2>
-            {error && <div className="error-message">{error}</div>}
-            
+            <h2>Student Service Diary</h2>            
             {!isVerified ? (
                 <form className="login-form" onSubmit={(e) => {
                     e.preventDefault();
@@ -164,7 +162,8 @@ function OrganizationForm() {
                     <div className="organization-info">
     <h3>Verified Organisation</h3>
     <p className="organization-name">{organizationData.name}</p>
-</div>
+    {error && <div className="error-message">{error}</div>}
+            </div>
                     
                     <div className="form-group">
                         <label htmlFor="studentName">Student's Full Name:</label>
