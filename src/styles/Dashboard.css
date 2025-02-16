@@ -1,4 +1,34 @@
-/* styles/Dashboard.css */
+.progress-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.hours-info {
+    display: flex;
+    gap: 1rem;
+}
+
+.progress-key {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.key-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
 .dashboard-container {
     padding: 20px;
     max-width: 1200px;

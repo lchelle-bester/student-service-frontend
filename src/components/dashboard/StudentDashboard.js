@@ -131,6 +131,17 @@ function StudentDashboard() {
     <div className="progress-labels">
         <span>{`${studentData.totalHours} / ${REQUIRED_HOURS[studentData.grade]} hours`}</span>
         <span>{Math.round((studentData.totalHours / REQUIRED_HOURS[studentData.grade]) * 100)}%</span>
+        <div className="progress-key">
+        <div className="key-item">
+            <span className="dot school"></span>
+            <span>School</span>
+        </div>
+        <div className="key-item">
+            <span className="dot community"></span>
+            <span>Community</span>
+        </div>
+    </div>       
+
     </div>
 </div>
       </div>
