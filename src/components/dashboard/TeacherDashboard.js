@@ -280,7 +280,6 @@ function TeacherDashboard() {
           </div>
 
           {isLoading && <div className="loading">Searching...</div>}
-          {error && <div className="error-message">{error}</div>}
 
           <div className="search-results">
             {searchResults.map((student) => (
