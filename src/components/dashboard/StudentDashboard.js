@@ -81,7 +81,7 @@ function StudentDashboard() {
     8: 25,
     9: 25,
     10: 25,
-    11: 25,
+    11: 20,
     12: 20
   };
 
