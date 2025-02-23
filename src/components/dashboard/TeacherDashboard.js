@@ -101,7 +101,7 @@ function TeacherDashboard() {
         },
         body: JSON.stringify({
           studentName: serviceForm.studentName,
-          numberOfHours: parseInt(serviceForm.numberOfHours),
+          numberOfHours: parseFloat(serviceForm.numberOfHours),
           dateCompleted: serviceForm.dateCompleted,
           description: serviceForm.description,
         }),
@@ -195,6 +195,7 @@ function TeacherDashboard() {
     window.location.href = "/";
   };
 
+  //handleSubmitHours
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
