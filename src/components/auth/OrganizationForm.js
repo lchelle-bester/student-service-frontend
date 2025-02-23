@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/Login.css";
 
+//input
 function OrganizationForm() {
   const API_URL =
     process.env.REACT_APP_API_URL ||
@@ -81,8 +82,13 @@ function OrganizationForm() {
     // Validate hours
     const hours = parseInt(serviceForm.hours);
     if (isNaN(hours) || hours <= 0 || hours > 10) {
-      errors.push("Hours must be between 1 and 10");
-    }
+      errors.push('Hours must be between 0.5 and 10');
+     }
+
+     if (hours * 10 % 5 !== 0) {
+      errors.push('Hours must be in half hour increments (e.g., 1.0, 1.5, 2.0, 2.5)');
+  }
+
 
     return errors;
   };
@@ -233,6 +239,7 @@ function OrganizationForm() {
               onChange={handleServiceFormChange}
               min="1"
               max="10"
+              step="0.5"
               required
             />
           </div>

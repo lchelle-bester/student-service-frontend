@@ -232,6 +232,7 @@ function TeacherDashboard() {
                 onChange={handleServiceFormChange}
                 min="1"
                 max="10"
+                step="0.5"
                 required
               />
             </div>
@@ -265,7 +266,6 @@ function TeacherDashboard() {
             </button>
           </form>
         </section>
-
         {/* Right section: Search Students */}
         <section className="search-section">
           <h2>Search For Students</h2>

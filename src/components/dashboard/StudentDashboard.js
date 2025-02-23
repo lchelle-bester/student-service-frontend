@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/Dashboard.css";
 
+const formatHours = (hours) => {
+  return parseFloat(hours).toFixed(1);
+};
+
 function StudentDashboard() {
   const API_URL = process.env.REACT_APP_API_URL || 'https://web-production-f1ba5.up.railway.app';
   
@@ -94,20 +98,20 @@ function StudentDashboard() {
         </button>
       </div>
       <div className="student-info-section">
-        <div className="info-grid">
-          <div className="info-card">
-            <label>Name:</label>
-            <span>{studentData.name}</span>
-          </div>
-          <div className="info-card">
-            <label>Grade:</label>
-            <span>{studentData.grade}</span>
-          </div>
-          <div className="info-card">
-            <label>Total Hours:</label>
-            <span>{studentData.totalHours}</span>
-          </div>
-        </div>
+      <div className="info-grid">
+    <div className="info-card">
+        <label>Name:</label>
+        <span>{studentData.name}</span>
+    </div>
+    <div className="info-card">
+        <label>Grade:</label>
+        <span>{studentData.grade}</span>
+    </div>
+    <div className="info-card">
+        <label>Total Hours:</label>
+        <span>{formatHours(studentData.totalHours)}</span>
+    </div>
+</div>
 
 
         <div className="progress-section">
@@ -117,20 +121,20 @@ function StudentDashboard() {
             <div
                 className="progress-bar school"
                 style={{
-                    width: `${(studentData.schoolHours / REQUIRED_HOURS[studentData.grade]) * 100}%`
+                    width: `${(parseFloat(studentData.schoolHours) / REQUIRED_HOURS[studentData.grade]) * 100}%`
                 }}
             />
             <div
                 className="progress-bar community"
                 style={{
-                    width: `${(studentData.communityHours / REQUIRED_HOURS[studentData.grade]) * 100}%`
+                    width: `${(parseFloat(studentData.communityHours) / REQUIRED_HOURS[studentData.grade]) * 100}%`
                 }}
             />
         </div>
     </div>
     <div className="progress-labels">
-        <span>{`${studentData.totalHours} / ${REQUIRED_HOURS[studentData.grade]} hours`}</span>
-        <span>{Math.round((studentData.totalHours / REQUIRED_HOURS[studentData.grade]) * 100)}%</span>
+        <span>{`${formatHours(studentData.totalHours)} / ${REQUIRED_HOURS[studentData.grade]} hours`}</span>
+        <span>{Math.round((parseFloat(studentData.totalHours) / REQUIRED_HOURS[studentData.grade]) * 100)}%</span>
     </div>
 </div>
       </div>
@@ -154,7 +158,7 @@ function StudentDashboard() {
                   <td>
                     {new Date(record.date_completed).toLocaleDateString()}
                   </td>
-                  <td>{record.hours}</td>
+                  <td>{formatHours(record.hours)}</td>
                   <td>{record.service_type}</td>
                   <td>{record.description}</td>
                   <td>{record.assigned_by}</td>
