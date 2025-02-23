@@ -112,7 +112,7 @@ function OrganizationForm() {
         },
         body: JSON.stringify({
           studentName: serviceForm.studentName,
-          hours: parseInt(serviceForm.hours),
+          hours: parseFloat(serviceForm.hours),
           dateCompleted: serviceForm.dateCompleted,
           description: serviceForm.description,
         }),
