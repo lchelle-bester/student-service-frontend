@@ -53,6 +53,7 @@ function OrganizationForm() {
     }
   };
 
+
   const handleServiceFormChange = (e) => {
     const { name, value } = e.target;
     setServiceForm((prev) => ({
@@ -89,7 +90,12 @@ function OrganizationForm() {
      if (hours * 10 % 5 !== 0) {
       errors.push('Hours must be in half hour increments (e.g., 1.0, 1.5, 2.0, 2.5)');
   }
-
+    if (serviceForm.description.length < 8) {
+      errors.push("Description must be at least 8 characters long");
+    }
+    if (serviceForm.description.length > 200) {
+      errors.push("Description must be less than 200 characters long");
+    }
 
     return errors;
   };

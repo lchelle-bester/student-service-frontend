@@ -35,18 +35,18 @@ function TeacherDashboard() {
     const userData = localStorage.getItem("userData");
 
     if (!token || !userData) {
-      navigate("/teacher-login"); // Change this from '/login' to '/teacher-login'
+      navigate("/teacher-login"); 
       return;
     }
     try {
       const user = JSON.parse(userData);
       if (user.type !== "teacher") {
-        navigate("/teacher-login"); // Change this too
+        navigate("/teacher-login"); 
         console.log("Teacher authenticated:", user);
       }
     } catch (error) {
       console.error("Error parsing user data:", error);
-      navigate("/teacher-login"); // And this
+      navigate("/teacher-login"); 
     }
   }, [navigate]);
 
@@ -75,6 +75,10 @@ function TeacherDashboard() {
     const hours = parseInt(serviceForm.numberOfHours);
     if (isNaN(hours) || hours <= 0 || hours > 10) {
       errors.push("Hours must be between 1 and 10");
+    }
+
+    if(serviceForm.description.trim().length < 8){
+      errors.push("Description must be at least 8 characters long");
     }
 
     return errors;
