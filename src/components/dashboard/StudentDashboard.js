@@ -16,6 +16,7 @@ function StudentDashboard() {
     schoolHours: 0,
     communityHours: 0,
   });
+  
   const [serviceRecords, setServiceRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -58,7 +59,7 @@ function StudentDashboard() {
             name: userData.name,
             studentId: userData.id, 
             grade: userData.grade,
-            totalHours: data.student?.total_hours || 0,
+            totalHours: parseFloat(data.student?.schoolHours || 0) + parseFloat(data.student?.communityHours || 0),
             schoolHours: data.student?.schoolHours || 0,
             communityHours: data.student?.communityHours || 0,
           });
