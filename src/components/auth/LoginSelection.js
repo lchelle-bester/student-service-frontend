@@ -1,4 +1,3 @@
-// src/components/auth/LoginSelection.js
 import React, { useState } from 'react';              // We need useState for managing component state
 import { useNavigate } from 'react-router-dom';       // This lets us navigate between pages
 import '../../styles/LoginSelection.css';             // Our component's styles
@@ -27,7 +26,7 @@ function LoginSelection() {
         <div className="login-container">
             <div className="logo-section">
                 <h1>Curro Student Service Diary</h1>
-                <p>Welcome to Curro Hillcrest's Student Service Management System</p>
+                <p>Welcome to Curro Hillcrest's Student Service System</p>
             </div>
 
             <div className="selection-section">
