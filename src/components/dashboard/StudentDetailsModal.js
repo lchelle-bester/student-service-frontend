@@ -14,15 +14,15 @@ function StudentDetailsModal({ student, serviceRecords, onClose }) {
                 <div className="student-details">
                     <div className="info-grid">
                         <div className="info-item">
-                            <label>Name:</label>
-                            <span>{student.full_name}</span>
-                        </div>
-                        <div className="info-item">
                             <label>Grade:</label>
                             <span>{student.grade}</span>
                         </div>
                         <div className="info-item">
-                            <label>Total Hours:</label>
+                            <label>Total Community Service Hours:</label>
+                            <span>{student.total_hours}</span>
+                        </div>
+                        <div className="info-item">
+                            <label>Total School Service Hours:</label>
                             <span>{student.total_hours || 0}</span>
                         </div>
                     </div>
