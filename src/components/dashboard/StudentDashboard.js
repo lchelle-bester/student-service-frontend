@@ -30,7 +30,7 @@ function StudentDashboard() {
     const fetchStudentData = async () => {
       try {
         const userData = JSON.parse(localStorage.getItem("userData"));
-        console.log('Stored user data:', userData); // Add this
+        console.log('Stored user data:', userData); 
 
         if (!userData?.id) {
           setError("Please log in again");
@@ -38,11 +38,10 @@ function StudentDashboard() {
         }
 
         const token = localStorage.getItem("authToken");
-        console.log('Auth token:', token); // Add this
+        console.log('Auth token:', token); 
 
         const fullUrl = `${API_URL}/api/service/student-details/${userData.id}`;
-        console.log('Making request to:', fullUrl); // Add this
-
+        console.log('Making request to:', fullUrl); 
         const response = await fetch(fullUrl, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -50,14 +49,14 @@ function StudentDashboard() {
           },
         });
 
-        console.log('Response status:', response.status); // Add this
+        console.log('Response status:', response.status); 
         const data = await response.json();
-        console.log('Response data:', data); // Add this
+        console.log('Response data:', data); 
 
         if (response.ok) {
           setStudentData({
             name: userData.name,
-            studentId: userData.id, // Changed from studentId to id
+            studentId: userData.id, 
             grade: userData.grade,
             totalHours: data.student?.total_hours || 0,
             schoolHours: data.student?.schoolHours || 0,
