@@ -426,18 +426,6 @@
     z-index: 2;
 }
 
-.progress-bar.community {
-    background-color: #53a352;  /* Green for community */
-    z-index: 1;
-}
-
-.progress-breakdown .dot.school {
-    background-color: #003c70;
-}
-
-.progress-breakdown .dot.community {
-    background-color: #53a352;
-}
 
 .progress-labels {
     display: flex;
