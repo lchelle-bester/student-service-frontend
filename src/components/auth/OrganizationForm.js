@@ -41,6 +41,7 @@ function OrganizationForm() {
         setIsVerified(true);
         setOrganizationData(data.organization);
         localStorage.setItem("authToken", data.token);
+        setError(null);
       } else {
         setError(data.message || "Failed to verify organization key");
       }
