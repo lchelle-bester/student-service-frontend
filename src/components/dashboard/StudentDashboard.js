@@ -100,16 +100,16 @@ function StudentDashboard() {
       <div className="student-info-section">
       <div className="info-grid">
     <div className="info-card">
-        <label>Name:</label>
-        <span>{studentData.name}</span>
-    </div>
-    <div className="info-card">
         <label>Grade:</label>
         <span>{studentData.grade}</span>
     </div>
     <div className="info-card">
-        <label>Total Hours:</label>
-        <span>{formatHours(studentData.totalHours)}</span>
+        <label>Total Community Service Hours:</label>
+        <span>{studentData.communityHours}</span>
+    </div>
+    <div className="info-card">
+        <label>Total School Service Hours:</label>
+        <span>{formatHours(studentData.schoolHours)}</span>
     </div>
 </div>
 
