@@ -82,11 +82,11 @@ function StudentDashboard() {
   if (error) return <div className="error-message">{error}</div>;
 
   const REQUIRED_HOURS = {
-    8: 25,
-    9: 25,
-    10: 25,
+    8: 20,
+    9: 20,
+    10: 20,
     11: 20,
-    12: 20
+    12: 15
   };
 
   return (
@@ -121,13 +121,7 @@ function StudentDashboard() {
             <div
                 className="progress-bar school"
                 style={{
-                    width: `${(parseFloat(studentData.schoolHours) / REQUIRED_HOURS[studentData.grade]) * 100}%`
-                }}
-            />
-            <div
-                className="progress-bar community"
-                style={{
-                    width: `${(parseFloat(studentData.communityHours) / REQUIRED_HOURS[studentData.grade]) * 100}%`
+                    width: `${(parseFloat(studentData.totalHours) / REQUIRED_HOURS[studentData.grade]) * 100}%`
                 }}
             />
         </div>
