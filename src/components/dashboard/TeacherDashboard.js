@@ -292,7 +292,7 @@ function TeacherDashboard() {
                 <div className="student-info">
                   <h3>{student.full_name}</h3>
                   <p>Grade: {student.grade}</p>
-                  <p>Total Hours: {(student.communityHours + student.schoolHours)}</p>
+                  <p>Total Hours: {student.total_hours}</p>
                 </div>
                 <button
                   className="view-details-button"
