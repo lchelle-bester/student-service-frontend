@@ -181,8 +181,7 @@ function OrganizationForm() {
                     <h3>Organisation Key Help</h3>
                     <p>If your organisation key is not working:</p>
                     <ul>
-                        <li>Check that you've entered the key exactly as provided</li>
-                        <li>Keys are case-sensitive</li>
+                        <li>Check that you've entered the key exactly as provided.</li>
                         <li>Make sure there are no extra spaces</li>
                     </ul>
                     <p>For additional help or a new key, please contact support at lchelle.best@gmail.com</p>
@@ -286,6 +285,7 @@ function OrganizationForm() {
               setIsVerified(false);
               setOrganizationData(null);
               setOrgKey("");
+              setError(null);
             }}
           >
             Back
