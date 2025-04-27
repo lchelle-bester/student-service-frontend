@@ -19,11 +19,11 @@ function StudentDetailsModal({ student, serviceRecords, onClose }) {
                         </div>
                         <div className="info-item">
                             <label>Total Community Service Hours:</label>
-                            <span>{student.total_hours}</span>
+                            <span>{student.communityHours}</span>
                         </div>
                         <div className="info-item">
                             <label>Total School Service Hours:</label>
-                            <span>{student.total_hours || 0}</span>
+                            <span>{student.schoolHours}</span>
                         </div>
                     </div>
 
