@@ -43,11 +43,11 @@ function OrganizationForm() {
         localStorage.setItem("authToken", data.token);
         setError(null);
       } else {
-        setError(data.message || "Failed to verify organization key");
+        setError(data.message || "Failed to verify organisation key");
       }
     } catch (error) {
       console.error("Verification error:", error);
-      setError("Failed to verify organization key");
+      setError("Failed to verify organisation key");
     } finally {
       setIsLoading(false); // Add this
     }
@@ -196,7 +196,7 @@ function OrganizationForm() {
               id="orgKey"
               value={orgKey}
               onChange={(e) => setOrgKey(e.target.value)}
-              placeholder="Enter organization key"
+              placeholder="Enter organisation key"
               required
             />
           </div>
