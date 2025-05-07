@@ -58,12 +58,12 @@ function TeacherDashboard() {
 
     // Check for empty fields
     if (!serviceForm.studentFirstName.trim())
-      errors.push("Student first name is required");
+      errors.push("Student first name is required\n");
     if (!serviceForm.studentSurname.trim())
-      errors.push("Student surname is required");
-    if (!serviceForm.numberOfHours) errors.push("Number of hours is required");
-    if (!serviceForm.dateCompleted) errors.push("Date is required");
-    if (!serviceForm.description.trim()) errors.push("Description is required");
+      errors.push("Student surname is required\n");
+    if (!serviceForm.numberOfHours) errors.push("Number of hours is required\n");
+    if (!serviceForm.dateCompleted) errors.push("Date is required\n");
+    if (!serviceForm.description.trim()) errors.push("Description is required\n");
 
     // Validate date
     const selectedDate = new Date(serviceForm.dateCompleted);
@@ -71,24 +71,24 @@ function TeacherDashboard() {
     today.setHours(0, 0, 0, 0);
 
     if (selectedDate > today) {
-      errors.push("Service date cannot be in the future");
+      errors.push("Service date cannot be in the future\n");
     }
 
     // Validate hours
     const hours = parseInt(serviceForm.numberOfHours);
-    if (isNaN(hours) || hours <= 0 || hours > 10) {
-      errors.push("Hours must be between 1 and 10");
+    if (isNaN(hours) || hours <= 0.5 || hours > 10) {
+      errors.push("Hours must be between 0.5 and 10\n");
     }
 
     if(serviceForm.description.trim().length < 8){
-      errors.push("Description must be at least 8 characters long");
+      errors.push("Description must be at least 8 characters long\n");
     }
 
       // Check field lengths
   if (serviceForm.studentFirstName.trim().length <= 1)
-    errors.push("First name must be longer than 1 character");
+    errors.push("First name must be longer than 1 character\n");
   if (serviceForm.studentSurname.trim().length <= 1)
-    errors.push("Surname must be longer than 1 character");
+    errors.push("Surname must be longer than 1 character\n");
 
     return errors;
   };
@@ -126,7 +126,8 @@ function TeacherDashboard() {
       if (response.ok) {
         alert("Service hours logged successfully!");
         setServiceForm({
-          studentName: "",
+          studentSurname: "",
+          studentFirstName: "",
           numberOfHours: "",
           dateCompleted: "",
           description: "",
