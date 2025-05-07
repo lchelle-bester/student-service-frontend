@@ -18,7 +18,8 @@ function OrganizationForm() {
 
   // State for service hours form
   const [serviceForm, setServiceForm] = useState({
-    studentName: "",
+    studentFirstName: "",
+    studentSurname: "",
     hours: "",
     dateCompleted: "",
     description: "",
@@ -66,11 +67,20 @@ function OrganizationForm() {
     const errors = [];
 
     // Check for empty fields
-    if (!serviceForm.studentName.trim())
-      errors.push("Student name is required");
+    if (!serviceForm.studentFirstName.trim())
+      errors.push("Student first name is required");
+    if (!serviceForm.studentSurname.trim())
+      errors.push("Student surname is required");
+  
     if (!serviceForm.hours) errors.push("Number of hours is required");
     if (!serviceForm.dateCompleted) errors.push("Date is required");
     if (!serviceForm.description.trim()) errors.push("Description is required");
+
+//length check 
+if (serviceForm.studentFirstName.trim().length <= 1)
+  errors.push("First name must be longer than 1 character");
+if (serviceForm.studentSurname.trim().length <= 1)
+  errors.push("Surname must be longer than 1 character");
 
     // Validate date
     const selectedDate = new Date(serviceForm.dateCompleted);
@@ -109,6 +119,7 @@ function OrganizationForm() {
       setError(validationErrors.join("\n"));
       return;
     }
+    const fullName = `${serviceForm.studentFirstName.trim()} ${serviceForm.studentSurname.trim()}`;
 
     try {
       const response = await fetch(`${API_URL}/api/service/log-community`, {
@@ -118,7 +129,7 @@ function OrganizationForm() {
           Authorization: `Bearer ${localStorage.getItem("authToken")}`,
         },
         body: JSON.stringify({
-          studentName: serviceForm.studentName,
+          studentName: fullName,
           hours: parseFloat(serviceForm.hours),
           dateCompleted: serviceForm.dateCompleted,
           description: serviceForm.description,
