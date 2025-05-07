@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 
 function TeacherDashboard() {
   const [serviceForm, setServiceForm] = useState({
-    studentName: "",
+    studentFirstName: "",
+    studentSurname: "",
     numberOfHours: "",
     dateCompleted: "",
     description: "",
@@ -56,8 +57,10 @@ function TeacherDashboard() {
     const errors = [];
 
     // Check for empty fields
-    if (!serviceForm.studentName.trim())
-      errors.push("Student name is required");
+    if (!serviceForm.studentFirstName.trim())
+      errors.push("Student first name is required");
+    if (!serviceForm.studentSurname.trim())
+      errors.push("Student surname is required");
     if (!serviceForm.numberOfHours) errors.push("Number of hours is required");
     if (!serviceForm.dateCompleted) errors.push("Date is required");
     if (!serviceForm.description.trim()) errors.push("Description is required");
@@ -81,6 +84,12 @@ function TeacherDashboard() {
       errors.push("Description must be at least 8 characters long");
     }
 
+      // Check field lengths
+  if (serviceForm.studentFirstName.trim().length <= 1)
+    errors.push("First name must be longer than 1 character");
+  if (serviceForm.studentSurname.trim().length <= 1)
+    errors.push("Surname must be longer than 1 character");
+
     return errors;
   };
 
@@ -95,6 +104,7 @@ function TeacherDashboard() {
     }
     const token = localStorage.getItem(TOKEN_KEY);
 
+    const fullName = `${serviceForm.studentFirstName.trim()} ${serviceForm.studentSurname.trim()}`;
     try {
       console.log("Token:", token);
       const response = await fetch(`${API_URL}/api/service/log`, {
@@ -104,7 +114,7 @@ function TeacherDashboard() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          studentName: serviceForm.studentName,
+          studentName: fullName,
           numberOfHours: parseFloat(serviceForm.numberOfHours),
           dateCompleted: serviceForm.dateCompleted,
           description: serviceForm.description,
@@ -215,17 +225,29 @@ function TeacherDashboard() {
           <h2>Log School Service Hours</h2>
           {error && <div className="error-message">{error}</div>}
           <form onSubmit={handleSubmitService} className="service-form">
-            <div className="form-group">
-              <label htmlFor="studentName">Student Full Name:</label>
-              <input
-                type="text"
-                id="studentName"
-                name="studentName"
-                value={serviceForm.studentName}
-                onChange={handleServiceFormChange}
-                required
-              />
-            </div>
+          <div className="form-group">
+  <label htmlFor="studentFirstName">Student First Name:</label>
+  <input
+    type="text"
+    id="studentFirstName"
+    name="studentFirstName"
+    value={serviceForm.studentFirstName}
+    onChange={handleServiceFormChange}
+    required
+  />
+</div>
+
+<div className="form-group">
+  <label htmlFor="studentSurname">Student Surname:</label>
+  <input
+    type="text"
+    id="studentSurname"
+    name="studentSurname"
+    value={serviceForm.studentSurname}
+    onChange={handleServiceFormChange}
+    required
+  />
+</div>
 
             <div className="form-group">
               <label htmlFor="numberOfHours">Number of Hours:</label>
