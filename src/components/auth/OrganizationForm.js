@@ -15,7 +15,6 @@ function OrganizationForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
 
-
   // State for service hours form
   const [serviceForm, setServiceForm] = useState({
     studentFirstName: "",
@@ -54,7 +53,6 @@ function OrganizationForm() {
     }
   };
 
-
   const handleServiceFormChange = (e) => {
     const { name, value } = e.target;
     setServiceForm((prev) => ({
@@ -71,16 +69,17 @@ function OrganizationForm() {
       errors.push("Student first name is required\n");
     if (!serviceForm.studentSurname.trim())
       errors.push("Student surname is required\n");
-  
+
     if (!serviceForm.hours) errors.push("Number of hours is required\n");
     if (!serviceForm.dateCompleted) errors.push("Date is required\n");
-    if (!serviceForm.description.trim()) errors.push("Description is required\n");
+    if (!serviceForm.description.trim())
+      errors.push("Description is required\n");
 
-//length check 
-if (serviceForm.studentFirstName.trim().length <= 1)
-  errors.push("First name must be longer than 1 character\n");
-if (serviceForm.studentSurname.trim().length <= 1)
-  errors.push("Surname must be longer than 1 character\n");
+    //length check
+    if (serviceForm.studentFirstName.trim().length <= 1)
+      errors.push("First name must be longer than 1 character\n");
+    if (serviceForm.studentSurname.trim().length <= 1)
+      errors.push("Surname must be longer than 1 character\n");
 
     // Validate date
     const selectedDate = new Date(serviceForm.dateCompleted);
@@ -94,12 +93,14 @@ if (serviceForm.studentSurname.trim().length <= 1)
     // Validate hours
     const hours = parseInt(serviceForm.hours);
     if (isNaN(hours) || hours <= 0 || hours > 10) {
-      errors.push('Hours must be between 0.5 and 10\n');
-     }
+      errors.push("Hours must be between 0.5 and 10\n");
+    }
 
-     if (hours * 10 % 5 !== 0) {
-      errors.push('Hours must be in half hour increments (e.g., 1.0, 1.5, 2.0, 2.5)\n');
-  }
+    if ((hours * 10) % 5 !== 0) {
+      errors.push(
+        "Hours must be in half hour increments (e.g., 1.0, 1.5, 2.0, 2.5)\n"
+      );
+    }
     if (serviceForm.description.length < 8) {
       errors.push("Description must be at least 8 characters long\n");
     }
@@ -167,39 +168,43 @@ if (serviceForm.studentSurname.trim().length <= 1)
             handleVerify();
           }}
         >
-
-{!isVerified && error && (
+          {!isVerified && error && (
             <div className="error-container">
-                <div className="error-message">{error}</div>
-                <button 
-                    className="help-button"
-                    onClick={() => setShowHelp(true)}
-                >
-                    Help
-                </button>
+              <div className="error-message">{error}</div>
+              <button className="help-button" onClick={() => setShowHelp(true)}>
+                Help
+              </button>
             </div>
-        )}
-        
-        {showHelp && (
+          )}
+
+          {showHelp && (
             <>
-                <div className="modal-overlay" onClick={() => setShowHelp(false)} />
-                <div className="help-modal">
-                    <button 
-                        className="close-modal"
-                        onClick={() => setShowHelp(false)}
-                    >
-                        ×
-                    </button>
-                    <h3>Organisation Key Help</h3>
-                    <p>If your organisation key is not working:</p>
-                    <ul>
-                        <li>Check that you've entered the key exactly as provided.</li>
-                        <li>Make sure there are no extra spaces</li>
-                    </ul>
-                    <p>For additional help or a new key, please contact support at lchelle.best@gmail.com</p>
-                </div>
+              <div
+                className="modal-overlay"
+                onClick={() => setShowHelp(false)}
+              />
+              <div className="help-modal">
+                <button
+                  className="close-modal"
+                  onClick={() => setShowHelp(false)}
+                >
+                  ×
+                </button>
+                <h3>Organisation Key Help</h3>
+                <p>If your organisation key is not working:</p>
+                <ul>
+                  <li>
+                    Check that you've entered the key exactly as provided.
+                  </li>
+                  <li>Make sure there are no extra spaces</li>
+                </ul>
+                <p>
+                  For additional help or a new key, please contact support at
+                  lchelle.best@gmail.com
+                </p>
+              </div>
             </>
-        )}
+          )}
 
           <div className="form-group">
             <label htmlFor="orgKey">Organisation Key:</label>
@@ -234,14 +239,24 @@ if (serviceForm.studentSurname.trim().length <= 1)
           </div>
 
           <div className="form-group">
-            {error && <div className="error-message">{error}</div>}
-
-            <label htmlFor="studentName">Student's Full Name:</label>
+            <label htmlFor="studentFirstName">Student's First Name:</label>
             <input
               type="text"
-              id="studentName"
-              name="studentName"
-              value={serviceForm.studentName}
+              id="studentFirstName"
+              name="studentFirstName"
+              value={serviceForm.studentFirstName}
+              onChange={handleServiceFormChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="studentSurname">Student's Surname:</label>
+            <input
+              type="text"
+              id="studentSurname"
+              name="studentSurname"
+              value={serviceForm.studentSurname}
               onChange={handleServiceFormChange}
               required
             />
