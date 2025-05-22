@@ -6,7 +6,7 @@ import "../../styles/Login.css";
 function OrganizationForm() {
   const API_URL =
     process.env.REACT_APP_API_URL ||
-    "https://web-production-f1ba5.up.railway.app";
+    "https://student-service-backend.onrender.com";
   const navigate = useNavigate();
   const [orgKey, setOrgKey] = useState("");
   const [error, setError] = useState("");
