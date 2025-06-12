@@ -1,18 +1,23 @@
-// src/components/dashboard/TeacherDashboard.js - Updated to integrate with existing system
+// src/components/dashboard/TeacherDashboard.js - FIXED to keep original look
 import React, { useState, useEffect } from "react";
 import StudentDetailsModal from "./StudentDetailsModal";
 import "../../styles/TeacherDashboard.css";
 import { useNavigate } from "react-router-dom";
 
 function TeacherDashboard() {
-  // Enhanced form state to support multiple students
+  // Keep original form structure but enhanced for multiple students
   const [serviceForm, setServiceForm] = useState({
+    studentFirstName: "",
+    studentSurname: "",
+    numberOfHours: "",
     dateCompleted: "",
     description: "",
-    students: [{ firstName: "", surname: "", hours: "" }]
   });
   
-  // Existing state
+  // Additional students (hidden from UI when only 1 student)
+  const [additionalStudents, setAdditionalStudents] = useState([]);
+  
+  // Existing state (unchanged)
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -47,49 +52,50 @@ function TeacherDashboard() {
     }
   }, [navigate]);
 
-  // Updated form change handlers
-  const handleCommonFieldChange = (e) => {
+  // Keep original form change handler
+  const handleServiceFormChange = (e) => {
     const { name, value } = e.target;
-    setServiceForm(prev => ({
+    setServiceForm((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  const handleStudentChange = (index, field, value) => {
-    setServiceForm(prev => ({
-      ...prev,
-      students: prev.students.map((student, i) => 
+  // Handler for additional students
+  const handleAdditionalStudentChange = (index, field, value) => {
+    setAdditionalStudents(prev => 
+      prev.map((student, i) => 
         i === index ? { ...student, [field]: value } : student
       )
-    }));
+    );
   };
 
   const addStudent = () => {
-    if (serviceForm.students.length < 50) {
-      setServiceForm(prev => ({
-        ...prev,
-        students: [...prev.students, { firstName: "", surname: "", hours: "" }]
-      }));
+    if (additionalStudents.length < 49) { // 49 + 1 main = 50 max
+      setAdditionalStudents(prev => [...prev, { 
+        firstName: "", 
+        surname: "", 
+        hours: "" 
+      }]);
     }
   };
 
   const removeStudent = (index) => {
-    if (serviceForm.students.length > 1) {
-      setServiceForm(prev => ({
-        ...prev,
-        students: prev.students.filter((_, i) => i !== index)
-      }));
-    }
+    setAdditionalStudents(prev => prev.filter((_, i) => i !== index));
   };
 
-  // Enhanced validation
+  // Enhanced validation (keeps original logic)
   const validateForm = () => {
     const errors = [];
 
-    if (!serviceForm.dateCompleted) {
-      errors.push("Date completed is required");
-    }
+    // Original validation for main student
+    if (!serviceForm.studentFirstName.trim())
+      errors.push("Student first name is required\n");
+    if (!serviceForm.studentSurname.trim())
+      errors.push("Student surname is required\n");
+    if (!serviceForm.numberOfHours) errors.push("Number of hours is required\n");
+    if (!serviceForm.dateCompleted) errors.push("Date is required\n");
+    if (!serviceForm.description.trim()) errors.push("Description is required\n");
 
     // Validate date
     const selectedDate = new Date(serviceForm.dateCompleted);
@@ -97,44 +103,30 @@ function TeacherDashboard() {
     today.setHours(0, 0, 0, 0);
 
     if (selectedDate > today) {
-      errors.push("Service date cannot be in the future");
+      errors.push("Service date cannot be in the future\n");
     }
 
-    if (!serviceForm.description || serviceForm.description.length < 8) {
-      errors.push("Description must be at least 8 characters long");
+    // Validate hours for main student
+    const hours = parseFloat(serviceForm.numberOfHours);
+    if (isNaN(hours) || hours < 0.5 || hours > 10) {
+      errors.push("Hours must be between 0.5 and 10\n");
     }
 
-    if (serviceForm.description && serviceForm.description.length > 200) {
-      errors.push("Description must be less than 200 characters");
+    if (serviceForm.description.trim().length < 8) {
+      errors.push("Description must be at least 8 characters long\n");
     }
 
-    // Check for empty students
-    const emptyStudents = serviceForm.students.filter(student => 
-      !student.firstName.trim() || !student.surname.trim() || !student.hours
-    );
-
-    if (emptyStudents.length > 0) {
-      errors.push(`${emptyStudents.length} student(s) have missing information`);
-    }
-
-    // Validate each student's hours
-    serviceForm.students.forEach((student, index) => {
+    // Additional validation for batch students
+    additionalStudents.forEach((student, index) => {
+      if (!student.firstName.trim() || !student.surname.trim() || !student.hours) {
+        errors.push(`Additional student ${index + 1} has missing information\n`);
+      }
+      
       if (student.hours) {
-        const hours = parseFloat(student.hours);
-        if (isNaN(hours) || hours < 0.5 || hours > 10) {
-          errors.push(`Student ${index + 1}: Hours must be between 0.5 and 10`);
+        const studentHours = parseFloat(student.hours);
+        if (isNaN(studentHours) || studentHours < 0.5 || studentHours > 10) {
+          errors.push(`Additional student ${index + 1}: Hours must be between 0.5 and 10\n`);
         }
-        if ((hours * 10) % 5 !== 0) {
-          errors.push(`Student ${index + 1}: Hours must be in half hour increments`);
-        }
-      }
-      
-      if (student.firstName && student.firstName.trim().length <= 1) {
-        errors.push(`Student ${index + 1}: First name must be longer than 1 character`);
-      }
-      
-      if (student.surname && student.surname.trim().length <= 1) {
-        errors.push(`Student ${index + 1}: Surname must be longer than 1 character`);
       }
     });
 
@@ -150,7 +142,7 @@ function TeacherDashboard() {
 
     const validationErrors = validateForm();
     if (validationErrors.length > 0) {
-      setError(validationErrors.join("\n"));
+      setError(validationErrors.join(""));
       return;
     }
 
@@ -158,10 +150,19 @@ function TeacherDashboard() {
 
     try {
       const token = localStorage.getItem(TOKEN_KEY);
-      const isBatch = serviceForm.students.length > 1;
+      const hasAdditionalStudents = additionalStudents.length > 0;
 
-      if (isBatch) {
+      if (hasAdditionalStudents) {
         // Use batch endpoint
+        const allStudents = [
+          {
+            firstName: serviceForm.studentFirstName,
+            surname: serviceForm.studentSurname,
+            hours: serviceForm.numberOfHours
+          },
+          ...additionalStudents
+        ];
+
         const response = await fetch(`${API_URL}/api/service/batch-log`, {
           method: 'POST',
           headers: {
@@ -169,7 +170,7 @@ function TeacherDashboard() {
             'Authorization': `Bearer ${token}`
           },
           body: JSON.stringify({
-            students: serviceForm.students,
+            students: allStudents,
             dateCompleted: serviceForm.dateCompleted,
             description: serviceForm.description
           })
@@ -183,24 +184,23 @@ function TeacherDashboard() {
 
           // Reset form
           setServiceForm({
+            studentFirstName: "",
+            studentSurname: "",
+            numberOfHours: "",
             dateCompleted: "",
             description: "",
-            students: [{ firstName: "", surname: "", hours: "" }]
           });
+          setAdditionalStudents([]);
 
           if (data.errors && data.errors.length > 0) {
             setError(`Some errors occurred:\n${data.errors.join('\n')}`);
           }
         } else {
           setError(data.message || 'Failed to log hours');
-          if (data.errors) {
-            setError(prev => prev + '\n' + data.errors.join('\n'));
-          }
         }
       } else {
-        // Use existing individual endpoint
-        const student = serviceForm.students[0];
-        const fullName = `${student.firstName.trim()} ${student.surname.trim()}`;
+        // Use original individual endpoint
+        const fullName = `${serviceForm.studentFirstName.trim()} ${serviceForm.studentSurname.trim()}`;
 
         const response = await fetch(`${API_URL}/api/service/log`, {
           method: "POST",
@@ -210,7 +210,7 @@ function TeacherDashboard() {
           },
           body: JSON.stringify({
             studentName: fullName,
-            numberOfHours: parseFloat(student.hours),
+            numberOfHours: parseFloat(serviceForm.numberOfHours),
             dateCompleted: serviceForm.dateCompleted,
             description: serviceForm.description,
           }),
@@ -221,9 +221,11 @@ function TeacherDashboard() {
         if (response.ok) {
           setSuccess("Service hours logged successfully!");
           setServiceForm({
+            studentFirstName: "",
+            studentSurname: "",
+            numberOfHours: "",
             dateCompleted: "",
             description: "",
-            students: [{ firstName: "", surname: "", hours: "" }]
           });
         } else {
           setError(data.message || "Failed to log service hours");
@@ -307,7 +309,7 @@ function TeacherDashboard() {
     window.location.href = "/";
   };
 
-  const isMultipleStudents = serviceForm.students.length > 1;
+  const totalStudents = 1 + additionalStudents.length;
 
   return (
     <div className="dashboard-container">
@@ -319,167 +321,214 @@ function TeacherDashboard() {
       </header>
 
       <div className="dashboard-content">
-        {/* Left section: Enhanced Log Service Hours */}
+        {/* Left section: EXACTLY same layout as original */}
         <section className="log-hours-section">
           <h2>Log School Service Hours</h2>
           
           {error && <div className="error-message">{error}</div>}
-          {success && <div className="success-message">{success}</div>}
+          {success && <div className="success-message" style={{
+            backgroundColor: '#d4edda',
+            color: '#155724',
+            padding: '12px',
+            borderRadius: '4px',
+            marginBottom: '20px'
+          }}>{success}</div>}
           
           <form onSubmit={handleSubmitService} className="service-form">
-            {/* Common fields */}
-            <div className="common-fields">
-              <div className="form-group">
-                <label htmlFor="dateCompleted">Date Completed:</label>
-                <input
-                  type="date"
-                  id="dateCompleted"
-                  name="dateCompleted"
-                  value={serviceForm.dateCompleted}
-                  onChange={handleCommonFieldChange}
-                  required
-                />
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="description">Activity Description:</label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={serviceForm.description}
-                  onChange={handleCommonFieldChange}
-                  rows="3"
-                  placeholder="Describe the service activity (8-200 characters)"
-                  required
-                />
-                <small className="char-count">
-                  {serviceForm.description.length}/200 characters
-                </small>
-              </div>
+            {/* EXACT same form fields as original */}
+            <div className="form-group">
+              <label htmlFor="studentFirstName">Student First Name:</label>
+              <input
+                type="text"
+                id="studentFirstName"
+                name="studentFirstName"
+                value={serviceForm.studentFirstName}
+                onChange={handleServiceFormChange}
+                required
+              />
             </div>
-            
-            {/* Students section */}
-            <div className="students-section">
-              <h3>
-                {isMultipleStudents ? `Students (${serviceForm.students.length})` : 'Student'}
-              </h3>
-              
-              <div className="students-list">
-                {serviceForm.students.map((student, index) => (
-                  <div key={index} className="student-row">
-                    {isMultipleStudents && (
-                      <div className="student-number">#{index + 1}</div>
-                    )}
-                    
-                    <div className="form-group">
-                      <label>First Name:</label>
+
+            <div className="form-group">
+              <label htmlFor="studentSurname">Student Surname:</label>
+              <input
+                type="text"
+                id="studentSurname"
+                name="studentSurname"
+                value={serviceForm.studentSurname}
+                onChange={handleServiceFormChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="numberOfHours">Number of Hours:</label>
+              <input
+                type="number"
+                id="numberOfHours"
+                name="numberOfHours"
+                value={serviceForm.numberOfHours}
+                onChange={handleServiceFormChange}
+                min="0.5"
+                max="10"
+                step="0.5"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="dateCompleted">Date Completed:</label>
+              <input
+                type="date"
+                id="dateCompleted"
+                name="dateCompleted"
+                value={serviceForm.dateCompleted}
+                onChange={handleServiceFormChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="description">Description:</label>
+              <textarea
+                id="description"
+                name="description"
+                value={serviceForm.description}
+                onChange={handleServiceFormChange}
+                rows="4"
+                required
+              />
+            </div>
+
+            {/* Additional students section - only shows when students are added */}
+            {additionalStudents.length > 0 && (
+              <div style={{ 
+                marginTop: '30px',
+                padding: '20px',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '8px',
+                border: '1px solid #e9ecef'
+              }}>
+                <h3 style={{ margin: '0 0 20px 0', color: '#333' }}>
+                  Additional Students ({additionalStudents.length})
+                </h3>
+                
+                {additionalStudents.map((student, index) => (
+                  <div key={index} style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr 100px 40px',
+                    gap: '10px',
+                    alignItems: 'end',
+                    marginBottom: '15px',
+                    padding: '15px',
+                    backgroundColor: '#fff',
+                    borderRadius: '6px',
+                    border: '1px solid #e9ecef'
+                  }}>
+                    <div className="form-group" style={{ margin: 0 }}>
+                      <label style={{ fontSize: '14px' }}>First Name:</label>
                       <input
                         type="text"
-                        placeholder="First Name"
                         value={student.firstName}
-                        onChange={(e) => handleStudentChange(index, 'firstName', e.target.value)}
+                        onChange={(e) => handleAdditionalStudentChange(index, 'firstName', e.target.value)}
                         required
+                        style={{ padding: '8px' }}
                       />
                     </div>
-                    
-                    <div className="form-group">
-                      <label>Surname:</label>
+                    <div className="form-group" style={{ margin: 0 }}>
+                      <label style={{ fontSize: '14px' }}>Surname:</label>
                       <input
                         type="text"
-                        placeholder="Surname"
                         value={student.surname}
-                        onChange={(e) => handleStudentChange(index, 'surname', e.target.value)}
+                        onChange={(e) => handleAdditionalStudentChange(index, 'surname', e.target.value)}
                         required
+                        style={{ padding: '8px' }}
                       />
                     </div>
-                    
-                    <div className="form-group">
-                      <label>Hours:</label>
+                    <div className="form-group" style={{ margin: 0 }}>
+                      <label style={{ fontSize: '14px' }}>Hours:</label>
                       <input
                         type="number"
-                        placeholder="Hours"
                         value={student.hours}
-                        onChange={(e) => handleStudentChange(index, 'hours', e.target.value)}
+                        onChange={(e) => handleAdditionalStudentChange(index, 'hours', e.target.value)}
                         min="0.5"
                         max="10"
                         step="0.5"
                         required
+                        style={{ padding: '8px', textAlign: 'center' }}
                       />
                     </div>
-                    
-                    {serviceForm.students.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeStudent(index)}
-                        className="remove-student-btn"
-                        title="Remove student"
-                      >
-                        ×
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      onClick={() => removeStudent(index)}
+                      style={{
+                        width: '30px',
+                        height: '30px',
+                        backgroundColor: '#dc3545',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '50%',
+                        cursor: 'pointer',
+                        fontSize: '16px',
+                        alignSelf: 'end'
+                      }}
+                    >
+                      ×
+                    </button>
                   </div>
                 ))}
-                
-                {/* Add student button */}
-                <div className="add-student-section">
-                  <button 
-                    type="button" 
-                    onClick={addStudent} 
-                    className="add-student-btn"
-                    disabled={serviceForm.students.length >= 50}
-                  >
-                    + Add Another Student
-                    {serviceForm.students.length >= 45 && (
-                      <span className="limit-warning">
-                        ({50 - serviceForm.students.length} remaining)
-                      </span>
-                    )}
-                  </button>
-                  {serviceForm.students.length >= 50 && (
-                    <p className="limit-message">Maximum of 50 students reached</p>
-                  )}
-                </div>
               </div>
-            </div>
+            )}
+
+            {/* Add student button - clean and simple */}
+            {additionalStudents.length < 49 && (
+              <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                <button
+                  type="button"
+                  onClick={addStudent}
+                  style={{
+                    backgroundColor: '#28a745',
+                    color: 'white',
+                    border: 'none',
+                    padding: '10px 20px',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '14px'
+                  }}
+                >
+                  + Add Another Student
+                </button>
+              </div>
+            )}
 
             <button 
               type="submit" 
               className="submit-button"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Logging Hours...' : 
-               isMultipleStudents ? `Log Hours for ${serviceForm.students.length} Students` : 'Submit Hours'}
+              {isSubmitting ? 'Submitting...' : 
+               totalStudents > 1 ? `Submit Hours for ${totalStudents} Students` : 'Submit Hours'}
             </button>
           </form>
-          
+
           {/* Results display */}
           {results && (
-            <div className="results-section">
-              <h3>Results</h3>
-              <div className="results-summary">
-                <div className="success-count">✓ {results.successCount} successful</div>
-                {results.errorCount > 0 && (
-                  <div className="error-count">✗ {results.errorCount} errors</div>
-                )}
-              </div>
-              
-              {results.results && results.results.length > 0 && (
-                <div className="successful-logs">
-                  <h4>Successfully Logged:</h4>
-                  <ul>
-                    {results.results.map((result, index) => (
-                      <li key={index}>
-                        {result.studentName} - {result.hours} hours
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+            <div style={{
+              marginTop: '20px',
+              padding: '15px',
+              backgroundColor: '#f8f9fa',
+              borderRadius: '6px',
+              border: '1px solid #e9ecef'
+            }}>
+              <h4>Results:</h4>
+              <div style={{ color: '#28a745' }}>✓ {results.successCount} successful</div>
+              {results.errorCount > 0 && (
+                <div style={{ color: '#dc3545' }}>✗ {results.errorCount} errors</div>
               )}
             </div>
           )}
         </section>
 
-        {/* Right section: Search Students (unchanged) */}
+        {/* Right section: Search Students (UNCHANGED) */}
         <section className="search-section">
           <h2>Search For Students</h2>
           <div className="search-container">
