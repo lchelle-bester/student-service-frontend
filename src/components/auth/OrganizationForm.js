@@ -112,7 +112,7 @@ function OrganizationForm() {
     today.setHours(0, 0, 0, 0);
 
     if (selectedDate > today) {
-      errors.push("Service date cannot be in the future\n");
+      errors.push("Date cannot be in the future\n");
     }
 
     // Validate hours
@@ -122,7 +122,7 @@ function OrganizationForm() {
     }
 
     if ((hours * 10) % 5 !== 0) {
-      errors.push("Hours must be in half hour increments (e.g., 1.0, 1.5, 2.0, 2.5)\n");
+      errors.push("Hours must be in half hour increments (e.g., 1.0, 1.5, 2.0)\n");
     }
 
     if (serviceForm.description.length < 8) {
@@ -166,11 +166,106 @@ function OrganizationForm() {
   // Enhanced submit handler
   const handleSubmitHours = async (e) => {
     e.preventDefault();
-    setError("");
 
-    const validationErrors = validateForm();
-    if (validationErrors.length > 0) {
-      setError(validationErrors.join(""));
+    // Let HTML5 validation handle basic required field checks
+    // Only do custom validation for complex rules
+    const customErrors = [];
+    
+    // Custom validation for full name format
+    if (serviceForm.studentFullName.trim()) {
+      const nameParts = serviceForm.studentFullName.trim().split(/\s+/);
+      if (nameParts.length < 2) {
+        e.target.studentFullName.setCustomValidity("Full name must include both first and last name (e.g. John Smith)");
+        e.target.studentFullName.reportValidity();
+        return;
+      }
+      if (serviceForm.studentFullName.trim().length < 3) {
+        e.target.studentFullName.setCustomValidity("Full name must be at least 3 characters long");
+        e.target.studentFullName.reportValidity();
+        return;
+      }
+      // Check for valid characters (letters, spaces, accented characters, hyphens, apostrophes, periods)
+      const namePattern = /^[a-zA-Zâäèéêëė\s'.-]+$/;
+      if (!namePattern.test(serviceForm.studentFullName.trim())) {
+        e.target.studentFullName.setCustomValidity("Name contains invalid characters");
+        e.target.studentFullName.reportValidity();
+        return;
+      }
+      // Clear custom validity if name is valid
+      e.target.studentFullName.setCustomValidity("");
+    }
+
+    // Custom validation for hours format
+    if (serviceForm.hours) {
+      const hours = parseFloat(serviceForm.hours);
+      if (!isNaN(hours) && (hours * 10) % 5 !== 0) {
+        e.target.hours.setCustomValidity("Hours must be in half hour increments (e.g., 1.0, 1.5, 2.0)");
+        e.target.hours.reportValidity();
+        return;
+      }
+      // Clear custom validity if hours are valid
+      e.target.hours.setCustomValidity("");
+    }
+
+    // Custom validation for description length
+    if (serviceForm.description.trim() && serviceForm.description.length < 8) {
+      e.target.description.setCustomValidity("Description must be at least 8 characters long");
+      e.target.description.reportValidity();
+      return;
+    }
+    if (serviceForm.description.length > 200) {
+      e.target.description.setCustomValidity("Description must be less than 200 characters long");
+      e.target.description.reportValidity();
+      return;
+    }
+    // Clear custom validity if description is valid
+    e.target.description.setCustomValidity("");
+
+    // Custom validation for future date
+    if (serviceForm.dateCompleted) {
+      const selectedDate = new Date(serviceForm.dateCompleted);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (selectedDate > today) {
+        e.target.dateCompleted.setCustomValidity("Date cannot be in the future");
+        e.target.dateCompleted.reportValidity();
+        return;
+      }
+      // Clear custom validity if date is valid
+      e.target.dateCompleted.setCustomValidity("");
+    }
+
+    // Validate additional students
+    for (let i = 0; i < additionalStudents.length; i++) {
+      const student = additionalStudents[i];
+      
+      if (student.fullName.trim()) {
+        const nameParts = student.fullName.trim().split(/\s+/);
+        if (nameParts.length < 2) {
+          customErrors.push(`Additional student ${i + 1}: Full name must include both first and last name (e.g. John Smith)`);
+        }
+        if (student.fullName.trim().length < 3) {
+          customErrors.push(`Additional student ${i + 1}: Full name must be at least 3 characters long`);
+        }
+        // Check for valid characters
+        const namePattern = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+$/;
+        if (!namePattern.test(student.fullName.trim())) {
+          customErrors.push(`Additional student ${i + 1}: Name contains invalid characters`);
+        }
+      }
+      
+      if (student.hours) {
+        const studentHours = parseFloat(student.hours);
+        if (!isNaN(studentHours) && (studentHours * 10) % 5 !== 0) {
+          customErrors.push(`Additional student ${i + 1}: Hours must be in half hour increments`);
+        }
+      }
+    }
+
+    // Show custom errors for additional students using alert (since we can't use HTML5 validation on dynamic fields)
+    if (customErrors.length > 0) {
+      alert(customErrors.join('\n'));
       return;
     }
 
@@ -219,10 +314,10 @@ function OrganizationForm() {
           setAdditionalStudents([]);
           
           if (data.errors && data.errors.length > 0) {
-            setError(`Some errors occurred:\n${data.errors.join('\n')}`);
+            alert(`Some errors occurred:\n${data.errors.join('\n')}`);
           }
         } else {
-          setError(data.message || "Failed to log service hours");
+          alert(data.message || "Failed to log service hours");
         }
       } else {
         // Use original individual endpoint
@@ -253,12 +348,12 @@ function OrganizationForm() {
             description: "",
           });
         } else {
-          setError(data.message || "Failed to log service hours");
+          alert(data.message || "Failed to log service hours");
         }
       }
     } catch (error) {
       console.error("Error:", error);
-      setError("Failed to submit service hours");
+      alert("Failed to submit service hours");
     }
   };
 
@@ -347,9 +442,7 @@ function OrganizationForm() {
             <p className="organization-name">{organizationData.name}</p>
           </div>
 
-          {error && <div className="error-message">{error}</div>}
-
-          {/* EXACT original form fields */}
+          {/* EXACT original form fields with enhanced HTML5 validation */}
           <div className="form-group">
             <label htmlFor="studentFullName">Student's Full Name:</label>
             <input
@@ -358,7 +451,10 @@ function OrganizationForm() {
               name="studentFullName"
               value={serviceForm.studentFullName}
               onChange={handleServiceFormChange}
-              placeholder="e.g. John Smith"
+              placeholder="e.g. John Van De Merwe"
+              minLength="3"
+              pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+\s+[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+.*$"
+              title="Please enter first and last name (e.g. John Van De Merwe, Zoë Smith)"
               required
             />
           </div>
@@ -374,6 +470,7 @@ function OrganizationForm() {
               min="0.5"
               max="10"
               step="0.5"
+              title="Hours must be between 0.5 and 10 in half-hour increments"
               required
             />
           </div>
@@ -386,6 +483,8 @@ function OrganizationForm() {
               name="dateCompleted"
               value={serviceForm.dateCompleted}
               onChange={handleServiceFormChange}
+              max={new Date().toISOString().split('T')[0]}
+              title="Service date cannot be in the future"
               required
             />
           </div>
@@ -398,6 +497,10 @@ function OrganizationForm() {
               value={serviceForm.description}
               onChange={handleServiceFormChange}
               rows="4"
+              minLength="8"
+              maxLength="200"
+              placeholder="Describe the community service activity (8-200 characters)"
+              title="Description must be between 8 and 200 characters"
               required
             />
           </div>

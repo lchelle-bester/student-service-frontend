@@ -96,10 +96,15 @@ function TeacherDashboard() {
     // Validate full name (should contain at least first and last name)
     const nameParts = serviceForm.studentFullName.trim().split(/\s+/);
     if (nameParts.length < 2) {
-      errors.push("Full name must include both first and last name\n");
+      errors.push("Full name must include both first and last name (e.g. John Van De Merwe)\n");
     }
     if (serviceForm.studentFullName.trim().length < 3) {
       errors.push("Full name must be at least 3 characters long\n");
+    }
+    // Check for valid characters (letters, spaces, accented characters, hyphens, apostrophes, periods)
+    const namePattern = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+$/;
+    if (!namePattern.test(serviceForm.studentFullName.trim())) {
+      errors.push("Name contains invalid characters\n");
     }
 
     // Validate date
@@ -130,10 +135,15 @@ function TeacherDashboard() {
       if (student.fullName.trim()) {
         const nameParts = student.fullName.trim().split(/\s+/);
         if (nameParts.length < 2) {
-          errors.push(`Additional student ${index + 1}: Full name must include both first and last name\n`);
+          errors.push(`Additional student ${index + 1}: Full name must include both first and last name (e.g. John Van De Merwe)\n`);
         }
         if (student.fullName.trim().length < 3) {
           errors.push(`Additional student ${index + 1}: Full name must be at least 3 characters long\n`);
+        }
+        // Check for valid characters
+        const namePattern = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+$/;
+        if (!namePattern.test(student.fullName.trim())) {
+          errors.push(`Additional student ${index + 1}: Name contains invalid characters\n`);
         }
       }
       
@@ -361,7 +371,7 @@ function TeacherDashboard() {
                 name="studentFullName"
                 value={serviceForm.studentFullName}
                 onChange={handleServiceFormChange}
-                placeholder="e.g. John Smith"
+                placeholder="e.g. John Van De Merwe"
                 required
               />
             </div>
@@ -436,7 +446,7 @@ function TeacherDashboard() {
                         type="text"
                         value={student.fullName}
                         onChange={(e) => handleAdditionalStudentChange(index, 'fullName', e.target.value)}
-                        placeholder="e.g. Jane Doe"
+                        placeholder="e.g. Zoë Van De Merwe"
                         required
                         style={{ padding: '8px' }}
                       />
