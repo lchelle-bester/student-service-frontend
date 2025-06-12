@@ -15,8 +15,7 @@ function OrganizationForm() {
 
   // State for service hours form (original structure)
   const [serviceForm, setServiceForm] = useState({
-    studentFirstName: "",
-    studentSurname: "",
+    studentFullName: "",
     hours: "",
     dateCompleted: "",
     description: "",
@@ -76,8 +75,7 @@ function OrganizationForm() {
   const addStudent = () => {
     if (additionalStudents.length < 49) {
       setAdditionalStudents(prev => [...prev, { 
-        firstName: "", 
-        surname: "", 
+        fullName: "", 
         hours: "" 
       }]);
     }
@@ -92,20 +90,21 @@ function OrganizationForm() {
     const errors = [];
 
     // Check for empty fields
-    if (!serviceForm.studentFirstName.trim())
-      errors.push("Student first name is required\n");
-    if (!serviceForm.studentSurname.trim())
-      errors.push("Student surname is required\n");
+    if (!serviceForm.studentFullName.trim())
+      errors.push("Student full name is required\n");
     if (!serviceForm.hours) errors.push("Number of hours is required\n");
     if (!serviceForm.dateCompleted) errors.push("Date is required\n");
     if (!serviceForm.description.trim())
       errors.push("Description is required\n");
 
-    // Length check
-    if (serviceForm.studentFirstName.trim().length <= 1)
-      errors.push("First name must be longer than 1 character\n");
-    if (serviceForm.studentSurname.trim().length <= 1)
-      errors.push("Surname must be longer than 1 character\n");
+    // Validate full name (should contain at least first and last name)
+    const nameParts = serviceForm.studentFullName.trim().split(/\s+/);
+    if (nameParts.length < 2) {
+      errors.push("Full name must include both first and last name\n");
+    }
+    if (serviceForm.studentFullName.trim().length < 3) {
+      errors.push("Full name must be at least 3 characters long\n");
+    }
 
     // Validate date
     const selectedDate = new Date(serviceForm.dateCompleted);
@@ -136,8 +135,18 @@ function OrganizationForm() {
 
     // Additional validation for batch students
     additionalStudents.forEach((student, index) => {
-      if (!student.firstName.trim() || !student.surname.trim() || !student.hours) {
+      if (!student.fullName.trim() || !student.hours) {
         errors.push(`Additional student ${index + 1} has missing information\n`);
+      }
+      
+      if (student.fullName.trim()) {
+        const nameParts = student.fullName.trim().split(/\s+/);
+        if (nameParts.length < 2) {
+          errors.push(`Additional student ${index + 1}: Full name must include both first and last name\n`);
+        }
+        if (student.fullName.trim().length < 3) {
+          errors.push(`Additional student ${index + 1}: Full name must be at least 3 characters long\n`);
+        }
       }
       
       if (student.hours) {
@@ -172,11 +181,15 @@ function OrganizationForm() {
         // Use batch endpoint
         const allStudents = [
           {
-            firstName: serviceForm.studentFirstName,
-            surname: serviceForm.studentSurname,
+            firstName: serviceForm.studentFullName.trim().split(/\s+/)[0],
+            surname: serviceForm.studentFullName.trim().split(/\s+/).slice(1).join(' '),
             hours: serviceForm.hours
           },
-          ...additionalStudents
+          ...additionalStudents.map(student => ({
+            firstName: student.fullName.trim().split(/\s+/)[0],
+            surname: student.fullName.trim().split(/\s+/).slice(1).join(' '),
+            hours: student.hours
+          }))
         ];
 
         const response = await fetch(`${API_URL}/api/service/batch-log-community`, {
@@ -198,8 +211,7 @@ function OrganizationForm() {
           alert(`Successfully logged hours for ${data.successCount} student(s)!`);
           // Reset form
           setServiceForm({
-            studentFirstName: "",
-            studentSurname: "",
+            studentFullName: "",
             hours: "",
             dateCompleted: "",
             description: "",
@@ -214,7 +226,7 @@ function OrganizationForm() {
         }
       } else {
         // Use original individual endpoint
-        const fullName = `${serviceForm.studentFirstName.trim()} ${serviceForm.studentSurname.trim()}`;
+        const fullName = serviceForm.studentFullName.trim();
 
         const response = await fetch(`${API_URL}/api/service/log-community`, {
           method: "POST",
@@ -235,8 +247,7 @@ function OrganizationForm() {
         if (response.ok) {
           alert("Service hours logged successfully!");
           setServiceForm({
-            studentFirstName: "",
-            studentSurname: "",
+            studentFullName: "",
             hours: "",
             dateCompleted: "",
             description: "",
@@ -340,25 +351,14 @@ function OrganizationForm() {
 
           {/* EXACT original form fields */}
           <div className="form-group">
-            <label htmlFor="studentFirstName">Student's First Name:</label>
+            <label htmlFor="studentFullName">Student's Full Name:</label>
             <input
               type="text"
-              id="studentFirstName"
-              name="studentFirstName"
-              value={serviceForm.studentFirstName}
+              id="studentFullName"
+              name="studentFullName"
+              value={serviceForm.studentFullName}
               onChange={handleServiceFormChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="studentSurname">Student's Surname:</label>
-            <input
-              type="text"
-              id="studentSurname"
-              name="studentSurname"
-              value={serviceForm.studentSurname}
-              onChange={handleServiceFormChange}
+              placeholder="e.g. John Smith"
               required
             />
           </div>
@@ -418,7 +418,7 @@ function OrganizationForm() {
               {additionalStudents.map((student, index) => (
                 <div key={index} style={{
                   display: 'grid',
-                  gridTemplateColumns: '1fr 1fr 80px 30px',
+                  gridTemplateColumns: '1fr 80px 30px',
                   gap: '10px',
                   alignItems: 'end',
                   marginBottom: '10px',
@@ -428,21 +428,12 @@ function OrganizationForm() {
                   border: '1px solid #ddd'
                 }}>
                   <div className="form-group" style={{ margin: 0 }}>
-                    <label style={{ fontSize: '12px', margin: '0 0 4px 0' }}>First Name:</label>
+                    <label style={{ fontSize: '12px', margin: '0 0 4px 0' }}>Full Name:</label>
                     <input
                       type="text"
-                      value={student.firstName}
-                      onChange={(e) => handleAdditionalStudentChange(index, 'firstName', e.target.value)}
-                      required
-                      style={{ padding: '6px', fontSize: '14px' }}
-                    />
-                  </div>
-                  <div className="form-group" style={{ margin: 0 }}>
-                    <label style={{ fontSize: '12px', margin: '0 0 4px 0' }}>Surname:</label>
-                    <input
-                      type="text"
-                      value={student.surname}
-                      onChange={(e) => handleAdditionalStudentChange(index, 'surname', e.target.value)}
+                      value={student.fullName}
+                      onChange={(e) => handleAdditionalStudentChange(index, 'fullName', e.target.value)}
+                      placeholder="e.g. Jane Doe"
                       required
                       style={{ padding: '6px', fontSize: '14px' }}
                     />

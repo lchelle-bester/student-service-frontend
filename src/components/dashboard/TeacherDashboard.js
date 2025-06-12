@@ -7,8 +7,7 @@ import { useNavigate } from "react-router-dom";
 function TeacherDashboard() {
   // Keep original form structure but enhanced for multiple students
   const [serviceForm, setServiceForm] = useState({
-    studentFirstName: "",
-    studentSurname: "",
+    studentFullName: "",
     numberOfHours: "",
     dateCompleted: "",
     description: "",
@@ -73,8 +72,7 @@ function TeacherDashboard() {
   const addStudent = () => {
     if (additionalStudents.length < 49) { // 49 + 1 main = 50 max
       setAdditionalStudents(prev => [...prev, { 
-        firstName: "", 
-        surname: "", 
+        fullName: "", 
         hours: "" 
       }]);
     }
@@ -89,13 +87,20 @@ function TeacherDashboard() {
     const errors = [];
 
     // Original validation for main student
-    if (!serviceForm.studentFirstName.trim())
-      errors.push("Student first name is required\n");
-    if (!serviceForm.studentSurname.trim())
-      errors.push("Student surname is required\n");
+    if (!serviceForm.studentFullName.trim())
+      errors.push("Student full name is required\n");
     if (!serviceForm.numberOfHours) errors.push("Number of hours is required\n");
     if (!serviceForm.dateCompleted) errors.push("Date is required\n");
     if (!serviceForm.description.trim()) errors.push("Description is required\n");
+
+    // Validate full name (should contain at least first and last name)
+    const nameParts = serviceForm.studentFullName.trim().split(/\s+/);
+    if (nameParts.length < 2) {
+      errors.push("Full name must include both first and last name\n");
+    }
+    if (serviceForm.studentFullName.trim().length < 3) {
+      errors.push("Full name must be at least 3 characters long\n");
+    }
 
     // Validate date
     const selectedDate = new Date(serviceForm.dateCompleted);
@@ -118,8 +123,18 @@ function TeacherDashboard() {
 
     // Additional validation for batch students
     additionalStudents.forEach((student, index) => {
-      if (!student.firstName.trim() || !student.surname.trim() || !student.hours) {
+      if (!student.fullName.trim() || !student.hours) {
         errors.push(`Additional student ${index + 1} has missing information\n`);
+      }
+      
+      if (student.fullName.trim()) {
+        const nameParts = student.fullName.trim().split(/\s+/);
+        if (nameParts.length < 2) {
+          errors.push(`Additional student ${index + 1}: Full name must include both first and last name\n`);
+        }
+        if (student.fullName.trim().length < 3) {
+          errors.push(`Additional student ${index + 1}: Full name must be at least 3 characters long\n`);
+        }
       }
       
       if (student.hours) {
@@ -156,11 +171,15 @@ function TeacherDashboard() {
         // Use batch endpoint
         const allStudents = [
           {
-            firstName: serviceForm.studentFirstName,
-            surname: serviceForm.studentSurname,
+            firstName: serviceForm.studentFullName.trim().split(/\s+/)[0],
+            surname: serviceForm.studentFullName.trim().split(/\s+/).slice(1).join(' '),
             hours: serviceForm.numberOfHours
           },
-          ...additionalStudents
+          ...additionalStudents.map(student => ({
+            firstName: student.fullName.trim().split(/\s+/)[0],
+            surname: student.fullName.trim().split(/\s+/).slice(1).join(' '),
+            hours: student.hours
+          }))
         ];
 
         const response = await fetch(`${API_URL}/api/service/batch-log`, {
@@ -184,8 +203,7 @@ function TeacherDashboard() {
 
           // Reset form
           setServiceForm({
-            studentFirstName: "",
-            studentSurname: "",
+            studentFullName: "",
             numberOfHours: "",
             dateCompleted: "",
             description: "",
@@ -200,7 +218,7 @@ function TeacherDashboard() {
         }
       } else {
         // Use original individual endpoint
-        const fullName = `${serviceForm.studentFirstName.trim()} ${serviceForm.studentSurname.trim()}`;
+        const fullName = serviceForm.studentFullName.trim();
 
         const response = await fetch(`${API_URL}/api/service/log`, {
           method: "POST",
@@ -221,8 +239,7 @@ function TeacherDashboard() {
         if (response.ok) {
           setSuccess("Service hours logged successfully!");
           setServiceForm({
-            studentFirstName: "",
-            studentSurname: "",
+            studentFullName: "",
             numberOfHours: "",
             dateCompleted: "",
             description: "",
@@ -337,25 +354,14 @@ function TeacherDashboard() {
           <form onSubmit={handleSubmitService} className="service-form">
             {/* EXACT same form fields as original */}
             <div className="form-group">
-              <label htmlFor="studentFirstName">Student First Name:</label>
+              <label htmlFor="studentFullName">Student Full Name:</label>
               <input
                 type="text"
-                id="studentFirstName"
-                name="studentFirstName"
-                value={serviceForm.studentFirstName}
+                id="studentFullName"
+                name="studentFullName"
+                value={serviceForm.studentFullName}
                 onChange={handleServiceFormChange}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="studentSurname">Student Surname:</label>
-              <input
-                type="text"
-                id="studentSurname"
-                name="studentSurname"
-                value={serviceForm.studentSurname}
-                onChange={handleServiceFormChange}
+                placeholder="e.g. John Smith"
                 required
               />
             </div>
@@ -415,7 +421,7 @@ function TeacherDashboard() {
                 {additionalStudents.map((student, index) => (
                   <div key={index} style={{
                     display: 'grid',
-                    gridTemplateColumns: '1fr 1fr 100px 40px',
+                    gridTemplateColumns: '1fr 100px 40px',
                     gap: '10px',
                     alignItems: 'end',
                     marginBottom: '15px',
@@ -425,21 +431,12 @@ function TeacherDashboard() {
                     border: '1px solid #e9ecef'
                   }}>
                     <div className="form-group" style={{ margin: 0 }}>
-                      <label style={{ fontSize: '14px' }}>First Name:</label>
+                      <label style={{ fontSize: '14px' }}>Full Name:</label>
                       <input
                         type="text"
-                        value={student.firstName}
-                        onChange={(e) => handleAdditionalStudentChange(index, 'firstName', e.target.value)}
-                        required
-                        style={{ padding: '8px' }}
-                      />
-                    </div>
-                    <div className="form-group" style={{ margin: 0 }}>
-                      <label style={{ fontSize: '14px' }}>Surname:</label>
-                      <input
-                        type="text"
-                        value={student.surname}
-                        onChange={(e) => handleAdditionalStudentChange(index, 'surname', e.target.value)}
+                        value={student.fullName}
+                        onChange={(e) => handleAdditionalStudentChange(index, 'fullName', e.target.value)}
+                        placeholder="e.g. Jane Doe"
                         required
                         style={{ padding: '8px' }}
                       />
