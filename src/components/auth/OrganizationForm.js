@@ -100,10 +100,10 @@ function OrganizationForm() {
     // Validate full name (should contain at least first and last name)
     const nameParts = serviceForm.studentFullName.trim().split(/\s+/);
     if (nameParts.length < 2) {
-      errors.push("Full name must include both first and last name\n");
+      errors.push("Full name must include both first & last name\n");
     }
     if (serviceForm.studentFullName.trim().length < 3) {
-      errors.push("Full name must be at least 3 characters long\n");
+      errors.push("Full name must be at least 3 characters\n");
     }
 
     // Validate date
@@ -118,7 +118,7 @@ function OrganizationForm() {
     // Validate hours
     const hours = parseFloat(serviceForm.hours);
     if (isNaN(hours) || hours < 0.5 || hours > 10) {
-      errors.push("Hours must be between 0.5 and 10\n");
+      errors.push("Hours must be between 0.5 - 10\n");
     }
 
     if ((hours * 10) % 5 !== 0) {
@@ -126,11 +126,11 @@ function OrganizationForm() {
     }
 
     if (serviceForm.description.length < 8) {
-      errors.push("Description must be at least 8 characters long\n");
+      errors.push("Description must be at least 8 characters\n");
     }
 
     if (serviceForm.description.length > 200) {
-      errors.push("Description must be less than 200 characters long\n");
+      errors.push("Description must be less than 200 characters\n");
     }
 
     // Additional validation for batch students
@@ -142,10 +142,10 @@ function OrganizationForm() {
       if (student.fullName.trim()) {
         const nameParts = student.fullName.trim().split(/\s+/);
         if (nameParts.length < 2) {
-          errors.push(`Additional student ${index + 1}: Full name must include both first and last name\n`);
+          errors.push(`Additional student ${index + 1}: Full name must include both first & last name\n`);
         }
         if (student.fullName.trim().length < 3) {
-          errors.push(`Additional student ${index + 1}: Full name must be at least 3 characters long\n`);
+          errors.push(`Additional student ${index + 1}: Full name must be at least 3 characters\n`);
         }
       }
       
@@ -180,12 +180,12 @@ function OrganizationForm() {
         return;
       }
       if (serviceForm.studentFullName.trim().length < 3) {
-        e.target.studentFullName.setCustomValidity("Full name must be at least 3 characters long");
+        e.target.studentFullName.setCustomValidity("Full name must be at least 3 characters");
         e.target.studentFullName.reportValidity();
         return;
       }
       // Check for valid characters (letters, spaces, accented characters, hyphens, apostrophes, periods)
-      const namePattern = /^[a-zA-Zâäèéêëė\s'.-]+$/;
+      const namePattern = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+$/;
       if (!namePattern.test(serviceForm.studentFullName.trim())) {
         e.target.studentFullName.setCustomValidity("Name contains invalid characters");
         e.target.studentFullName.reportValidity();
@@ -209,12 +209,12 @@ function OrganizationForm() {
 
     // Custom validation for description length
     if (serviceForm.description.trim() && serviceForm.description.length < 8) {
-      e.target.description.setCustomValidity("Description must be at least 8 characters long");
+      e.target.description.setCustomValidity("Description must be at least 8 characters");
       e.target.description.reportValidity();
       return;
     }
     if (serviceForm.description.length > 200) {
-      e.target.description.setCustomValidity("Description must be less than 200 characters long");
+      e.target.description.setCustomValidity("Description must be less than 200 characters");
       e.target.description.reportValidity();
       return;
     }
@@ -228,7 +228,7 @@ function OrganizationForm() {
       today.setHours(0, 0, 0, 0);
 
       if (selectedDate > today) {
-        e.target.dateCompleted.setCustomValidity("Date cannot be in the future");
+        e.target.dateCompleted.setCustomValidity("Service date cannot be in the future");
         e.target.dateCompleted.reportValidity();
         return;
       }
@@ -243,10 +243,10 @@ function OrganizationForm() {
       if (student.fullName.trim()) {
         const nameParts = student.fullName.trim().split(/\s+/);
         if (nameParts.length < 2) {
-          customErrors.push(`Additional student ${i + 1}: Full name must include both first and last name (e.g. John Smith)`);
+          customErrors.push(`Additional student ${i + 1}: Full name must include both first & last name (e.g. John Smith)`);
         }
         if (student.fullName.trim().length < 3) {
-          customErrors.push(`Additional student ${i + 1}: Full name must be at least 3 characters long`);
+          customErrors.push(`Additional student ${i + 1}: Full name must be at least 3 characters`);
         }
         // Check for valid characters
         const namePattern = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+$/;
@@ -451,42 +451,45 @@ function OrganizationForm() {
               name="studentFullName"
               value={serviceForm.studentFullName}
               onChange={handleServiceFormChange}
-              placeholder="e.g. John Smith"
+              placeholder="e.g. John Van De Merwe"
               minLength="3"
               pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+\s+[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+.*$"
-              title="Please enter first & last name (e.g. John Smith)"
+              title="Please enter first and last name (e.g. John Smith)"
               required
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="hours">Number of Hours:</label>
-            <input
-              type="number"
-              id="hours"
-              name="hours"
-              value={serviceForm.hours}
-              onChange={handleServiceFormChange}
-              min="0.5"
-              max="10"
-              step="0.5"
-              title="Hours must be between 0.5 - 10 in half-hour increments"
-              required
-            />
-          </div>
+          {/* Hours and Date in side-by-side layout */}
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="hours">Number of Hours:</label>
+              <input
+                type="number"
+                id="hours"
+                name="hours"
+                value={serviceForm.hours}
+                onChange={handleServiceFormChange}
+                min="0.5"
+                max="10"
+                step="0.5"
+                title="Hours must be between 0.5 and 10 in half-hour increments"
+                required
+              />
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="dateCompleted">Date Completed:</label>
-            <input
-              type="date"
-              id="dateCompleted"
-              name="dateCompleted"
-              value={serviceForm.dateCompleted}
-              onChange={handleServiceFormChange}
-              max={new Date().toISOString().split('T')[0]}
-              title="Service date cannot be in the future"
-              required
-            />
+            <div className="form-group">
+              <label htmlFor="dateCompleted">Date Completed:</label>
+              <input
+                type="date"
+                id="dateCompleted"
+                name="dateCompleted"
+                value={serviceForm.dateCompleted}
+                onChange={handleServiceFormChange}
+                max={new Date().toISOString().split('T')[0]}
+                title="Service date cannot be in the future"
+                required
+              />
+            </div>
           </div>
 
           <div className="form-group">
@@ -499,8 +502,8 @@ function OrganizationForm() {
               rows="4"
               minLength="8"
               maxLength="200"
-              placeholder="Describe the service activity completed (8-200 characters)"
-              title="Description must be between 8 - 200 characters"
+              placeholder="Describe the community service activity (8-200 characters)"
+              title="Description must be between 8 and 200 characters"
               required
             />
           </div>
@@ -536,7 +539,7 @@ function OrganizationForm() {
                       type="text"
                       value={student.fullName}
                       onChange={(e) => handleAdditionalStudentChange(index, 'fullName', e.target.value)}
-                      placeholder="e.g. Jane Doe"
+                      placeholder="e.g. Zoë Van De Merwe"
                       required
                       style={{ padding: '6px', fontSize: '14px' }}
                     />
