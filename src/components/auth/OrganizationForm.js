@@ -12,6 +12,8 @@ function OrganizationForm() {
   const [organizationData, setOrganizationData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [additionalStudents, setAdditionalStudents] = useState([]);
+
 
   // State for service hours form (original structure)
   const [serviceForm, setServiceForm] = useState({
@@ -20,9 +22,6 @@ function OrganizationForm() {
     dateCompleted: "",
     description: "",
   });
-
-  // Additional students for batch functionality
-  const [additionalStudents, setAdditionalStudents] = useState([]);
 
   // Original working verification function
   const handleVerify = async () => {
@@ -167,15 +166,13 @@ function OrganizationForm() {
   const handleSubmitHours = async (e) => {
     e.preventDefault();
 
-    // Let HTML5 validation handle basic required field checks
-    // Only do custom validation for complex rules
     const customErrors = [];
     
     // Custom validation for full name format
     if (serviceForm.studentFullName.trim()) {
       const nameParts = serviceForm.studentFullName.trim().split(/\s+/);
       if (nameParts.length < 2) {
-        e.target.studentFullName.setCustomValidity("Full name must include both first and last name (e.g. John Smith)");
+        e.target.studentFullName.setCustomValidity("Full name must include both first & last name (e.g. John Smith)");
         e.target.studentFullName.reportValidity();
         return;
       }
@@ -228,7 +225,7 @@ function OrganizationForm() {
       today.setHours(0, 0, 0, 0);
 
       if (selectedDate > today) {
-        e.target.dateCompleted.setCustomValidity("Service date cannot be in the future");
+        e.target.dateCompleted.setCustomValidity("Date cannot be in the future");
         e.target.dateCompleted.reportValidity();
         return;
       }
@@ -451,10 +448,10 @@ function OrganizationForm() {
               name="studentFullName"
               value={serviceForm.studentFullName}
               onChange={handleServiceFormChange}
-              placeholder="e.g. John Van De Merwe"
+              placeholder="e.g. Jarryd Braum"
               minLength="3"
               pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+\s+[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+.*$"
-              title="Please enter first and last name (e.g. John Smith)"
+              title="Please enter first and last name (e.g. Jarryd Braum)"
               required
             />
           </div>
@@ -472,7 +469,7 @@ function OrganizationForm() {
                 min="0.5"
                 max="10"
                 step="0.5"
-                title="Hours must be between 0.5 and 10 in half-hour increments"
+                title="Hours must be between 0.5 - 10"
                 required
               />
             </div>
@@ -486,7 +483,7 @@ function OrganizationForm() {
                 value={serviceForm.dateCompleted}
                 onChange={handleServiceFormChange}
                 max={new Date().toISOString().split('T')[0]}
-                title="Service date cannot be in the future"
+                title="Date cannot be in the future"
                 required
               />
             </div>
@@ -502,8 +499,8 @@ function OrganizationForm() {
               rows="4"
               minLength="8"
               maxLength="200"
-              placeholder="Describe the community service activity (8-200 characters)"
-              title="Description must be between 8 and 200 characters"
+              placeholder="Describe the community service activity completed (8-200 characters)"
+              title="Description must be between 8 - 200 characters"
               required
             />
           </div>
@@ -539,7 +536,7 @@ function OrganizationForm() {
                       type="text"
                       value={student.fullName}
                       onChange={(e) => handleAdditionalStudentChange(index, 'fullName', e.target.value)}
-                      placeholder="e.g. Zoë Van De Merwe"
+                      placeholder="e.g. Jarryd Braum"
                       required
                       style={{ padding: '6px', fontSize: '14px' }}
                     />
@@ -595,7 +592,7 @@ function OrganizationForm() {
                   fontSize: '14px'
                 }}
               >
-                + Add Another Student
+                + Log this service activty for another student
               </button>
             </div>
           )}
