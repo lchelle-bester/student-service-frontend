@@ -56,61 +56,66 @@ function OrganizationForm() {
   };
 
   // Enhanced form change handler with real-time validation clearing
-const handleServiceFormChange = (e) => {
-  const { name, value } = e.target;
-  
-  // Update the form state
-  setServiceForm((prev) => ({
-    ...prev,
-    [name]: value,
-  }));
-  
-  // Clear student not found error when user starts typing in name field
-  if (name === 'studentFullName' && studentNotFoundError) {
-    setStudentNotFoundError(false);
-  }
-  
-  // Real-time validation clearing - this is the key addition
-  // Clear custom validity messages as user types if the content becomes valid
-  if (name === 'studentFullName') {
-    const trimmedValue = value.trim();
-    const nameParts = trimmedValue.split(/\s+/);
-    
-    // If the name now meets our criteria, clear any previous custom validity
-    if (nameParts.length >= 2 && trimmedValue.length >= 3) {
-      e.target.setCustomValidity(""); // Remove the sticky note!
+  const handleServiceFormChange = (e) => {
+    const { name, value } = e.target;
+
+    // Update the form state
+    setServiceForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // Clear student not found error when user starts typing in name field
+    if (name === "studentFullName" && studentNotFoundError) {
+      setStudentNotFoundError(false);
     }
-  }
-  
-  // Similar real-time clearing for hours field
-  if (name === 'hours') {
-    const hours = parseFloat(value);
-    // If hours are now valid, clear any previous custom validity
-    if (!isNaN(hours) && (hours * 10) % 5 === 0 && hours >= 0.5 && hours <= 10) {
-      e.target.setCustomValidity(""); // Remove the sticky note!
+
+    // Real-time validation clearing - this is the key addition
+    // Clear custom validity messages as user types if the content becomes valid
+    if (name === "studentFullName") {
+      const trimmedValue = value.trim();
+      const nameParts = trimmedValue.split(/\s+/);
+
+      // If the name now meets our criteria, clear any previous custom validity
+      if (nameParts.length >= 2 && trimmedValue.length >= 3) {
+        e.target.setCustomValidity(""); // Remove the sticky note!
+      }
     }
-  }
-  
-  // Similar real-time clearing for description field
-  if (name === 'description') {
-    // If description is now valid, clear any previous custom validity
-    if (value.length >= 8 && value.length <= 200) {
-      e.target.setCustomValidity(""); // Remove the sticky note!
+
+    // Similar real-time clearing for hours field
+    if (name === "hours") {
+      const hours = parseFloat(value);
+      // If hours are now valid, clear any previous custom validity
+      if (
+        !isNaN(hours) &&
+        (hours * 10) % 5 === 0 &&
+        hours >= 0.5 &&
+        hours <= 10
+      ) {
+        e.target.setCustomValidity(""); // Remove the sticky note!
+      }
     }
-  }
-  
-  // Similar real-time clearing for date field
-  if (name === 'dateCompleted') {
-    const selectedDate = new Date(value);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    // If date is now valid, clear any previous custom validity
-    if (selectedDate <= today) {
-      e.target.setCustomValidity(""); // Remove the sticky note!
+
+    // Similar real-time clearing for description field
+    if (name === "description") {
+      // If description is now valid, clear any previous custom validity
+      if (value.length >= 8 && value.length <= 200) {
+        e.target.setCustomValidity(""); // Remove the sticky note!
+      }
     }
-  }
-};
+
+    // Similar real-time clearing for date field
+    if (name === "dateCompleted") {
+      const selectedDate = new Date(value);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // If date is now valid, clear any previous custom validity
+      if (selectedDate <= today) {
+        e.target.setCustomValidity(""); // Remove the sticky note!
+      }
+    }
+  };
 
   // Function to clear the error and reset the student name field
   const handleTryAgain = () => {
@@ -473,7 +478,11 @@ const handleServiceFormChange = (e) => {
             description: "",
           });
         } else {
-          alert(data.message || "Failed to log service hours");
+          if (response.status === 404 && data.message === "Student not found") {
+            setStudentNotFoundError(true); // Show our nice inline error
+          } else {
+            alert(data.message || "Failed to log service hours"); // Keep alerts for other errors
+          }
         }
       }
     } catch (error) {
@@ -579,23 +588,24 @@ const handleServiceFormChange = (e) => {
               placeholder="e.g. Jarryd Braum"
               minLength="3"
               pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+\s+[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+.*$"
-              className={studentNotFoundError ? 'error' : ''}
+              className={studentNotFoundError ? "error" : ""}
               title="Please enter first and last name (e.g. Jarryd Braum)"
               required
             />
-            
+
             {/* Inline error message for student not found */}
             {studentNotFoundError && (
               <div className="inline-error">
                 <div className="inline-error-icon">
                   <svg width="12" height="12" fill="white" viewBox="0 0 24 24">
-                    <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
                 <span className="inline-error-text">
-                  No student found with this name. Please check the spelling and try again.
+                  No student found with this name. Please check the spelling and
+                  try again.
                 </span>
-                <button 
+                <button
                   type="button"
                   className="inline-error-action"
                   onClick={handleTryAgain}
