@@ -4,7 +4,9 @@ import { useNavigate } from "react-router-dom";
 import "../../styles/Login.css";
 
 function OrganizationForm() {
-  const API_URL = process.env.REACT_APP_API_URL || "https://student-service-backend.onrender.com";
+  const API_URL =
+    process.env.REACT_APP_API_URL ||
+    "https://student-service-backend.onrender.com";
   const navigate = useNavigate();
   const [orgKey, setOrgKey] = useState("");
   const [error, setError] = useState("");
@@ -13,7 +15,6 @@ function OrganizationForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [additionalStudents, setAdditionalStudents] = useState([]);
-
 
   // State for service hours form (original structure)
   const [serviceForm, setServiceForm] = useState({
@@ -64,8 +65,8 @@ function OrganizationForm() {
 
   // Handler for additional students
   const handleAdditionalStudentChange = (index, field, value) => {
-    setAdditionalStudents(prev => 
-      prev.map((student, i) => 
+    setAdditionalStudents((prev) =>
+      prev.map((student, i) =>
         i === index ? { ...student, [field]: value } : student
       )
     );
@@ -73,15 +74,18 @@ function OrganizationForm() {
 
   const addStudent = () => {
     if (additionalStudents.length < 49) {
-      setAdditionalStudents(prev => [...prev, { 
-        fullName: "", 
-        hours: "" 
-      }]);
+      setAdditionalStudents((prev) => [
+        ...prev,
+        {
+          fullName: "",
+          hours: "",
+        },
+      ]);
     }
   };
 
   const removeStudent = (index) => {
-    setAdditionalStudents(prev => prev.filter((_, i) => i !== index));
+    setAdditionalStudents((prev) => prev.filter((_, i) => i !== index));
   };
 
   // Original validation logic
@@ -121,7 +125,9 @@ function OrganizationForm() {
     }
 
     if ((hours * 10) % 5 !== 0) {
-      errors.push("Hours must be in half hour increments (e.g., 1.0, 1.5, 2.0)\n");
+      errors.push(
+        "Hours must be in half hour increments (e.g., 1.0, 1.5, 2.0)\n"
+      );
     }
 
     if (serviceForm.description.length < 8) {
@@ -135,26 +141,44 @@ function OrganizationForm() {
     // Additional validation for batch students
     additionalStudents.forEach((student, index) => {
       if (!student.fullName.trim() || !student.hours) {
-        errors.push(`Additional student ${index + 1} has missing information\n`);
+        errors.push(
+          `Additional student ${index + 1} has missing information\n`
+        );
       }
-      
+
       if (student.fullName.trim()) {
         const nameParts = student.fullName.trim().split(/\s+/);
         if (nameParts.length < 2) {
-          errors.push(`Additional student ${index + 1}: Full name must include both first & last name\n`);
+          errors.push(
+            `Additional student ${
+              index + 1
+            }: Full name must include both first & last name\n`
+          );
         }
         if (student.fullName.trim().length < 3) {
-          errors.push(`Additional student ${index + 1}: Full name must be at least 3 characters\n`);
+          errors.push(
+            `Additional student ${
+              index + 1
+            }: Full name must be at least 3 characters\n`
+          );
         }
       }
-      
+
       if (student.hours) {
         const studentHours = parseFloat(student.hours);
         if (isNaN(studentHours) || studentHours < 0.5 || studentHours > 10) {
-          errors.push(`Additional student ${index + 1}: Hours must be between 0.5 and 10\n`);
+          errors.push(
+            `Additional student ${
+              index + 1
+            }: Hours must be between 0.5 and 10\n`
+          );
         }
         if ((studentHours * 10) % 5 !== 0) {
-          errors.push(`Additional student ${index + 1}: Hours must be in half hour increments\n`);
+          errors.push(
+            `Additional student ${
+              index + 1
+            }: Hours must be in half hour increments\n`
+          );
         }
       }
     });
@@ -167,24 +191,31 @@ function OrganizationForm() {
     e.preventDefault();
 
     const customErrors = [];
-    
+
     // Custom validation for full name format
     if (serviceForm.studentFullName.trim()) {
       const nameParts = serviceForm.studentFullName.trim().split(/\s+/);
       if (nameParts.length < 2) {
-        e.target.studentFullName.setCustomValidity("Full name must include both first & last name (e.g. John Smith)");
+        e.target.studentFullName.setCustomValidity(
+          "Full name must include both first & last name (e.g. John Smith)"
+        );
         e.target.studentFullName.reportValidity();
         return;
       }
       if (serviceForm.studentFullName.trim().length < 3) {
-        e.target.studentFullName.setCustomValidity("Full name must be at least 3 characters");
+        e.target.studentFullName.setCustomValidity(
+          "Full name must be at least 3 characters"
+        );
         e.target.studentFullName.reportValidity();
         return;
       }
       // Check for valid characters (letters, spaces, accented characters, hyphens, apostrophes, periods)
-      const namePattern = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+$/;
+      const namePattern =
+        /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+$/;
       if (!namePattern.test(serviceForm.studentFullName.trim())) {
-        e.target.studentFullName.setCustomValidity("Name contains invalid characters");
+        e.target.studentFullName.setCustomValidity(
+          "Name contains invalid characters"
+        );
         e.target.studentFullName.reportValidity();
         return;
       }
@@ -196,7 +227,9 @@ function OrganizationForm() {
     if (serviceForm.hours) {
       const hours = parseFloat(serviceForm.hours);
       if (!isNaN(hours) && (hours * 10) % 5 !== 0) {
-        e.target.hours.setCustomValidity("Hours must be in half hour increments (e.g., 1.0, 1.5, 2.0)");
+        e.target.hours.setCustomValidity(
+          "Hours must be in half hour increments (e.g., 1.0, 1.5, 2.0)"
+        );
         e.target.hours.reportValidity();
         return;
       }
@@ -206,12 +239,16 @@ function OrganizationForm() {
 
     // Custom validation for description length
     if (serviceForm.description.trim() && serviceForm.description.length < 8) {
-      e.target.description.setCustomValidity("Description must be at least 8 characters");
+      e.target.description.setCustomValidity(
+        "Description must be at least 8 characters"
+      );
       e.target.description.reportValidity();
       return;
     }
     if (serviceForm.description.length > 200) {
-      e.target.description.setCustomValidity("Description must be less than 200 characters");
+      e.target.description.setCustomValidity(
+        "Description must be less than 200 characters"
+      );
       e.target.description.reportValidity();
       return;
     }
@@ -225,7 +262,9 @@ function OrganizationForm() {
       today.setHours(0, 0, 0, 0);
 
       if (selectedDate > today) {
-        e.target.dateCompleted.setCustomValidity("Date cannot be in the future");
+        e.target.dateCompleted.setCustomValidity(
+          "Date cannot be in the future"
+        );
         e.target.dateCompleted.reportValidity();
         return;
       }
@@ -236,33 +275,46 @@ function OrganizationForm() {
     // Validate additional students
     for (let i = 0; i < additionalStudents.length; i++) {
       const student = additionalStudents[i];
-      
+
       if (student.fullName.trim()) {
         const nameParts = student.fullName.trim().split(/\s+/);
         if (nameParts.length < 2) {
-          customErrors.push(`Additional student ${i + 1}: Full name must include both first & last name (e.g. John Smith)`);
+          customErrors.push(
+            `Additional student ${
+              i + 1
+            }: Full name must include both first & last name (e.g. John Smith)`
+          );
         }
         if (student.fullName.trim().length < 3) {
-          customErrors.push(`Additional student ${i + 1}: Full name must be at least 3 characters`);
+          customErrors.push(
+            `Additional student ${
+              i + 1
+            }: Full name must be at least 3 characters`
+          );
         }
         // Check for valid characters
-        const namePattern = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+$/;
+        const namePattern =
+          /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+$/;
         if (!namePattern.test(student.fullName.trim())) {
-          customErrors.push(`Additional student ${i + 1}: Name contains invalid characters`);
+          customErrors.push(
+            `Additional student ${i + 1}: Name contains invalid characters`
+          );
         }
       }
-      
+
       if (student.hours) {
         const studentHours = parseFloat(student.hours);
         if (!isNaN(studentHours) && (studentHours * 10) % 5 !== 0) {
-          customErrors.push(`Additional student ${i + 1}: Hours must be in half hour increments`);
+          customErrors.push(
+            `Additional student ${i + 1}: Hours must be in half hour increments`
+          );
         }
       }
     }
 
     // Show custom errors for additional students using alert (since we can't use HTML5 validation on dynamic fields)
     if (customErrors.length > 0) {
-      alert(customErrors.join('\n'));
+      alert(customErrors.join("\n"));
       return;
     }
 
@@ -274,33 +326,42 @@ function OrganizationForm() {
         const allStudents = [
           {
             firstName: serviceForm.studentFullName.trim().split(/\s+/)[0],
-            surname: serviceForm.studentFullName.trim().split(/\s+/).slice(1).join(' '),
-            hours: serviceForm.hours
+            surname: serviceForm.studentFullName
+              .trim()
+              .split(/\s+/)
+              .slice(1)
+              .join(" "),
+            hours: serviceForm.hours,
           },
-          ...additionalStudents.map(student => ({
+          ...additionalStudents.map((student) => ({
             firstName: student.fullName.trim().split(/\s+/)[0],
-            surname: student.fullName.trim().split(/\s+/).slice(1).join(' '),
-            hours: student.hours
-          }))
+            surname: student.fullName.trim().split(/\s+/).slice(1).join(" "),
+            hours: student.hours,
+          })),
         ];
 
-        const response = await fetch(`${API_URL}/api/service/batch-log-community`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-          body: JSON.stringify({
-            students: allStudents,
-            dateCompleted: serviceForm.dateCompleted,
-            description: serviceForm.description,
-          }),
-        });
+        const response = await fetch(
+          `${API_URL}/api/service/batch-log-community`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+            body: JSON.stringify({
+              students: allStudents,
+              dateCompleted: serviceForm.dateCompleted,
+              description: serviceForm.description,
+            }),
+          }
+        );
 
         const data = await response.json();
 
         if (response.ok && data.success) {
-          alert(`Successfully logged hours for ${data.successCount} student(s)!`);
+          alert(
+            `Successfully logged hours for ${data.successCount} student(s)!`
+          );
           // Reset form
           setServiceForm({
             studentFullName: "",
@@ -309,9 +370,9 @@ function OrganizationForm() {
             description: "",
           });
           setAdditionalStudents([]);
-          
+
           if (data.errors && data.errors.length > 0) {
-            alert(`Some errors occurred:\n${data.errors.join('\n')}`);
+            alert(`Some errors occurred:\n${data.errors.join("\n")}`);
           }
         } else {
           alert(data.message || "Failed to log service hours");
@@ -482,7 +543,7 @@ function OrganizationForm() {
                 name="dateCompleted"
                 value={serviceForm.dateCompleted}
                 onChange={handleServiceFormChange}
-                max={new Date().toISOString().split('T')[0]}
+                max={new Date().toISOString().split("T")[0]}
                 title="Date cannot be in the future"
                 required
               />
@@ -507,66 +568,91 @@ function OrganizationForm() {
 
           {/* Additional students section - only shows when students are added */}
           {additionalStudents.length > 0 && (
-            <div style={{ 
-              marginTop: '20px',
-              padding: '15px',
-              backgroundColor: '#f8f9fa',
-              borderRadius: '8px',
-              border: '1px solid #e9ecef'
-            }}>
-              <h4 style={{ margin: '0 0 15px 0', color: '#333' }}>
+            <div
+              style={{
+                marginTop: "20px",
+                padding: "15px",
+                backgroundColor: "#f8f9fa",
+                borderRadius: "8px",
+                border: "1px solid #e9ecef",
+              }}
+            >
+              <h4 style={{ margin: "0 0 15px 0", color: "#333" }}>
                 Additional Students ({additionalStudents.length})
               </h4>
-              
+
               {additionalStudents.map((student, index) => (
-                <div key={index} style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 80px 30px',
-                  gap: '10px',
-                  alignItems: 'end',
-                  marginBottom: '10px',
-                  padding: '10px',
-                  backgroundColor: '#fff',
-                  borderRadius: '4px',
-                  border: '1px solid #ddd'
-                }}>
+                <div
+                  key={index}
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 80px 30px",
+                    gap: "10px",
+                    alignItems: "end",
+                    marginBottom: "10px",
+                    padding: "10px",
+                    backgroundColor: "#fff",
+                    borderRadius: "4px",
+                    border: "1px solid #ddd",
+                  }}
+                >
                   <div className="form-group" style={{ margin: 0 }}>
-                    <label style={{ fontSize: '12px', margin: '0 0 4px 0' }}>Full Name:</label>
+                    <label style={{ fontSize: "12px", margin: "0 0 4px 0" }}>
+                      Full Name:
+                    </label>
                     <input
                       type="text"
                       value={student.fullName}
-                      onChange={(e) => handleAdditionalStudentChange(index, 'fullName', e.target.value)}
+                      onChange={(e) =>
+                        handleAdditionalStudentChange(
+                          index,
+                          "fullName",
+                          e.target.value
+                        )
+                      }
                       placeholder="e.g. Jarryd Braum"
                       required
-                      style={{ padding: '6px', fontSize: '14px' }}
+                      style={{ padding: "6px", fontSize: "14px" }}
                     />
                   </div>
                   <div className="form-group" style={{ margin: 0 }}>
-                    <label style={{ fontSize: '12px', margin: '0 0 4px 0' }}>Hours:</label>
+                    <label style={{ fontSize: "12px", margin: "0 0 4px 0" }}>
+                      Hours:
+                    </label>
                     <input
                       type="number"
                       value={student.hours}
-                      onChange={(e) => handleAdditionalStudentChange(index, 'hours', e.target.value)}
+                      onChange={(e) =>
+                        handleAdditionalStudentChange(
+                          index,
+                          "hours",
+                          e.target.value
+                        )
+                      }
                       min="0.5"
                       max="10"
                       step="0.5"
                       required
-                      style={{ padding: '6px', fontSize: '14px', textAlign: 'center' }}
+                      style={{
+                        padding: "6px",
+                        fontSize: "14px",
+                        textAlign: "center",
+                      }}
                     />
                   </div>
                   <button
                     type="button"
                     onClick={() => removeStudent(index)}
                     style={{
-                      width: '24px',
-                      height: '24px',
-                      backgroundColor: '#dc3545',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '50%',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      alignSelf: 'end'
+                      width: "24px",
+                      height: "24px",
+                      backgroundColor: "#dc3545",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "50%",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                      alignSelf: "end",
                     }}
                   >
                     ×
@@ -578,18 +664,18 @@ function OrganizationForm() {
 
           {/* Add student button */}
           {additionalStudents.length < 49 && (
-            <div style={{ textAlign: 'center', margin: '15px 0' }}>
+            <div style={{ textAlign: "center", margin: "15px 0" }}>
               <button
                 type="button"
                 onClick={addStudent}
                 style={{
-                  backgroundColor: '#28a745',
-                  color: 'white',
-                  border: 'none',
-                  padding: '8px 16px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '14px'
+                  backgroundColor: "#28a745",
+                  color: "white",
+                  border: "none",
+                  padding: "8px 16px",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontSize: "14px",
                 }}
               >
                 + Log this service activty for another student
@@ -597,11 +683,10 @@ function OrganizationForm() {
             </div>
           )}
 
-          <button 
-            type="submit" 
-            className="submit-button"
-          >
-            {totalStudents > 1 ? `Submit Hours for ${totalStudents} Students` : 'Submit Hours'}
+          <button type="submit" className="submit-button">
+            {totalStudents > 1
+              ? `Submit Hours for ${totalStudents} Students`
+              : "Submit Hours"}
           </button>
 
           <button
@@ -613,6 +698,12 @@ function OrganizationForm() {
               setOrgKey("");
               setError(null);
               setAdditionalStudents([]);
+              setServiceForm({
+                studentFullName: "",
+                hours: "",
+                dateCompleted: "",
+                description: "",
+              });
             }}
           >
             Back
