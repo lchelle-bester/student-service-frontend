@@ -15,6 +15,7 @@ function OrganizationForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [additionalStudents, setAdditionalStudents] = useState([]);
+  const [studentNotFoundError, setStudentNotFoundError] = useState(false);
 
   // State for service hours form (original structure)
   const [serviceForm, setServiceForm] = useState({
@@ -61,6 +62,22 @@ function OrganizationForm() {
       ...prev,
       [name]: value,
     }));
+
+    if (name === "studentFullName" && studentNotFoundError) {
+      setStudentNotFoundError(false);
+    }
+  };
+
+  // Function to clear the error and reset the student name field
+  const handleTryAgain = () => {
+    setStudentNotFoundError(false); // Hide the error message
+    setServiceForm((prev) => ({
+      ...prev,
+      studentFullName: "", // Clear the student name field
+    }));
+    // Focus on the student name field so user can immediately start typing
+    // The ?. ensures this won't crash if the element doesn't exist
+    document.getElementById("studentFullName")?.focus();
   };
 
   // Handler for additional students
@@ -189,6 +206,7 @@ function OrganizationForm() {
   // Enhanced submit handler
   const handleSubmitHours = async (e) => {
     e.preventDefault();
+    setStudentNotFoundError(false);
 
     const customErrors = [];
 
@@ -223,6 +241,7 @@ function OrganizationForm() {
       e.target.studentFullName.setCustomValidity("");
     }
 
+    //data.message
     // Custom validation for hours format
     if (serviceForm.hours) {
       const hours = parseFloat(serviceForm.hours);
@@ -375,7 +394,11 @@ function OrganizationForm() {
             alert(`Some errors occurred:\n${data.errors.join("\n")}`);
           }
         } else {
-          alert(data.message || "Failed to log service hours");
+          if (response.status === 404 && data.message === "Student not found") {
+            setStudentNotFoundError(true); // Show our nice inline error
+          } else {
+            alert(data.message || "Failed to log service hours"); // Keep alerts for other errors
+          }
         }
       } else {
         // Use original individual endpoint
@@ -512,9 +535,31 @@ function OrganizationForm() {
               placeholder="e.g. Jarryd Braum"
               minLength="3"
               pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+\s+[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+.*$"
+              className={studentNotFoundError ? 'error' : ''}
               title="Please enter first and last name (e.g. Jarryd Braum)"
               required
             />
+            
+            {/* Inline error message for student not found */}
+            {studentNotFoundError && (
+              <div className="inline-error">
+                <div className="inline-error-icon">
+                  <svg width="12" height="12" fill="white" viewBox="0 0 24 24">
+                    <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <span className="inline-error-text">
+                  No student found with this name. Please check the spelling and try again.
+                </span>
+                <button 
+                  type="button"
+                  className="inline-error-action"
+                  onClick={handleTryAgain}
+                >
+                  Clear & retry
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Hours and Date in side-by-side layout */}
