@@ -451,10 +451,10 @@ function OrganizationForm() {
               name="studentFullName"
               value={serviceForm.studentFullName}
               onChange={handleServiceFormChange}
-              placeholder="e.g. John Van De Merwe"
+              placeholder="e.g. John Smith"
               minLength="3"
               pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+\s+[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+.*$"
-              title="Please enter first and last name (e.g. John Van De Merwe, Zoë Smith)"
+              title="Please enter first & last name (e.g. John Smith)"
               required
             />
           </div>
@@ -470,7 +470,7 @@ function OrganizationForm() {
               min="0.5"
               max="10"
               step="0.5"
-              title="Hours must be between 0.5 and 10 in half-hour increments"
+              title="Hours must be between 0.5 - 10 in half-hour increments"
               required
             />
           </div>
@@ -499,8 +499,8 @@ function OrganizationForm() {
               rows="4"
               minLength="8"
               maxLength="200"
-              placeholder="Describe the community service activity (8-200 characters)"
-              title="Description must be between 8 and 200 characters"
+              placeholder="Describe the service activity completed (8-200 characters)"
+              title="Description must be between 8 - 200 characters"
               required
             />
           </div>

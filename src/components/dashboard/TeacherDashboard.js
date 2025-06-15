@@ -96,34 +96,34 @@ function TeacherDashboard() {
     // Validate full name (should contain at least first and last name)
     const nameParts = serviceForm.studentFullName.trim().split(/\s+/);
     if (nameParts.length < 2) {
-      errors.push("Full name must include both first and last name (e.g. John Van De Merwe)\n");
+      errors.push("Full name must include both first & last name (e.g. John Smith)\n");
     }
     if (serviceForm.studentFullName.trim().length < 3) {
-      errors.push("Full name must be at least 3 characters long\n");
+      errors.push("Full name must be at least 3 characters\n");
     }
     // Check for valid characters (letters, spaces, accented characters, hyphens, apostrophes, periods)
-    const namePattern = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+$/;
+    const namePattern = /^[a-zA-ZäéêëÉÊË\s'.-]+$/;
     if (!namePattern.test(serviceForm.studentFullName.trim())) {
       errors.push("Name contains invalid characters\n");
     }
 
     // Validate date
     const selectedDate = new Date(serviceForm.dateCompleted);
-    const today = new Date();
+    const today = new Date() +1;
     today.setHours(0, 0, 0, 0);
 
     if (selectedDate > today) {
-      errors.push("Service date cannot be in the future\n");
+      errors.push("Date cannot be in the future\n");
     }
 
     // Validate hours for main student
     const hours = parseFloat(serviceForm.numberOfHours);
     if (isNaN(hours) || hours < 0.5 || hours > 10) {
-      errors.push("Hours must be between 0.5 and 10\n");
+      errors.push("Hours must be between 0.5 - 10\n");
     }
 
     if (serviceForm.description.trim().length < 8) {
-      errors.push("Description must be at least 8 characters long\n");
+      errors.push("Description must be at least 8 characters\n");
     }
 
     // Additional validation for batch students
@@ -135,10 +135,10 @@ function TeacherDashboard() {
       if (student.fullName.trim()) {
         const nameParts = student.fullName.trim().split(/\s+/);
         if (nameParts.length < 2) {
-          errors.push(`Additional student ${index + 1}: Full name must include both first and last name (e.g. John Van De Merwe)\n`);
+          errors.push(`Additional student ${index + 1}: Full name must include both first & last name (e.g. John Smith)\n`);
         }
         if (student.fullName.trim().length < 3) {
-          errors.push(`Additional student ${index + 1}: Full name must be at least 3 characters long\n`);
+          errors.push(`Additional student ${index + 1}: Full name must be at least 3 characters\n`);
         }
         // Check for valid characters
         const namePattern = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+$/;
@@ -150,7 +150,7 @@ function TeacherDashboard() {
       if (student.hours) {
         const studentHours = parseFloat(student.hours);
         if (isNaN(studentHours) || studentHours < 0.5 || studentHours > 10) {
-          errors.push(`Additional student ${index + 1}: Hours must be between 0.5 and 10\n`);
+          errors.push(`Additional student ${index + 1}: Hours must be between 0.5 - 10\n`);
         }
       }
     });
@@ -371,7 +371,7 @@ function TeacherDashboard() {
                 name="studentFullName"
                 value={serviceForm.studentFullName}
                 onChange={handleServiceFormChange}
-                placeholder="e.g. John Van De Merwe"
+                placeholder="e.g. John Smith"
                 required
               />
             </div>
