@@ -63,6 +63,7 @@ function OrganizationForm() {
       [name]: value,
     }));
 
+    setError("");
     if (name === "studentFullName" && studentNotFoundError) {
       setStudentNotFoundError(false);
     }
