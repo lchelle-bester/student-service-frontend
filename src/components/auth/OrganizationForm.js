@@ -117,18 +117,6 @@ function OrganizationForm() {
     }
   };
 
-  // Function to clear the error and reset the student name field
-  const handleTryAgain = () => {
-    setStudentNotFoundError(false); // Hide the error message
-    setServiceForm((prev) => ({
-      ...prev,
-      studentFullName: "", // Clear the student name field
-    }));
-    // Focus on the student name field so user can immediately start typing
-    // The ?. ensures this won't crash if the element doesn't exist
-    document.getElementById("studentFullName")?.focus();
-  };
-
   // Handler for additional students
   const handleAdditionalStudentChange = (index, field, value) => {
     setAdditionalStudents((prev) =>
@@ -592,6 +580,7 @@ function OrganizationForm() {
               title="Please enter first and last name (e.g. Jarryd Braum)"
               required
             />
+            //handleTryAgain
 
             {/* Inline error message for student not found */}
             {studentNotFoundError && (
@@ -605,13 +594,6 @@ function OrganizationForm() {
                   No student found with this name. Please check the spelling and
                   try again.
                 </span>
-                <button
-                  type="button"
-                  className="inline-error-action"
-                  onClick={handleTryAgain}
-                >
-                  Clear & retry
-                </button>
               </div>
             )}
           </div>
