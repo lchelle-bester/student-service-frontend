@@ -580,7 +580,6 @@ function OrganizationForm() {
               title="Please enter first and last name (e.g. Jarryd Braum)"
               required
             />
-            //handleTryAgain
 
             {/* Inline error message for student not found */}
             {studentNotFoundError && (
