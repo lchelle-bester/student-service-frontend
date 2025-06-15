@@ -228,6 +228,8 @@ h3 {
 
 /* Add this to the bottom of your existing src/styles/Login.css file */
 
+/* Add this CSS to your existing src/styles/OrganizationForm.css or src/styles/Login.css */
+
 /* Form row for side-by-side layout */
 .form-row {
     display: grid;
