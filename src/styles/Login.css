@@ -628,6 +628,297 @@ h3 {
     }
 }
 
+
+/* ====================================================================
+   GREEN CELEBRATION SUCCESS NOTIFICATION (USER CONTROLLED)
+   ==================================================================== */
+
+.success-notification-celebration {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 380px;
+    width: 90%;
+    animation: celebrationSlideIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.celebration-content {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(16, 185, 129, 0.4);
+    color: white;
+    padding: 24px 20px 20px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.celebration-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 6px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.celebration-close:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    transform: scale(1.1);
+}
+
+.celebration-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px auto;
+    animation: celebrationIconPulse 2s infinite;
+}
+
+.celebration-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.celebration-message {
+    font-size: 16px;
+    margin: 0 0 16px 0;
+    opacity: 0.95;
+    line-height: 1.4;
+}
+
+.celebration-students {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 0;
+}
+
+.celebration-student-name {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: celebrationStudentPop 0.4s ease-out;
+}
+
+.celebration-student-name:nth-child(1) { animation-delay: 0.1s; }
+.celebration-student-name:nth-child(2) { animation-delay: 0.2s; }
+.celebration-student-name:nth-child(3) { animation-delay: 0.3s; }
+.celebration-student-name:nth-child(4) { animation-delay: 0.4s; }
+.celebration-student-name:nth-child(5) { animation-delay: 0.5s; }
+
+/* Confetti Animation */
+.confetti {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: confettiFall 3s infinite;
+}
+
+.confetti-1 {
+    left: 15%;
+    background: rgba(255, 255, 255, 0.9);
+    animation-delay: 0s;
+}
+
+.confetti-2 {
+    left: 30%;
+    background: rgba(254, 240, 138, 0.9);
+    animation-delay: 0.5s;
+}
+
+.confetti-3 {
+    left: 45%;
+    background: rgba(167, 243, 208, 0.9);
+    animation-delay: 1s;
+}
+
+.confetti-4 {
+    left: 60%;
+    background: rgba(196, 181, 253, 0.9);
+    animation-delay: 1.5s;
+}
+
+.confetti-5 {
+    left: 75%;
+    background: rgba(252, 165, 165, 0.9);
+    animation-delay: 2s;
+}
+
+.confetti-6 {
+    left: 85%;
+    background: rgba(255, 255, 255, 0.9);
+    animation-delay: 2.5s;
+}
+
+/* ====================================================================
+   GREEN CELEBRATION ANIMATIONS
+   ==================================================================== */
+
+@keyframes celebrationSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateX(100%) scale(0.8) rotate(10deg);
+    }
+    60% {
+        transform: translateX(-10%) scale(1.05) rotate(-2deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1) rotate(0deg);
+    }
+}
+
+@keyframes celebrationIconPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+}
+
+@keyframes celebrationStudentPop {
+    0% {
+        opacity: 0;
+        transform: scale(0.5) translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(300px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* ====================================================================
+   RESPONSIVE GREEN CELEBRATION
+   ==================================================================== */
+
+@media (max-width: 768px) {
+    .success-notification-celebration {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+        max-width: none;
+    }
+    
+    .celebration-content {
+        padding: 20px 16px 16px 16px;
+    }
+    
+    .celebration-icon {
+        width: 52px;
+        height: 52px;
+        margin-bottom: 12px;
+    }
+    
+    .celebration-title {
+        font-size: 20px;
+    }
+    
+    .celebration-message {
+        font-size: 15px;
+        margin-bottom: 14px;
+    }
+    
+    .celebration-students {
+        gap: 6px;
+    }
+    
+    .celebration-student-name {
+        font-size: 13px;
+        padding: 5px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .celebration-content {
+        padding: 18px 14px 14px 14px;
+    }
+    
+    .celebration-title {
+        font-size: 18px;
+    }
+    
+    .celebration-message {
+        font-size: 14px;
+    }
+    
+    .celebration-student-name {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+}
+
+/* Accessibility & Performance */
+@media (prefers-reduced-motion: reduce) {
+    .success-notification-celebration {
+        animation: none;
+    }
+    
+    .celebration-icon {
+        animation: none;
+    }
+    
+    .celebration-student-name {
+        animation: none;
+    }
+    
+    .confetti {
+        animation: none;
+        display: none;
+    }
+}
+
+@media (prefers-contrast: high) {
+    .celebration-content {
+        border: 2px solid #059669;
+    }
+    
+    .celebration-student-name {
+        background: rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+}
+
 /* ====================================================================
    END OF STUDENT SERVICE DIARY STYLES
    ==================================================================== */

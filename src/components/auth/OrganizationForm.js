@@ -17,13 +17,19 @@ function OrganizationForm() {
   const [additionalStudents, setAdditionalStudents] = useState([]);
   const [studentNotFoundError, setStudentNotFoundError] = useState(false);
 
+  const [successNotification, setSuccessNotification] = useState({
+    show: false,
+    message: "",
+    details: null,
+  });
+
   // Enhanced error tracking state for field-level validation
   const [fieldErrors, setFieldErrors] = useState({
     mainStudent: {
       fullName: null,
-      hours: null
+      hours: null,
     },
-    additionalStudents: []
+    additionalStudents: [],
   });
 
   // State for service hours form (original structure preserved)
@@ -64,6 +70,18 @@ function OrganizationForm() {
     }
   };
 
+  const showSuccessNotification = (message, details = null) => {
+      setSuccessNotification({
+        show: true,
+        message: message,
+        details: details,
+      });
+    };
+
+    const dismissSuccessNotification = () => {
+      setSuccessNotification((prev) => ({ ...prev, show: false }));
+    };
+
   // Enhanced single student validation with comprehensive error detection
   const validateSingleStudentWithFields = (student) => {
     const { fullName, hours, studentNumber } = student;
@@ -86,7 +104,8 @@ function OrganizationForm() {
           nameError = "Surname too short";
         } else {
           // Check for valid characters
-          const namePattern = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+$/;
+          const namePattern =
+            /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+$/;
           if (!namePattern.test(fullName)) {
             nameError = "Contains invalid characters";
           }
@@ -108,7 +127,7 @@ function OrganizationForm() {
 
     return {
       nameError,
-      hoursError
+      hoursError,
     };
   };
 
@@ -116,7 +135,7 @@ function OrganizationForm() {
   const validateAllStudentsWithFieldTracking = () => {
     const newFieldErrors = {
       mainStudent: { fullName: null, hours: null },
-      additionalStudents: []
+      additionalStudents: [],
     };
 
     let hasAnyErrors = false;
@@ -125,7 +144,7 @@ function OrganizationForm() {
     const mainStudentErrors = validateSingleStudentWithFields({
       fullName: serviceForm.studentFullName.trim(),
       hours: serviceForm.hours,
-      studentNumber: 1
+      studentNumber: 1,
     });
 
     newFieldErrors.mainStudent.fullName = mainStudentErrors.nameError;
@@ -140,12 +159,12 @@ function OrganizationForm() {
       const studentErrors = validateSingleStudentWithFields({
         fullName: student.fullName.trim(),
         hours: student.hours,
-        studentNumber: index + 2
+        studentNumber: index + 2,
       });
 
       newFieldErrors.additionalStudents[index] = {
         fullName: studentErrors.nameError,
-        hours: studentErrors.hoursError
+        hours: studentErrors.hoursError,
       };
 
       if (studentErrors.nameError || studentErrors.hoursError) {
@@ -155,35 +174,43 @@ function OrganizationForm() {
 
     // Update field error state
     setFieldErrors(newFieldErrors);
-    
+
     return hasAnyErrors;
   };
 
   // Helper functions for error state checking
   const hasFieldError = (studentType, studentIndex, fieldName) => {
-    if (studentType === 'main') {
+    if (studentType === "main") {
       return fieldErrors.mainStudent[fieldName] !== null;
     } else {
-      return fieldErrors.additionalStudents[studentIndex] && 
-             fieldErrors.additionalStudents[studentIndex][fieldName] !== null;
+      return (
+        fieldErrors.additionalStudents[studentIndex] &&
+        fieldErrors.additionalStudents[studentIndex][fieldName] !== null
+      );
     }
   };
 
   const getFieldError = (studentType, studentIndex, fieldName) => {
-    if (studentType === 'main') {
+    if (studentType === "main") {
       return fieldErrors.mainStudent[fieldName];
     } else {
-      return fieldErrors.additionalStudents[studentIndex] ? 
-             fieldErrors.additionalStudents[studentIndex][fieldName] : null;
+      return fieldErrors.additionalStudents[studentIndex]
+        ? fieldErrors.additionalStudents[studentIndex][fieldName]
+        : null;
     }
   };
 
   const studentSectionHasErrors = (studentType, studentIndex) => {
-    if (studentType === 'main') {
-      return hasFieldError('main', 0, 'fullName') || hasFieldError('main', 0, 'hours');
+    if (studentType === "main") {
+      return (
+        hasFieldError("main", 0, "fullName") ||
+        hasFieldError("main", 0, "hours")
+      );
     } else {
-      return hasFieldError('additional', studentIndex, 'fullName') || 
-             hasFieldError('additional', studentIndex, 'hours');
+      return (
+        hasFieldError("additional", studentIndex, "fullName") ||
+        hasFieldError("additional", studentIndex, "hours")
+      );
     }
   };
 
@@ -201,17 +228,17 @@ function OrganizationForm() {
     }
 
     // Clear field-specific errors when user starts typing
-    if (name === 'studentFullName' && hasFieldError('main', 0, 'fullName')) {
-      setFieldErrors(prev => ({
+    if (name === "studentFullName" && hasFieldError("main", 0, "fullName")) {
+      setFieldErrors((prev) => ({
         ...prev,
-        mainStudent: { ...prev.mainStudent, fullName: null }
+        mainStudent: { ...prev.mainStudent, fullName: null },
       }));
     }
-    
-    if (name === 'hours' && hasFieldError('main', 0, 'hours')) {
-      setFieldErrors(prev => ({
+
+    if (name === "hours" && hasFieldError("main", 0, "hours")) {
+      setFieldErrors((prev) => ({
         ...prev,
-        mainStudent: { ...prev.mainStudent, hours: null }
+        mainStudent: { ...prev.mainStudent, hours: null },
       }));
     }
 
@@ -261,18 +288,18 @@ function OrganizationForm() {
     );
 
     // Clear field-specific error when user starts typing
-    if (hasFieldError('additional', index, field)) {
-      setFieldErrors(prev => {
+    if (hasFieldError("additional", index, field)) {
+      setFieldErrors((prev) => {
         const newAdditionalErrors = [...prev.additionalStudents];
         if (newAdditionalErrors[index]) {
           newAdditionalErrors[index] = {
             ...newAdditionalErrors[index],
-            [field]: null
+            [field]: null,
           };
         }
         return {
           ...prev,
-          additionalStudents: newAdditionalErrors
+          additionalStudents: newAdditionalErrors,
         };
       });
     }
@@ -292,9 +319,9 @@ function OrganizationForm() {
 
   const removeStudent = (index) => {
     setAdditionalStudents((prev) => prev.filter((_, i) => i !== index));
-    setFieldErrors(prev => ({
+    setFieldErrors((prev) => ({
       ...prev,
-      additionalStudents: prev.additionalStudents.filter((_, i) => i !== index)
+      additionalStudents: prev.additionalStudents.filter((_, i) => i !== index),
     }));
   };
 
@@ -385,14 +412,14 @@ function OrganizationForm() {
       if (hasAdditionalStudents) {
         // UNIFIED VALIDATION: Use only our field-level error system
         const hasValidationErrors = validateAllStudentsWithFieldTracking();
-        
+
         if (hasValidationErrors) {
           // Scroll to first error field for better UX
-          const firstErrorField = document.querySelector('.field-error');
+          const firstErrorField = document.querySelector(".field-error");
           if (firstErrorField) {
-            firstErrorField.scrollIntoView({ 
-              behavior: 'smooth', 
-              block: 'center' 
+            firstErrorField.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
             });
             setTimeout(() => firstErrorField.focus(), 300);
           }
@@ -402,7 +429,7 @@ function OrganizationForm() {
         // Clear all field errors since validation passed
         setFieldErrors({
           mainStudent: { fullName: null, hours: null },
-          additionalStudents: []
+          additionalStudents: [],
         });
 
         // Your existing batch submission logic (unchanged)
@@ -443,19 +470,26 @@ function OrganizationForm() {
 
         if (response.ok && data.success) {
           if (data.errorCount === 0) {
-            alert(
-              `Successfully logged hours for ${data.successCount} student(s)!`
+            showSuccessNotification(
+              `You've successfully logged hours for ${data.successCount} student(s)!`,
+              {
+                type: "batch",
+                count: data.successCount,
+                students: allStudents.map((s) => `${s.firstName} ${s.surname}`),
+              }
             );
+
             setServiceForm({
               studentFullName: "",
               hours: "",
               dateCompleted: "",
               description: "",
             });
+
             setAdditionalStudents([]);
             setFieldErrors({
               mainStudent: { fullName: null, hours: null },
-              additionalStudents: []
+              additionalStudents: [],
             });
           } else {
             alert(`Some errors occurred:\n${data.errors.join("\n")}`);
@@ -471,7 +505,7 @@ function OrganizationForm() {
         // Individual submission logic (unchanged)
         setFieldErrors({
           mainStudent: { fullName: null, hours: null },
-          additionalStudents: []
+          additionalStudents: [],
         });
 
         const fullName = serviceForm.studentFullName.trim();
@@ -493,7 +527,14 @@ function OrganizationForm() {
         const data = await response.json();
 
         if (response.ok) {
-          alert("Service hours logged successfully!");
+          showSuccessNotification(
+            "You've successfully logged hours for 1 student!",
+            {
+              type: "individual",
+              students: [serviceForm.studentFullName],
+              hours: parseFloat(serviceForm.hours),
+            }
+          );
           setServiceForm({
             studentFullName: "",
             hours: "",
@@ -591,16 +632,81 @@ function OrganizationForm() {
           </button>
         </form>
       ) : (
-           <form className="login-form" onSubmit={handleSubmitHours}>
+        <form className="login-form" onSubmit={handleSubmitHours}>
           <h3>Log Community Service Hours</h3>
+          {/* Green Celebration Success Notification */}
+          {successNotification.show && (
+            <div className="success-notification-celebration">
+              <div className="celebration-content">
+                {/* Animated confetti */}
+                <div className="confetti confetti-1"></div>
+                <div className="confetti confetti-2"></div>
+                <div className="confetti confetti-3"></div>
+                <div className="confetti confetti-4"></div>
+                <div className="confetti confetti-5"></div>
+                <div className="confetti confetti-6"></div>
+
+                {/* Close button */}
+                <button
+                  type="button"
+                  className="celebration-close"
+                  onClick={dismissSuccessNotification}
+                  aria-label="Dismiss notification"
+                >
+                  ×
+                </button>
+
+                {/* Success icon with animation */}
+                <div className="celebration-icon">
+                  <svg
+                    width="32"
+                    height="32"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+
+                {/* Title */}
+                <h4 className="celebration-title">Awesome Work!</h4>
+
+                {/* Custom message */}
+                <p className="celebration-message">
+                  {successNotification.message}
+                </p>
+
+                {/* Student names display */}
+                {successNotification.details &&
+                  successNotification.details.students && (
+                    <div className="celebration-students">
+                      {successNotification.details.students.map(
+                        (name, index) => (
+                          <span
+                            key={index}
+                            className="celebration-student-name"
+                          >
+                            {name}
+                          </span>
+                        )
+                      )}
+                    </div>
+                  )}
+              </div>
+            </div>
+          )}
+
           <div className="organization-info">
             <h3>Verified Organisation</h3>
             <p className="organization-name">{organizationData.name}</p>
           </div>
 
           {/* RESTRUCTURED: Main student section with ALL related fields grouped together */}
-          <div className={`student-section ${studentSectionHasErrors('main', 0) ? 'has-errors' : 'valid'}`}>
-            
+          <div
+            className={`student-section ${
+              studentSectionHasErrors("main", 0) ? "has-errors" : "valid"
+            }`}
+          >
             {/* Student name field with proper spacing */}
             <div className="form-group">
               <label htmlFor="studentFullName">Student's Full Name:</label>
@@ -613,32 +719,44 @@ function OrganizationForm() {
                 placeholder="e.g. Jarryd Braum"
                 minLength="3"
                 pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+\s+[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+.*$"
-                className={`${studentNotFoundError ? 'error' : ''} ${hasFieldError('main', 0, 'fullName') ? 'field-error' : ''}`}
+                className={`${studentNotFoundError ? "error" : ""} ${
+                  hasFieldError("main", 0, "fullName") ? "field-error" : ""
+                }`}
                 title="Please enter first and last name (e.g. Jarryd Braum)"
                 required
               />
-              
-              {hasFieldError('main', 0, 'fullName') && (
+
+              {hasFieldError("main", 0, "fullName") && (
                 <div className="field-error-message">
                   <div className="field-error-icon">
-                    <svg width="10" height="10" fill="white" viewBox="0 0 24 24">
-                      <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    <svg
+                      width="10"
+                      height="10"
+                      fill="white"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <span>{getFieldError('main', 0, 'fullName')}</span>
+                  <span>{getFieldError("main", 0, "fullName")}</span>
                 </div>
               )}
 
               {studentNotFoundError && (
                 <div className="inline-error">
                   <div className="inline-error-icon">
-                    <svg width="12" height="12" fill="white" viewBox="0 0 24 24">
+                    <svg
+                      width="12"
+                      height="12"
+                      fill="white"
+                      viewBox="0 0 24 24"
+                    >
                       <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
                   <span className="inline-error-text">
-                    No student found with this name. Please check the spelling and
-                    try again.
+                    No student found with this name. Please check the spelling
+                    and try again.
                   </span>
                 </div>
               )}
@@ -657,19 +775,26 @@ function OrganizationForm() {
                   min="0.5"
                   max="10"
                   step="0.5"
-                  className={hasFieldError('main', 0, 'hours') ? 'field-error' : ''}
+                  className={
+                    hasFieldError("main", 0, "hours") ? "field-error" : ""
+                  }
                   title="Hours must be between 0.5 - 10"
                   required
                 />
-                
-                {hasFieldError('main', 0, 'hours') && (
+
+                {hasFieldError("main", 0, "hours") && (
                   <div className="field-error-message">
                     <div className="field-error-icon">
-                      <svg width="10" height="10" fill="white" viewBox="0 0 24 24">
-                        <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      <svg
+                        width="10"
+                        height="10"
+                        fill="white"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
-                    <span>{getFieldError('main', 0, 'hours')}</span>
+                    <span>{getFieldError("main", 0, "hours")}</span>
                   </div>
                 )}
               </div>
@@ -711,13 +836,17 @@ function OrganizationForm() {
           {additionalStudents.length > 0 && (
             <>
               <h4 className="additional-students-heading">
-                Batch logging for ({additionalStudents.length}) students 
+                Batch Logging For ({additionalStudents.length}) Students
               </h4>
 
               {additionalStudents.map((student, index) => (
-                <div 
-                  key={index} 
-                  className={`student-section additional-student ${studentSectionHasErrors('additional', index) ? 'has-errors' : 'valid'}`}
+                <div
+                  key={index}
+                  className={`student-section additional-student ${
+                    studentSectionHasErrors("additional", index)
+                      ? "has-errors"
+                      : "valid"
+                  }`}
                 >
                   {/* SIMPLIFIED: Remove empty header space, just show remove button in top-right */}
                   <button
@@ -736,21 +865,36 @@ function OrganizationForm() {
                         type="text"
                         value={student.fullName}
                         onChange={(e) =>
-                          handleAdditionalStudentChange(index, "fullName", e.target.value)
+                          handleAdditionalStudentChange(
+                            index,
+                            "fullName",
+                            e.target.value
+                          )
                         }
                         placeholder="e.g. Jarryd Braum"
-                        className={hasFieldError('additional', index, 'fullName') ? 'field-error' : ''}
+                        className={
+                          hasFieldError("additional", index, "fullName")
+                            ? "field-error"
+                            : ""
+                        }
                         required
                       />
-                      
-                      {hasFieldError('additional', index, 'fullName') && (
+
+                      {hasFieldError("additional", index, "fullName") && (
                         <div className="field-error-message">
                           <div className="field-error-icon">
-                            <svg width="10" height="10" fill="white" viewBox="0 0 24 24">
-                              <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            <svg
+                              width="10"
+                              height="10"
+                              fill="white"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                           </div>
-                          <span>{getFieldError('additional', index, 'fullName')}</span>
+                          <span>
+                            {getFieldError("additional", index, "fullName")}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -761,23 +905,38 @@ function OrganizationForm() {
                         type="number"
                         value={student.hours}
                         onChange={(e) =>
-                          handleAdditionalStudentChange(index, "hours", e.target.value)
+                          handleAdditionalStudentChange(
+                            index,
+                            "hours",
+                            e.target.value
+                          )
                         }
                         min="0.5"
                         max="10"
                         step="0.5"
-                        className={hasFieldError('additional', index, 'hours') ? 'field-error' : ''}
+                        className={
+                          hasFieldError("additional", index, "hours")
+                            ? "field-error"
+                            : ""
+                        }
                         required
                       />
-                      
-                      {hasFieldError('additional', index, 'hours') && (
+
+                      {hasFieldError("additional", index, "hours") && (
                         <div className="field-error-message">
                           <div className="field-error-icon">
-                            <svg width="10" height="10" fill="white" viewBox="0 0 24 24">
-                              <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            <svg
+                              width="10"
+                              height="10"
+                              fill="white"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                           </div>
-                          <span>{getFieldError('additional', index, 'hours')}</span>
+                          <span>
+                            {getFieldError("additional", index, "hours")}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -823,7 +982,7 @@ function OrganizationForm() {
               });
               setFieldErrors({
                 mainStudent: { fullName: null, hours: null },
-                additionalStudents: []
+                additionalStudents: [],
               });
             }}
           >
