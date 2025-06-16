@@ -316,3 +316,132 @@ h3 {
         transform: translateY(0);
     }
 }
+
+
+/* Add this enhanced field error styling to your existing Login.css file */
+
+/* Student section visual grouping - Level 2 error feedback */
+.student-section {
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+/* Default student section styling */
+.student-section.valid {
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+/* Student section with errors - this provides the Level 2 visual feedback */
+.student-section.has-errors {
+    background-color: #fef7f7;
+    border-color: #fecaca;
+    box-shadow: 0 1px 3px rgba(220, 38, 38, 0.1);
+}
+
+/* Student section header with status indication */
+.student-section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: #374151;
+}
+
+/* Student number badge - changes color to indicate status */
+.student-number-badge {
+    background-color: #e5e7eb;
+    color: #374151;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 24px;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+/* Error state for student number badge - red indicates problems */
+.student-section.has-errors .student-number-badge {
+    background-color: #dc2626;
+    color: white;
+}
+
+/* Success state for student number badge - green indicates all good */
+.student-section.valid .student-number-badge {
+    background-color: #10b981;
+    color: white;
+}
+
+/* Enhanced error state for input fields - Level 3 feedback */
+.form-group input.field-error,
+.form-group textarea.field-error {
+    border-color: #dc2626;
+    background-color: #fef2f2;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    transition: all 0.2s ease;
+}
+
+/* Field-level error message styling - appears right next to problematic fields */
+.field-error-message {
+    color: #dc2626;
+    font-size: 13px;
+    margin-top: 4px;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    animation: fieldErrorSlide 0.3s ease-out;
+    line-height: 1.3;
+}
+
+/* Small error icon for field-level errors */
+.field-error-icon {
+    width: 16px;
+    height: 16px;
+    background-color: #dc2626;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+/* Animation for field errors appearing smoothly */
+@keyframes fieldErrorSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Enhanced focus states for better interaction feedback */
+.form-group input:focus.field-error {
+    border-color: #2563eb;
+    background-color: #fefbf2;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Mobile responsiveness for error states */
+@media (max-width: 768px) {
+    .student-section {
+        padding: 12px;
+    }
+    
+    .field-error-message {
+        font-size: 12px;
+    }
+    
+    .student-section-header {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+}
