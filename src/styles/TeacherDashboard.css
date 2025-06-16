@@ -503,7 +503,7 @@
 
 /* Additional students section styling */
 .additional-students-heading {
-  margin: 30px 0 20px 0;
+  margin: 20px 0 15px 0; /* Reduced top margin from 30px to 20px */
   color: #333;
   font-size: 18px;
   font-weight: 600;
@@ -556,7 +556,7 @@
   display: grid;
   grid-template-columns: 1fr 150px;
   gap: 15px;
-  align-items: end;
+  align-items: start; /* Changed from 'end' to 'start' for proper alignment */
 }
 
 @media (max-width: 768px) {

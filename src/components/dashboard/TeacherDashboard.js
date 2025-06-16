@@ -135,7 +135,7 @@ function TeacherDashboard() {
       dateError = "Date is required";
     } else {
       const selectedDate = new Date(dateCompleted);
-      const today = new Date();
+      const today = new Date(); today.setHours(23, 59, 59, 999);
       today.setHours(0, 0, 0, 0);
       if (selectedDate > today) {
         dateError = "Date cannot be in the future";
@@ -874,7 +874,7 @@ function TeacherDashboard() {
                               e.target.value
                             )
                           }
-                          placeholder="e.g. Jane Doe"
+                          placeholder="e.g. Mackenzie Comrie"
                           className={
                             hasFieldError("additional", index, "fullName")
                               ? "field-error"
