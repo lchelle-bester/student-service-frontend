@@ -591,17 +591,17 @@ function OrganizationForm() {
           </button>
         </form>
       ) : (
-        // SIMPLIFIED: Form without number badges, with clean visual grouping
-        <form className="login-form" onSubmit={handleSubmitHours}>
+           <form className="login-form" onSubmit={handleSubmitHours}>
           <h3>Log Community Service Hours</h3>
           <div className="organization-info">
             <h3>Verified Organisation</h3>
             <p className="organization-name">{organizationData.name}</p>
           </div>
 
-          {/* SIMPLIFIED: Main student section without number badge */}
+          {/* RESTRUCTURED: Main student section with ALL related fields grouped together */}
           <div className={`student-section ${studentSectionHasErrors('main', 0) ? 'has-errors' : 'valid'}`}>
-
+            
+            {/* Student name field with proper spacing */}
             <div className="form-group">
               <label htmlFor="studentFullName">Student's Full Name:</label>
               <input
@@ -644,6 +644,7 @@ function OrganizationForm() {
               )}
             </div>
 
+            {/* Hours and Date with consistent spacing */}
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="hours">Number of Hours:</label>
@@ -687,61 +688,50 @@ function OrganizationForm() {
                 />
               </div>
             </div>
+
+            {/* MOVED: Description field INSIDE the main student section for visual grouping */}
+            <div className="form-group">
+              <label htmlFor="description">Description:</label>
+              <textarea
+                id="description"
+                name="description"
+                value={serviceForm.description}
+                onChange={handleServiceFormChange}
+                rows="4"
+                minLength="8"
+                maxLength="200"
+                placeholder="Describe the community service activity completed (8-200 characters)"
+                title="Description must be between 8 - 200 characters"
+                required
+              />
+            </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="description">Description:</label>
-            <textarea
-              id="description"
-              name="description"
-              value={serviceForm.description}
-              onChange={handleServiceFormChange}
-              rows="4"
-              minLength="8"
-              maxLength="200"
-              placeholder="Describe the community service activity completed (8-200 characters)"
-              title="Description must be between 8 - 200 characters"
-              required
-            />
-          </div>
-
-          {/* SIMPLIFIED: Additional students without number badges */}
+          {/* CLEANED UP: Additional students section with proper spacing and no empty headers */}
           {additionalStudents.length > 0 && (
-            <div style={{ marginTop: "20px" }}>
-              <h4 style={{ margin: "0 0 15px 0", color: "#333" }}>
+            <>
+              <h4 className="additional-students-heading">
                 Additional Students ({additionalStudents.length})
               </h4>
 
               {additionalStudents.map((student, index) => (
                 <div 
                   key={index} 
-                  className={`student-section ${studentSectionHasErrors('additional', index) ? 'has-errors' : 'valid'}`}
+                  className={`student-section additional-student ${studentSectionHasErrors('additional', index) ? 'has-errors' : 'valid'}`}
                 >
-                  <div className="student-section-header">
-                    <button
-                      type="button"
-                      onClick={() => removeStudent(index)}
-                      style={{
-                        marginLeft: 'auto',
-                        width: "24px",
-                        height: "24px",
-                        backgroundColor: "#dc3545",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "50%",
-                        cursor: "pointer",
-                        fontSize: "14px",
-                      }}
-                    >
-                      ×
-                    </button>
-                  </div>
+                  {/* SIMPLIFIED: Remove empty header space, just show remove button in top-right */}
+                  <button
+                    type="button"
+                    onClick={() => removeStudent(index)}
+                    className="remove-student-button"
+                    title={`Remove additional student ${index + 1}`}
+                  >
+                    ×
+                  </button>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px', gap: '15px' }}>
-                    <div className="form-group" style={{ margin: 0 }}>
-                      <label style={{ fontSize: "14px", margin: "0 0 6px 0", display: 'block' }}>
-                        Full Name:
-                      </label>
+                  <div className="additional-student-fields">
+                    <div className="form-group">
+                      <label>Full Name:</label>
                       <input
                         type="text"
                         value={student.fullName}
@@ -751,12 +741,6 @@ function OrganizationForm() {
                         placeholder="e.g. Jarryd Braum"
                         className={hasFieldError('additional', index, 'fullName') ? 'field-error' : ''}
                         required
-                        style={{ 
-                          padding: "8px", 
-                          fontSize: "14px",
-                          width: '100%',
-                          boxSizing: 'border-box'
-                        }}
                       />
                       
                       {hasFieldError('additional', index, 'fullName') && (
@@ -771,10 +755,8 @@ function OrganizationForm() {
                       )}
                     </div>
 
-                    <div className="form-group" style={{ margin: 0 }}>
-                      <label style={{ fontSize: "14px", margin: "0 0 6px 0", display: 'block' }}>
-                        Hours:
-                      </label>
+                    <div className="form-group">
+                      <label>Hours:</label>
                       <input
                         type="number"
                         value={student.hours}
@@ -786,13 +768,6 @@ function OrganizationForm() {
                         step="0.5"
                         className={hasFieldError('additional', index, 'hours') ? 'field-error' : ''}
                         required
-                        style={{
-                          padding: "8px",
-                          fontSize: "14px",
-                          textAlign: "center",
-                          width: '100%',
-                          boxSizing: 'border-box'
-                        }}
                       />
                       
                       {hasFieldError('additional', index, 'hours') && (
@@ -809,25 +784,18 @@ function OrganizationForm() {
                   </div>
                 </div>
               ))}
-            </div>
+            </>
           )}
 
+          {/* Add student button with proper spacing */}
           {additionalStudents.length < 49 && (
-            <div style={{ textAlign: "center", margin: "15px 0" }}>
+            <div className="add-student-section">
               <button
                 type="button"
                 onClick={addStudent}
-                style={{
-                  backgroundColor: "#28a745",
-                  color: "white",
-                  border: "none",
-                  padding: "8px 16px",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  fontSize: "14px",
-                }}
+                className="add-student-button"
               >
-                + Log this service activty for another student
+                + Log this service activity for another student
               </button>
             </div>
           )}
