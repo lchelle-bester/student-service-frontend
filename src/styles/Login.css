@@ -318,9 +318,9 @@ h3 {
 }
 
 
-/* Add this enhanced field error styling to your existing Login.css file */
+/* Add this simplified styling to your existing Login.css file */
 
-/* Student section visual grouping - Level 2 error feedback */
+/* Student section visual grouping without number badges */
 .student-section {
     padding: 16px;
     border-radius: 8px;
@@ -335,14 +335,14 @@ h3 {
     border-color: #e2e8f0;
 }
 
-/* Student section with errors - this provides the Level 2 visual feedback */
+/* Student section with errors - clean background change only */
 .student-section.has-errors {
     background-color: #fef7f7;
     border-color: #fecaca;
     box-shadow: 0 1px 3px rgba(220, 38, 38, 0.1);
 }
 
-/* Student section header with status indication */
+/* Student section header - simplified without badges */
 .student-section-header {
     display: flex;
     align-items: center;
@@ -350,34 +350,10 @@ h3 {
     margin-bottom: 12px;
     font-weight: 600;
     color: #374151;
+    justify-content: space-between;
 }
 
-/* Student number badge - changes color to indicate status */
-.student-number-badge {
-    background-color: #e5e7eb;
-    color: #374151;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-    min-width: 24px;
-    text-align: center;
-    transition: all 0.2s ease;
-}
-
-/* Error state for student number badge - red indicates problems */
-.student-section.has-errors .student-number-badge {
-    background-color: #dc2626;
-    color: white;
-}
-
-/* Success state for student number badge - green indicates all good */
-.student-section.valid .student-number-badge {
-    background-color: #10b981;
-    color: white;
-}
-
-/* Enhanced error state for input fields - Level 3 feedback */
+/* Enhanced error state for input fields */
 .form-group input.field-error,
 .form-group textarea.field-error {
     border-color: #dc2626;
@@ -386,7 +362,7 @@ h3 {
     transition: all 0.2s ease;
 }
 
-/* Field-level error message styling - appears right next to problematic fields */
+/* Field-level error message styling */
 .field-error-message {
     color: #dc2626;
     font-size: 13px;
@@ -411,7 +387,7 @@ h3 {
     margin-top: 1px;
 }
 
-/* Animation for field errors appearing smoothly */
+/* Animation for field errors appearing */
 @keyframes fieldErrorSlide {
     from {
         opacity: 0;
@@ -423,14 +399,14 @@ h3 {
     }
 }
 
-/* Enhanced focus states for better interaction feedback */
+/* Enhanced focus states */
 .form-group input:focus.field-error {
     border-color: #2563eb;
     background-color: #fefbf2;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-/* Mobile responsiveness for error states */
+/* Mobile responsiveness */
 @media (max-width: 768px) {
     .student-section {
         padding: 12px;
@@ -438,10 +414,5 @@ h3 {
     
     .field-error-message {
         font-size: 12px;
-    }
-    
-    .student-section-header {
-        flex-wrap: wrap;
-        gap: 6px;
     }
 }
