@@ -601,9 +601,6 @@ function OrganizationForm() {
 
           {/* SIMPLIFIED: Main student section without number badge */}
           <div className={`student-section ${studentSectionHasErrors('main', 0) ? 'has-errors' : 'valid'}`}>
-            <div className="student-section-header">
-              <span>Primary Student</span>
-            </div>
 
             <div className="form-group">
               <label htmlFor="studentFullName">Student's Full Name:</label>
@@ -721,7 +718,6 @@ function OrganizationForm() {
                   className={`student-section ${studentSectionHasErrors('additional', index) ? 'has-errors' : 'valid'}`}
                 >
                   <div className="student-section-header">
-                    <span>Additional Student {index + 1}</span>
                     <button
                       type="button"
                       onClick={() => removeStudent(index)}
