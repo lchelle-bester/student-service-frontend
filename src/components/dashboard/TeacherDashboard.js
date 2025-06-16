@@ -1,4 +1,4 @@
-// src/components/dashboard/TeacherDashboard.js - FIXED to keep original look
+// src/components/dashboard/TeacherDashboard.js - Enhanced with field-level validation
 import React, { useState, useEffect } from "react";
 import StudentDetailsModal from "./StudentDetailsModal";
 import "../../styles/TeacherDashboard.css";
@@ -27,6 +27,27 @@ function TeacherDashboard() {
   const [success, setSuccess] = useState("");
   const [results, setResults] = useState(null);
 
+  // NEW: Enhanced error tracking state for field-level validation
+  const [fieldErrors, setFieldErrors] = useState({
+    mainStudent: {
+      studentFullName: null,
+      numberOfHours: null,
+      dateCompleted: null,
+      description: null,
+    },
+    additionalStudents: [],
+  });
+
+  // NEW: Student not found error (similar to Organization form)
+  const [studentNotFoundError, setStudentNotFoundError] = useState(false);
+
+  // NEW: Success notification state (enhanced like Organization form)
+  const [successNotification, setSuccessNotification] = useState({
+    show: false,
+    message: "",
+    details: null,
+  });
+
   const API_URL = process.env.REACT_APP_API_URL || "https://student-service-backend.onrender.com";
   const navigate = useNavigate();
   const TOKEN_KEY = "authToken";
@@ -51,22 +72,242 @@ function TeacherDashboard() {
     }
   }, [navigate]);
 
-  // Keep original form change handler
+  // NEW: Success notification functions
+  const showSuccessNotification = (message, details = null) => {
+    setSuccessNotification({
+      show: true,
+      message: message,
+      details: details,
+    });
+  };
+
+  const dismissSuccessNotification = () => {
+    setSuccessNotification((prev) => ({ ...prev, show: false }));
+  };
+
+  // NEW: Enhanced single student validation with comprehensive error detection
+  const validateSingleStudentWithFields = (student) => {
+    const { studentFullName, numberOfHours, dateCompleted, description, studentNumber } = student;
+    let nameError = null;
+    let hoursError = null;
+    let dateError = null;
+    let descriptionError = null;
+
+    // Comprehensive name validation
+    if (!studentFullName) {
+      nameError = "Student full name is required";
+    } else if (studentFullName.length < 3) {
+      nameError = "Must be at least 3 characters";
+    } else {
+      const nameParts = studentFullName.split(/\s+/);
+      if (nameParts.length < 2) {
+        nameError = "Include both first and last name";
+      } else {
+        if (nameParts[0].length < 2) {
+          nameError = "First name too short";
+        } else if (nameParts[nameParts.length - 1].length < 2) {
+          nameError = "Surname too short";
+        } else {
+          // Check for valid characters
+          const namePattern =
+            /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+$/;
+          if (!namePattern.test(studentFullName)) {
+            nameError = "Contains invalid characters";
+          }
+        }
+      }
+    }
+
+    // Comprehensive hours validation
+    if (!numberOfHours) {
+      hoursError = "Hours are required";
+    } else {
+      const hoursNum = parseFloat(numberOfHours);
+      if (isNaN(hoursNum) || hoursNum < 0.5 || hoursNum > 10) {
+        hoursError = "Must be between 0.5 and 10";
+      } else if ((hoursNum * 10) % 5 !== 0) {
+        hoursError = "Must be in half hour increments";
+      }
+    }
+
+    // Date validation
+    if (!dateCompleted) {
+      dateError = "Date is required";
+    } else {
+      const selectedDate = new Date(dateCompleted);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (selectedDate > today) {
+        dateError = "Date cannot be in the future";
+      }
+    }
+
+    // Description validation
+    if (!description) {
+      descriptionError = "Description is required";
+    } else if (description.trim().length < 8) {
+      descriptionError = "Must be at least 8 characters";
+    } else if (description.length > 200) {
+      descriptionError = "Must be less than 200 characters";
+    }
+
+    return {
+      nameError,
+      hoursError,
+      dateError,
+      descriptionError,
+    };
+  };
+
+  // NEW: Unified validation that handles ALL students through field-level tracking
+  const validateAllStudentsWithFieldTracking = () => {
+    const newFieldErrors = {
+      mainStudent: { 
+        studentFullName: null, 
+        numberOfHours: null, 
+        dateCompleted: null, 
+        description: null 
+      },
+      additionalStudents: [],
+    };
+
+    let hasAnyErrors = false;
+
+    // Validate main student
+    const mainStudentErrors = validateSingleStudentWithFields({
+      studentFullName: serviceForm.studentFullName.trim(),
+      numberOfHours: serviceForm.numberOfHours,
+      dateCompleted: serviceForm.dateCompleted,
+      description: serviceForm.description.trim(),
+      studentNumber: 1,
+    });
+
+    newFieldErrors.mainStudent.studentFullName = mainStudentErrors.nameError;
+    newFieldErrors.mainStudent.numberOfHours = mainStudentErrors.hoursError;
+    newFieldErrors.mainStudent.dateCompleted = mainStudentErrors.dateError;
+    newFieldErrors.mainStudent.description = mainStudentErrors.descriptionError;
+
+    if (mainStudentErrors.nameError || mainStudentErrors.hoursError || 
+        mainStudentErrors.dateError || mainStudentErrors.descriptionError) {
+      hasAnyErrors = true;
+    }
+
+    // Validate ALL additional students through the same system
+    additionalStudents.forEach((student, index) => {
+      const studentErrors = validateSingleStudentWithFields({
+        studentFullName: student.fullName.trim(),
+        numberOfHours: student.hours,
+        dateCompleted: serviceForm.dateCompleted, // shared date
+        description: serviceForm.description.trim(), // shared description
+        studentNumber: index + 2,
+      });
+
+      newFieldErrors.additionalStudents[index] = {
+        fullName: studentErrors.nameError,
+        hours: studentErrors.hoursError,
+      };
+
+      if (studentErrors.nameError || studentErrors.hoursError) {
+        hasAnyErrors = true;
+      }
+    });
+
+    // Update field error state
+    setFieldErrors(newFieldErrors);
+
+    return hasAnyErrors;
+  };
+
+  // NEW: Helper functions for error state checking
+  const hasFieldError = (studentType, studentIndex, fieldName) => {
+    if (studentType === "main") {
+      return fieldErrors.mainStudent[fieldName] !== null;
+    } else {
+      return (
+        fieldErrors.additionalStudents[studentIndex] &&
+        fieldErrors.additionalStudents[studentIndex][fieldName] !== null
+      );
+    }
+  };
+
+  const getFieldError = (studentType, studentIndex, fieldName) => {
+    if (studentType === "main") {
+      return fieldErrors.mainStudent[fieldName];
+    } else {
+      return fieldErrors.additionalStudents[studentIndex]
+        ? fieldErrors.additionalStudents[studentIndex][fieldName]
+        : null;
+    }
+  };
+
+  const studentSectionHasErrors = (studentType, studentIndex) => {
+    if (studentType === "main") {
+      return (
+        hasFieldError("main", 0, "studentFullName") ||
+        hasFieldError("main", 0, "numberOfHours") ||
+        hasFieldError("main", 0, "dateCompleted") ||
+        hasFieldError("main", 0, "description")
+      );
+    } else {
+      return (
+        hasFieldError("additional", studentIndex, "fullName") ||
+        hasFieldError("additional", studentIndex, "hours")
+      );
+    }
+  };
+
+  // Enhanced form change handler with intelligent error clearing
   const handleServiceFormChange = (e) => {
     const { name, value } = e.target;
+    
     setServiceForm((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    // Clear student not found error when name changes
+    if (name === "studentFullName" && studentNotFoundError) {
+      setStudentNotFoundError(false);
+    }
+
+    // Clear field-specific errors when user starts typing
+    if (hasFieldError("main", 0, name)) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        mainStudent: { ...prev.mainStudent, [name]: null },
+      }));
+    }
+
+    // Clear general error
+    if (error) {
+      setError("");
+    }
   };
 
-  // Handler for additional students
+  // Enhanced additional student change handler
   const handleAdditionalStudentChange = (index, field, value) => {
     setAdditionalStudents(prev => 
       prev.map((student, i) => 
         i === index ? { ...student, [field]: value } : student
       )
     );
+
+    // Clear field-specific error when user starts typing
+    if (hasFieldError("additional", index, field)) {
+      setFieldErrors((prev) => {
+        const newAdditionalErrors = [...prev.additionalStudents];
+        if (newAdditionalErrors[index]) {
+          newAdditionalErrors[index] = {
+            ...newAdditionalErrors[index],
+            [field]: null,
+          };
+        }
+        return {
+          ...prev,
+          additionalStudents: newAdditionalErrors,
+        };
+      });
+    }
   };
 
   const addStudent = () => {
@@ -80,105 +321,52 @@ function TeacherDashboard() {
 
   const removeStudent = (index) => {
     setAdditionalStudents(prev => prev.filter((_, i) => i !== index));
+    setFieldErrors((prev) => ({
+      ...prev,
+      additionalStudents: prev.additionalStudents.filter((_, i) => i !== index),
+    }));
   };
 
-  // Enhanced validation (keeps original logic)
-  const validateForm = () => {
-    const errors = [];
-
-    // Original validation for main student
-    if (!serviceForm.studentFullName.trim())
-      errors.push("Student full name is required\n");
-    if (!serviceForm.numberOfHours) errors.push("Number of hours is required\n");
-    if (!serviceForm.dateCompleted) errors.push("Date is required\n");
-    if (!serviceForm.description.trim()) errors.push("Description is required\n");
-
-    // Validate full name (should contain at least first and last name)
-    const nameParts = serviceForm.studentFullName.trim().split(/\s+/);
-    if (nameParts.length < 2) {
-      errors.push("Full name must include both first & last name (e.g. John Smith)\n");
-    }
-    if (serviceForm.studentFullName.trim().length < 3) {
-      errors.push("Full name must be at least 3 characters\n");
-    }
-    // Check for valid characters (letters, spaces, accented characters, hyphens, apostrophes, periods)
-    const namePattern = /^[a-zA-ZäéêëÉÊË\s'.-]+$/;
-    if (!namePattern.test(serviceForm.studentFullName.trim())) {
-      errors.push("Name contains invalid characters\n");
-    }
-
-    // Validate date
-    const selectedDate = new Date(serviceForm.dateCompleted);
-    const today = new Date() +1;
-    today.setHours(0, 0, 0, 0);
-
-    if (selectedDate > today) {
-      errors.push("Date cannot be in the future\n");
-    }
-
-    // Validate hours for main student
-    const hours = parseFloat(serviceForm.numberOfHours);
-    if (isNaN(hours) || hours < 0.5 || hours > 10) {
-      errors.push("Hours must be between 0.5 - 10\n");
-    }
-
-    if (serviceForm.description.trim().length < 8) {
-      errors.push("Description must be at least 8 characters\n");
-    }
-
-    // Additional validation for batch students
-    additionalStudents.forEach((student, index) => {
-      if (!student.fullName.trim() || !student.hours) {
-        errors.push(`Additional student ${index + 1} has missing information\n`);
-      }
-      
-      if (student.fullName.trim()) {
-        const nameParts = student.fullName.trim().split(/\s+/);
-        if (nameParts.length < 2) {
-          errors.push(`Additional student ${index + 1}: Full name must include both first & last name (e.g. John Smith)\n`);
-        }
-        if (student.fullName.trim().length < 3) {
-          errors.push(`Additional student ${index + 1}: Full name must be at least 3 characters\n`);
-        }
-        // Check for valid characters
-        const namePattern = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+$/;
-        if (!namePattern.test(student.fullName.trim())) {
-          errors.push(`Additional student ${index + 1}: Name contains invalid characters\n`);
-        }
-      }
-      
-      if (student.hours) {
-        const studentHours = parseFloat(student.hours);
-        if (isNaN(studentHours) || studentHours < 0.5 || studentHours > 10) {
-          errors.push(`Additional student ${index + 1}: Hours must be between 0.5 - 10\n`);
-        }
-      }
-    });
-
-    return errors;
-  };
-
-  // Enhanced submit handler
+  // STREAMLINED: Submit handler with unified validation
   const handleSubmitService = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
     setResults(null);
-
-    const validationErrors = validateForm();
-    if (validationErrors.length > 0) {
-      setError(validationErrors.join(""));
-      return;
-    }
-
-    setIsSubmitting(true);
+    setStudentNotFoundError(false);
 
     try {
-      const token = localStorage.getItem(TOKEN_KEY);
       const hasAdditionalStudents = additionalStudents.length > 0;
 
       if (hasAdditionalStudents) {
-        // Use batch endpoint
+        // UNIFIED VALIDATION: Use only our field-level error system
+        const hasValidationErrors = validateAllStudentsWithFieldTracking();
+
+        if (hasValidationErrors) {
+          // Scroll to first error field for better UX
+          const firstErrorField = document.querySelector(".field-error");
+          if (firstErrorField) {
+            firstErrorField.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+            setTimeout(() => firstErrorField.focus(), 300);
+          }
+          return; // Stop submission if any errors exist
+        }
+
+        // Clear all field errors since validation passed
+        setFieldErrors({
+          mainStudent: { 
+            studentFullName: null, 
+            numberOfHours: null, 
+            dateCompleted: null, 
+            description: null 
+          },
+          additionalStudents: [],
+        });
+
+        // Batch submission logic
         const allStudents = [
           {
             firstName: serviceForm.studentFullName.trim().split(/\s+/)[0],
@@ -196,7 +384,7 @@ function TeacherDashboard() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${localStorage.getItem(TOKEN_KEY)}`
           },
           body: JSON.stringify({
             students: allStudents,
@@ -208,25 +396,78 @@ function TeacherDashboard() {
         const data = await response.json();
 
         if (response.ok && data.success) {
-          setSuccess(`Successfully logged hours for ${data.successCount} student(s)!`);
-          setResults(data);
+          if (data.errorCount === 0) {
+            showSuccessNotification(
+              `You've successfully logged hours for ${data.successCount} student(s)!`,
+              {
+                type: "batch",
+                count: data.successCount,
+                students: allStudents.map((s) => `${s.firstName} ${s.surname}`),
+              }
+            );
 
-          // Reset form
-          setServiceForm({
-            studentFullName: "",
-            numberOfHours: "",
-            dateCompleted: "",
-            description: "",
-          });
-          setAdditionalStudents([]);
-
-          if (data.errors && data.errors.length > 0) {
+            // Reset form
+            setServiceForm({
+              studentFullName: "",
+              numberOfHours: "",
+              dateCompleted: "",
+              description: "",
+            });
+            setAdditionalStudents([]);
+            setFieldErrors({
+              mainStudent: { 
+                studentFullName: null, 
+                numberOfHours: null, 
+                dateCompleted: null, 
+                description: null 
+              },
+              additionalStudents: [],
+            });
+          } else {
             setError(`Some errors occurred:\n${data.errors.join('\n')}`);
           }
         } else {
-          setError(data.message || 'Failed to log hours');
+          if (response.status === 404 && data.message === "Student not found") {
+            setStudentNotFoundError(true);
+          } else {
+            setError(data.message || 'Failed to log hours');
+          }
         }
       } else {
+        // Individual submission - validate main student only
+        const mainStudentErrors = validateSingleStudentWithFields({
+          studentFullName: serviceForm.studentFullName.trim(),
+          numberOfHours: serviceForm.numberOfHours,
+          dateCompleted: serviceForm.dateCompleted,
+          description: serviceForm.description.trim(),
+          studentNumber: 1,
+        });
+
+        const newFieldErrors = {
+          mainStudent: {
+            studentFullName: mainStudentErrors.nameError,
+            numberOfHours: mainStudentErrors.hoursError,
+            dateCompleted: mainStudentErrors.dateError,
+            description: mainStudentErrors.descriptionError,
+          },
+          additionalStudents: [],
+        };
+
+        setFieldErrors(newFieldErrors);
+
+        if (mainStudentErrors.nameError || mainStudentErrors.hoursError || 
+            mainStudentErrors.dateError || mainStudentErrors.descriptionError) {
+          const firstErrorField = document.querySelector(".field-error");
+          if (firstErrorField) {
+            firstErrorField.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+            setTimeout(() => firstErrorField.focus(), 300);
+          }
+          return;
+        }
+
         // Use original individual endpoint
         const fullName = serviceForm.studentFullName.trim();
 
@@ -234,7 +475,7 @@ function TeacherDashboard() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem(TOKEN_KEY)}`,
           },
           body: JSON.stringify({
             studentName: fullName,
@@ -247,15 +488,35 @@ function TeacherDashboard() {
         const data = await response.json();
 
         if (response.ok) {
-          setSuccess("Service hours logged successfully!");
+          showSuccessNotification(
+            "You've successfully logged hours for 1 student!",
+            {
+              type: "individual",
+              students: [serviceForm.studentFullName],
+              hours: parseFloat(serviceForm.numberOfHours),
+            }
+          );
           setServiceForm({
             studentFullName: "",
             numberOfHours: "",
             dateCompleted: "",
             description: "",
           });
+          setFieldErrors({
+            mainStudent: { 
+              studentFullName: null, 
+              numberOfHours: null, 
+              dateCompleted: null, 
+              description: null 
+            },
+            additionalStudents: [],
+          });
         } else {
-          setError(data.message || "Failed to log service hours");
+          if (response.status === 404 && data.message === "Student not found") {
+            setStudentNotFoundError(true);
+          } else {
+            setError(data.message || "Failed to log service hours");
+          }
         }
       }
     } catch (error) {
@@ -348,161 +609,355 @@ function TeacherDashboard() {
       </header>
 
       <div className="dashboard-content">
-        {/* Left section: EXACTLY same layout as original */}
+        {/* Left section: Enhanced with field-level validation */}
         <section className="log-hours-section">
           <h2>Log School Service Hours</h2>
           
+          {/* Enhanced Success Notification */}
+          {successNotification.show && (
+            <div className="success-notification-celebration">
+              <div className="celebration-content">
+                {/* Animated confetti */}
+                <div className="confetti confetti-1"></div>
+                <div className="confetti confetti-2"></div>
+                <div className="confetti confetti-3"></div>
+                <div className="confetti confetti-4"></div>
+                <div className="confetti confetti-5"></div>
+                <div className="confetti confetti-6"></div>
+
+                {/* Close button */}
+                <button
+                  type="button"
+                  className="celebration-close"
+                  onClick={dismissSuccessNotification}
+                  aria-label="Dismiss notification"
+                >
+                  ×
+                </button>
+
+                {/* Success icon with animation */}
+                <div className="celebration-icon">
+                  <svg
+                    width="32"
+                    height="32"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+
+                {/* Title */}
+                <h4 className="celebration-title">Awesome Work!</h4>
+
+                {/* Custom message */}
+                <p className="celebration-message">
+                  {successNotification.message}
+                </p>
+
+                {/* Student names display */}
+                {successNotification.details &&
+                  successNotification.details.students && (
+                    <div className="celebration-students">
+                      {successNotification.details.students.map(
+                        (name, index) => (
+                          <span
+                            key={index}
+                            className="celebration-student-name"
+                          >
+                            {name}
+                          </span>
+                        )
+                      )}
+                    </div>
+                  )}
+              </div>
+            </div>
+          )}
+          
           {error && <div className="error-message">{error}</div>}
-          {success && <div className="success-message" style={{
-            backgroundColor: '#d4edda',
-            color: '#155724',
-            padding: '12px',
-            borderRadius: '4px',
-            marginBottom: '20px'
-          }}>{success}</div>}
           
           <form onSubmit={handleSubmitService} className="service-form">
-            {/* EXACT same form fields as original */}
-            <div className="form-group">
-              <label htmlFor="studentFullName">Student Full Name:</label>
-              <input
-                type="text"
-                id="studentFullName"
-                name="studentFullName"
-                value={serviceForm.studentFullName}
-                onChange={handleServiceFormChange}
-                placeholder="e.g. John Smith"
-                required
-              />
+            {/* Enhanced form fields with field-level validation */}
+            <div className={`student-section ${
+              studentSectionHasErrors("main", 0) ? "has-errors" : "valid"
+            }`}>
+              
+              <div className="form-group">
+                <label htmlFor="studentFullName">Student Full Name:</label>
+                <input
+                  type="text"
+                  id="studentFullName"
+                  name="studentFullName"
+                  value={serviceForm.studentFullName}
+                  onChange={handleServiceFormChange}
+                  placeholder="e.g. John Smith"
+                  className={`${studentNotFoundError ? "error" : ""} ${
+                    hasFieldError("main", 0, "studentFullName") ? "field-error" : ""
+                  }`}
+                  required
+                />
+
+                {hasFieldError("main", 0, "studentFullName") && (
+                  <div className="field-error-message">
+                    <div className="field-error-icon">
+                      <svg
+                        width="10"
+                        height="10"
+                        fill="white"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <span>{getFieldError("main", 0, "studentFullName")}</span>
+                  </div>
+                )}
+
+                {studentNotFoundError && (
+                  <div className="inline-error">
+                    <div className="inline-error-icon">
+                      <svg
+                        width="12"
+                        height="12"
+                        fill="white"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <span className="inline-error-text">
+                      No student found with this name. Please check the spelling
+                      and try again.
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="numberOfHours">Number of Hours:</label>
+                  <input
+                    type="number"
+                    id="numberOfHours"
+                    name="numberOfHours"
+                    value={serviceForm.numberOfHours}
+                    onChange={handleServiceFormChange}
+                    min="0.5"
+                    max="10"
+                    step="0.5"
+                    className={
+                      hasFieldError("main", 0, "numberOfHours") ? "field-error" : ""
+                    }
+                    required
+                  />
+
+                  {hasFieldError("main", 0, "numberOfHours") && (
+                    <div className="field-error-message">
+                      <div className="field-error-icon">
+                        <svg
+                          width="10"
+                          height="10"
+                          fill="white"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <span>{getFieldError("main", 0, "numberOfHours")}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="dateCompleted">Date Completed:</label>
+                  <input
+                    type="date"
+                    id="dateCompleted"
+                    name="dateCompleted"
+                    value={serviceForm.dateCompleted}
+                    onChange={handleServiceFormChange}
+                    className={
+                      hasFieldError("main", 0, "dateCompleted") ? "field-error" : ""
+                    }
+                    required
+                  />
+
+                  {hasFieldError("main", 0, "dateCompleted") && (
+                    <div className="field-error-message">
+                      <div className="field-error-icon">
+                        <svg
+                          width="10"
+                          height="10"
+                          fill="white"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <span>{getFieldError("main", 0, "dateCompleted")}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="description">Description:</label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={serviceForm.description}
+                  onChange={handleServiceFormChange}
+                  rows="4"
+                  minLength="8"
+                  maxLength="200"
+                  placeholder="Describe the service activity completed (8-200 characters)"
+                  className={
+                    hasFieldError("main", 0, "description") ? "field-error" : ""
+                  }
+                  required
+                />
+
+                {hasFieldError("main", 0, "description") && (
+                  <div className="field-error-message">
+                    <div className="field-error-icon">
+                      <svg
+                        width="10"
+                        height="10"
+                        fill="white"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <span>{getFieldError("main", 0, "description")}</span>
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="numberOfHours">Number of Hours:</label>
-              <input
-                type="number"
-                id="numberOfHours"
-                name="numberOfHours"
-                value={serviceForm.numberOfHours}
-                onChange={handleServiceFormChange}
-                min="0.5"
-                max="10"
-                step="0.5"
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="dateCompleted">Date Completed:</label>
-              <input
-                type="date"
-                id="dateCompleted"
-                name="dateCompleted"
-                value={serviceForm.dateCompleted}
-                onChange={handleServiceFormChange}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="description">Description:</label>
-              <textarea
-                id="description"
-                name="description"
-                value={serviceForm.description}
-                onChange={handleServiceFormChange}
-                rows="4"
-                required
-              />
-            </div>
-
-            {/* Additional students section - only shows when students are added */}
+            {/* Enhanced additional students section with validation */}
             {additionalStudents.length > 0 && (
-              <div style={{ 
-                marginTop: '30px',
-                padding: '20px',
-                backgroundColor: '#f8f9fa',
-                borderRadius: '8px',
-                border: '1px solid #e9ecef'
-              }}>
-                <h3 style={{ margin: '0 0 20px 0', color: '#333' }}>
-                  Additional Students ({additionalStudents.length})
-                </h3>
+              <>
+                <h4 className="additional-students-heading">
+                  Batch Logging For ({additionalStudents.length}) Students
+                </h4>
                 
                 {additionalStudents.map((student, index) => (
-                  <div key={index} style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 100px 40px',
-                    gap: '10px',
-                    alignItems: 'end',
-                    marginBottom: '15px',
-                    padding: '15px',
-                    backgroundColor: '#fff',
-                    borderRadius: '6px',
-                    border: '1px solid #e9ecef'
-                  }}>
-                    <div className="form-group" style={{ margin: 0 }}>
-                      <label style={{ fontSize: '14px' }}>Full Name:</label>
-                      <input
-                        type="text"
-                        value={student.fullName}
-                        onChange={(e) => handleAdditionalStudentChange(index, 'fullName', e.target.value)}
-                        placeholder="e.g. Zoë Van De Merwe"
-                        required
-                        style={{ padding: '8px' }}
-                      />
-                    </div>
-                    <div className="form-group" style={{ margin: 0 }}>
-                      <label style={{ fontSize: '14px' }}>Hours:</label>
-                      <input
-                        type="number"
-                        value={student.hours}
-                        onChange={(e) => handleAdditionalStudentChange(index, 'hours', e.target.value)}
-                        min="0.5"
-                        max="10"
-                        step="0.5"
-                        required
-                        style={{ padding: '8px', textAlign: 'center' }}
-                      />
-                    </div>
+                  <div
+                    key={index}
+                    className={`student-section additional-student ${
+                      studentSectionHasErrors("additional", index)
+                        ? "has-errors"
+                        : "valid"
+                    }`}
+                  >
                     <button
                       type="button"
                       onClick={() => removeStudent(index)}
-                      style={{
-                        width: '30px',
-                        height: '30px',
-                        backgroundColor: '#dc3545',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '50%',
-                        cursor: 'pointer',
-                        fontSize: '16px',
-                        alignSelf: 'end'
-                      }}
+                      className="remove-student-button"
+                      title={`Remove additional student ${index + 1}`}
                     >
                       ×
                     </button>
+
+                    <div className="additional-student-fields">
+                      <div className="form-group">
+                        <label>Full Name:</label>
+                        <input
+                          type="text"
+                          value={student.fullName}
+                          onChange={(e) =>
+                            handleAdditionalStudentChange(
+                              index,
+                              "fullName",
+                              e.target.value
+                            )
+                          }
+                          placeholder="e.g. Jane Doe"
+                          className={
+                            hasFieldError("additional", index, "fullName")
+                              ? "field-error"
+                              : ""
+                          }
+                          required
+                        />
+
+                        {hasFieldError("additional", index, "fullName") && (
+                          <div className="field-error-message">
+                            <div className="field-error-icon">
+                              <svg
+                                width="10"
+                                height="10"
+                                fill="white"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </div>
+                            <span>
+                              {getFieldError("additional", index, "fullName")}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="form-group">
+                        <label>Hours:</label>
+                        <input
+                          type="number"
+                          value={student.hours}
+                          onChange={(e) =>
+                            handleAdditionalStudentChange(
+                              index,
+                              "hours",
+                              e.target.value
+                            )
+                          }
+                          min="0.5"
+                          max="10"
+                          step="0.5"
+                          className={
+                            hasFieldError("additional", index, "hours")
+                              ? "field-error"
+                              : ""
+                          }
+                          required
+                        />
+
+                        {hasFieldError("additional", index, "hours") && (
+                          <div className="field-error-message">
+                            <div className="field-error-icon">
+                              <svg
+                                width="10"
+                                height="10"
+                                fill="white"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </div>
+                            <span>
+                              {getFieldError("additional", index, "hours")}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 ))}
-              </div>
+              </>
             )}
 
-            {/* Add student button - clean and simple */}
+            {/* Add student button */}
             {additionalStudents.length < 49 && (
-              <div style={{ textAlign: 'center', margin: '20px 0' }}>
+              <div className="add-student-section">
                 <button
                   type="button"
                   onClick={addStudent}
-                  style={{
-                    backgroundColor: '#28a745',
-                    color: 'white',
-                    border: 'none',
-                    padding: '10px 20px',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontSize: '14px'
-                  }}
+                  className="add-student-button"
                 >
-                  + Add Another Student
+                  + Log this service activity for another student
                 </button>
               </div>
             )}
@@ -517,7 +972,7 @@ function TeacherDashboard() {
             </button>
           </form>
 
-          {/* Results display */}
+          {/* Results display (keep existing) */}
           {results && (
             <div style={{
               marginTop: '20px',
