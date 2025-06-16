@@ -711,7 +711,7 @@ function OrganizationForm() {
           {additionalStudents.length > 0 && (
             <>
               <h4 className="additional-students-heading">
-                Additional Students ({additionalStudents.length})
+                Batch logging for ({additionalStudents.length}) students 
               </h4>
 
               {additionalStudents.map((student, index) => (
