@@ -12,10 +12,10 @@ function TeacherDashboard() {
     dateCompleted: "",
     description: "",
   });
-  
+
   // Additional students (hidden from UI when only 1 student)
   const [additionalStudents, setAdditionalStudents] = useState([]);
-  
+
   // Existing state (unchanged)
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -48,7 +48,9 @@ function TeacherDashboard() {
     details: null,
   });
 
-  const API_URL = process.env.REACT_APP_API_URL || "https://student-service-backend.onrender.com";
+  const API_URL =
+    process.env.REACT_APP_API_URL ||
+    "https://student-service-backend.onrender.com";
   const navigate = useNavigate();
   const TOKEN_KEY = "authToken";
 
@@ -87,7 +89,13 @@ function TeacherDashboard() {
 
   // NEW: Enhanced single student validation with comprehensive error detection
   const validateSingleStudentWithFields = (student) => {
-    const { studentFullName, numberOfHours, dateCompleted, description, studentNumber } = student;
+    const {
+      studentFullName,
+      numberOfHours,
+      dateCompleted,
+      description,
+      studentNumber,
+    } = student;
     let nameError = null;
     let hoursError = null;
     let dateError = null;
@@ -135,7 +143,8 @@ function TeacherDashboard() {
       dateError = "Date is required";
     } else {
       const selectedDate = new Date(dateCompleted);
-      const today = new Date(); today.setHours(23, 59, 59, 999);
+      const today = new Date();
+      today.setHours(23, 59, 59, 999);
       today.setHours(0, 0, 0, 0);
       if (selectedDate > today) {
         dateError = "Date cannot be in the future";
@@ -162,11 +171,11 @@ function TeacherDashboard() {
   // NEW: Unified validation that handles ALL students through field-level tracking
   const validateAllStudentsWithFieldTracking = () => {
     const newFieldErrors = {
-      mainStudent: { 
-        studentFullName: null, 
-        numberOfHours: null, 
-        dateCompleted: null, 
-        description: null 
+      mainStudent: {
+        studentFullName: null,
+        numberOfHours: null,
+        dateCompleted: null,
+        description: null,
       },
       additionalStudents: [],
     };
@@ -187,8 +196,12 @@ function TeacherDashboard() {
     newFieldErrors.mainStudent.dateCompleted = mainStudentErrors.dateError;
     newFieldErrors.mainStudent.description = mainStudentErrors.descriptionError;
 
-    if (mainStudentErrors.nameError || mainStudentErrors.hoursError || 
-        mainStudentErrors.dateError || mainStudentErrors.descriptionError) {
+    if (
+      mainStudentErrors.nameError ||
+      mainStudentErrors.hoursError ||
+      mainStudentErrors.dateError ||
+      mainStudentErrors.descriptionError
+    ) {
       hasAnyErrors = true;
     }
 
@@ -259,7 +272,7 @@ function TeacherDashboard() {
   // Enhanced form change handler with intelligent error clearing
   const handleServiceFormChange = (e) => {
     const { name, value } = e.target;
-    
+
     setServiceForm((prev) => ({
       ...prev,
       [name]: value,
@@ -286,8 +299,8 @@ function TeacherDashboard() {
 
   // Enhanced additional student change handler
   const handleAdditionalStudentChange = (index, field, value) => {
-    setAdditionalStudents(prev => 
-      prev.map((student, i) => 
+    setAdditionalStudents((prev) =>
+      prev.map((student, i) =>
         i === index ? { ...student, [field]: value } : student
       )
     );
@@ -311,16 +324,20 @@ function TeacherDashboard() {
   };
 
   const addStudent = () => {
-    if (additionalStudents.length < 49) { // 49 + 1 main = 50 max
-      setAdditionalStudents(prev => [...prev, { 
-        fullName: "", 
-        hours: "" 
-      }]);
+    if (additionalStudents.length < 49) {
+      // 49 + 1 main = 50 max
+      setAdditionalStudents((prev) => [
+        ...prev,
+        {
+          fullName: "",
+          hours: "",
+        },
+      ]);
     }
   };
 
   const removeStudent = (index) => {
-    setAdditionalStudents(prev => prev.filter((_, i) => i !== index));
+    setAdditionalStudents((prev) => prev.filter((_, i) => i !== index));
     setFieldErrors((prev) => ({
       ...prev,
       additionalStudents: prev.additionalStudents.filter((_, i) => i !== index),
@@ -357,11 +374,11 @@ function TeacherDashboard() {
 
         // Clear all field errors since validation passed
         setFieldErrors({
-          mainStudent: { 
-            studentFullName: null, 
-            numberOfHours: null, 
-            dateCompleted: null, 
-            description: null 
+          mainStudent: {
+            studentFullName: null,
+            numberOfHours: null,
+            dateCompleted: null,
+            description: null,
           },
           additionalStudents: [],
         });
@@ -370,32 +387,36 @@ function TeacherDashboard() {
         const allStudents = [
           {
             firstName: serviceForm.studentFullName.trim().split(/\s+/)[0],
-            surname: serviceForm.studentFullName.trim().split(/\s+/).slice(1).join(' '),
-            hours: serviceForm.numberOfHours
+            surname: serviceForm.studentFullName
+              .trim()
+              .split(/\s+/)
+              .slice(1)
+              .join(" "),
+            hours: serviceForm.numberOfHours,
           },
-          ...additionalStudents.map(student => ({
+          ...additionalStudents.map((student) => ({
             firstName: student.fullName.trim().split(/\s+/)[0],
-            surname: student.fullName.trim().split(/\s+/).slice(1).join(' '),
-            hours: student.hours
-          }))
+            surname: student.fullName.trim().split(/\s+/).slice(1).join(" "),
+            hours: student.hours,
+          })),
         ];
 
         const response = await fetch(`${API_URL}/api/service/batch-log`, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem(TOKEN_KEY)}`
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem(TOKEN_KEY)}`,
           },
           body: JSON.stringify({
             students: allStudents,
             dateCompleted: serviceForm.dateCompleted,
-            description: serviceForm.description
-          })
+            description: serviceForm.description,
+          }),
         });
 
         const data = await response.json();
 
-//in-line-error
+        //in-line-error
 
         if (response.ok && data.success) {
           if (data.errorCount === 0) {
@@ -417,22 +438,76 @@ function TeacherDashboard() {
             });
             setAdditionalStudents([]);
             setFieldErrors({
-              mainStudent: { 
-                studentFullName: null, 
-                numberOfHours: null, 
-                dateCompleted: null, 
-                description: null 
+              mainStudent: {
+                studentFullName: null,
+                numberOfHours: null,
+                dateCompleted: null,
+                description: null,
               },
               additionalStudents: [],
             });
           } else {
-            setError(`Some errors occurred:\n${data.errors.join('\n')}`);
+            const newFieldErrors = {
+              mainStudent: {
+                studentFullName: null,
+                numberOfHours: null,
+                dateCompleted: null,
+                description: null,
+              },
+              additionalStudents: additionalStudents.map(() => ({
+                fullName: null,
+                hours: null,
+              })),
+            };
+
+            // Parse each error and assign to the correct student
+            data.errors.forEach((errorMessage) => {
+              // Extract student number from error message like "Student 1: Jarryd Bra not found in database"
+              const studentMatch = errorMessage.match(/Student (\d+):\s*(.+)/);
+              if (studentMatch) {
+                const studentNumber = parseInt(studentMatch[1]);
+                const errorText = studentMatch[2];
+
+                if (studentNumber === 1) {
+                  // Main student error
+                  if (errorText.includes("not found in database")) {
+                    newFieldErrors.mainStudent.studentFullName =
+                      "Student not found in database. Please check the spelling and try again.";
+                  } else if (errorText.includes("Hours must be")) {
+                    newFieldErrors.mainStudent.numberOfHours = errorText;
+                  }
+                } else if (studentNumber > 1) {
+                  // Additional student error
+                  const additionalIndex = studentNumber - 2; // Convert to 0-based index
+                  if (
+                    additionalIndex >= 0 &&
+                    additionalIndex < newFieldErrors.additionalStudents.length
+                  ) {
+                    if (errorText.includes("not found in database")) {
+                      newFieldErrors.additionalStudents[
+                        additionalIndex
+                      ].fullName =
+                        "Student not found in database. Please check the spelling and try again.";
+                    } else if (errorText.includes("Hours must be")) {
+                      newFieldErrors.additionalStudents[additionalIndex].hours =
+                        errorText;
+                    }
+                  }
+                }
+              }
+            });
+
+            // Set the field errors
+            setFieldErrors(newFieldErrors);
+
+            // Clear the general error since we're showing field-specific errors
+            setError("");
           }
         } else {
           if (response.status === 404 && data.message === "Student not found") {
             setStudentNotFoundError(true);
           } else {
-            setError(data.message || 'Failed to log hours');
+            setError(data.message || "Failed to log hours");
           }
         }
       } else {
@@ -457,8 +532,12 @@ function TeacherDashboard() {
 
         setFieldErrors(newFieldErrors);
 
-        if (mainStudentErrors.nameError || mainStudentErrors.hoursError || 
-            mainStudentErrors.dateError || mainStudentErrors.descriptionError) {
+        if (
+          mainStudentErrors.nameError ||
+          mainStudentErrors.hoursError ||
+          mainStudentErrors.dateError ||
+          mainStudentErrors.descriptionError
+        ) {
           const firstErrorField = document.querySelector(".field-error");
           if (firstErrorField) {
             firstErrorField.scrollIntoView({
@@ -505,11 +584,11 @@ function TeacherDashboard() {
             description: "",
           });
           setFieldErrors({
-            mainStudent: { 
-              studentFullName: null, 
-              numberOfHours: null, 
-              dateCompleted: null, 
-              description: null 
+            mainStudent: {
+              studentFullName: null,
+              numberOfHours: null,
+              dateCompleted: null,
+              description: null,
             },
             additionalStudents: [],
           });
@@ -614,7 +693,7 @@ function TeacherDashboard() {
         {/* Left section: Enhanced with field-level validation */}
         <section className="log-hours-section">
           <h2>Log School Service Hours</h2>
-          
+
           {/* Enhanced Success Notification */}
           {successNotification.show && (
             <div className="success-notification-celebration">
@@ -676,15 +755,16 @@ function TeacherDashboard() {
               </div>
             </div>
           )}
-          
+
           {error && <div className="error-message">{error}</div>}
-          
+
           <form onSubmit={handleSubmitService} className="service-form">
             {/* Enhanced form fields with field-level validation */}
-            <div className={`student-section ${
-              studentSectionHasErrors("main", 0) ? "has-errors" : "valid"
-            }`}>
-              
+            <div
+              className={`student-section ${
+                studentSectionHasErrors("main", 0) ? "has-errors" : "valid"
+              }`}
+            >
               <div className="form-group">
                 <label htmlFor="studentFullName">Student Full Name:</label>
                 <input
@@ -695,7 +775,9 @@ function TeacherDashboard() {
                   onChange={handleServiceFormChange}
                   placeholder="e.g. John Smith"
                   className={`${studentNotFoundError ? "error" : ""} ${
-                    hasFieldError("main", 0, "studentFullName") ? "field-error" : ""
+                    hasFieldError("main", 0, "studentFullName")
+                      ? "field-error"
+                      : ""
                   }`}
                   required
                 />
@@ -749,7 +831,9 @@ function TeacherDashboard() {
                     max="10"
                     step="0.5"
                     className={
-                      hasFieldError("main", 0, "numberOfHours") ? "field-error" : ""
+                      hasFieldError("main", 0, "numberOfHours")
+                        ? "field-error"
+                        : ""
                     }
                     required
                   />
@@ -780,7 +864,9 @@ function TeacherDashboard() {
                     value={serviceForm.dateCompleted}
                     onChange={handleServiceFormChange}
                     className={
-                      hasFieldError("main", 0, "dateCompleted") ? "field-error" : ""
+                      hasFieldError("main", 0, "dateCompleted")
+                        ? "field-error"
+                        : ""
                     }
                     required
                   />
@@ -844,7 +930,7 @@ function TeacherDashboard() {
                 <h4 className="additional-students-heading">
                   Batch Logging For ({additionalStudents.length}) Students
                 </h4>
-                
+
                 {additionalStudents.map((student, index) => (
                   <div
                     key={index}
@@ -964,29 +1050,38 @@ function TeacherDashboard() {
               </div>
             )}
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="submit-button"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Submitting...' : 
-               totalStudents > 1 ? `Submit Hours for ${totalStudents} Students` : 'Submit Hours'}
+              {isSubmitting
+                ? "Submitting..."
+                : totalStudents > 1
+                ? `Submit Hours for ${totalStudents} Students`
+                : "Submit Hours"}
             </button>
           </form>
 
           {/* Results display (keep existing) */}
           {results && (
-            <div style={{
-              marginTop: '20px',
-              padding: '15px',
-              backgroundColor: '#f8f9fa',
-              borderRadius: '6px',
-              border: '1px solid #e9ecef'
-            }}>
+            <div
+              style={{
+                marginTop: "20px",
+                padding: "15px",
+                backgroundColor: "#f8f9fa",
+                borderRadius: "6px",
+                border: "1px solid #e9ecef",
+              }}
+            >
               <h4>Results:</h4>
-              <div style={{ color: '#28a745' }}>✓ {results.successCount} successful</div>
+              <div style={{ color: "#28a745" }}>
+                ✓ {results.successCount} successful
+              </div>
               {results.errorCount > 0 && (
-                <div style={{ color: '#dc3545' }}>✗ {results.errorCount} errors</div>
+                <div style={{ color: "#dc3545" }}>
+                  ✗ {results.errorCount} errors
+                </div>
               )}
             </div>
           )}
