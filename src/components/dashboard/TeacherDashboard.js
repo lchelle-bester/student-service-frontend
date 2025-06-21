@@ -395,6 +395,8 @@ function TeacherDashboard() {
 
         const data = await response.json();
 
+//in-line-error
+
         if (response.ok && data.success) {
           if (data.errorCount === 0) {
             showSuccessNotification(
@@ -715,8 +717,8 @@ function TeacherDashboard() {
                 )}
 
                 {studentNotFoundError && (
-                  <div className="inline-error">
-                    <div className="inline-error-icon">
+                  <div className="student-not-found-error">
+                    <div className="student-not-found-icon">
                       <svg
                         width="12"
                         height="12"
@@ -726,7 +728,7 @@ function TeacherDashboard() {
                         <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
-                    <span className="inline-error-text">
+                    <span className="student-not-found-error-text">
                       No student found with this name. Please check the spelling
                       and try again.
                     </span>

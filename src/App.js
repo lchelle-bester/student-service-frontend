@@ -5,7 +5,7 @@ import LoginSelection from './components/auth/LoginSelection';
 import TeacherLogin from './components/auth/TeacherLogin';
 import StudentLogin from './components/auth/StudentLogin';
 import TeacherDashboard from './components/dashboard/TeacherDashboard';
-import StudentDashboard from './components/dashboard/StudentDashboard'; // Add this import
+import StudentDashboard from './components/dashboard/StudentDashboard'; 
 import OrganizationForm from './components/auth/OrganizationForm';  
 import './App.css';
 

@@ -459,7 +459,7 @@
 }
 
 /* Inline error styling (for student not found) */
-.inline-error {
+.student-not-found-error {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -473,7 +473,7 @@
   animation: slideDown 0.3s ease;
 }
 
-.inline-error-icon {
+.student-not-found-icon {
   flex-shrink: 0;
   width: 16px;
   height: 16px;
@@ -482,7 +482,7 @@
   justify-content: center;
 }
 
-.inline-error-text {
+.student-not-found-text {
   flex: 1;
 }
 
