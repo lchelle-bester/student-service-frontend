@@ -472,7 +472,7 @@ function TeacherDashboard() {
                   // Main student error
                   if (errorText.includes("not found in database")) {
                     newFieldErrors.mainStudent.studentFullName =
-                      "Student not found in database. Please check the spelling and try again.";
+                      "Student not found. Please check the spelling and try again.";
                   } else if (errorText.includes("Hours must be")) {
                     newFieldErrors.mainStudent.numberOfHours = errorText;
                   }
@@ -487,7 +487,7 @@ function TeacherDashboard() {
                       newFieldErrors.additionalStudents[
                         additionalIndex
                       ].fullName =
-                        "Student not found in database. Please check the spelling and try again.";
+                        "Student not found. Please check the spelling and try again.";
                     } else if (errorText.includes("Hours must be")) {
                       newFieldErrors.additionalStudents[additionalIndex].hours =
                         errorText;
