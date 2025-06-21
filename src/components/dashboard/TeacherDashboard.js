@@ -773,7 +773,7 @@ function TeacherDashboard() {
                   name="studentFullName"
                   value={serviceForm.studentFullName}
                   onChange={handleServiceFormChange}
-                  placeholder="e.g. John Smith"
+                  placeholder="e.g. Leah Bester"
                   className={`${studentNotFoundError ? "error" : ""} ${
                     hasFieldError("main", 0, "studentFullName")
                       ? "field-error"
@@ -1108,7 +1108,7 @@ function TeacherDashboard() {
                 <div className="student-info">
                   <h3>{student.full_name}</h3>
                   <p>Grade: {student.grade}</p>
-                  <p>Total Hours: {student.total_hours / 2.0}</p>
+                  <p>Total Hours: {student.total_hours}</p>
                 </div>
                 <button
                   className="view-details-button"
