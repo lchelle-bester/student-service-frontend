@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import StudentDetailsModal from "./StudentDetailsModal";
 import "../../styles/TeacherDashboard.css";
 import { useNavigate } from "react-router-dom";
+import FloatingHelpButton from "../feedback/FloatingHelpButton";
 
 function TeacherDashboard() {
   // Keep original form structure but enhanced for multiple students
@@ -26,6 +27,7 @@ function TeacherDashboard() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState("");
   const [results, setResults] = useState(null);
+  const [user, setUser] = useState(null);
 
   // NEW: Enhanced error tracking state for field-level validation
   const [fieldErrors, setFieldErrors] = useState({
@@ -63,10 +65,11 @@ function TeacherDashboard() {
       return;
     }
     try {
-      const user = JSON.parse(userData);
-      if (user.type !== "teacher") {
+      const parsedUser = JSON.parse(userData);
+      setUser(parsedUser); // Add this line
+      if (parsedUser.type !== "teacher") {
         navigate("/teacher-login");
-        console.log("Teacher authenticated:", user);
+        console.log("Teacher authenticated:", parsedUser);
       }
     } catch (error) {
       console.error("Error parsing user data:", error);
@@ -1132,6 +1135,7 @@ function TeacherDashboard() {
           }}
         />
       )}
+      <FloatingHelpButton userInfo={user} />
     </div>
   );
 }
