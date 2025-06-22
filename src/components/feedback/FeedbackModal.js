@@ -120,14 +120,6 @@ const FeedbackModal = ({ isOpen, onClose, userInfo }) => {
 
         {submitStatus === "success" && (
           <div className="feedback-success-message">
-            <button
-              className="feedback-close-button success-close"
-              onClick={handleClose}
-              type="button"
-              title="Close"
-            >
-              ×
-            </button>
             <div className="success-icon">✓</div>
             <p>Thank you! Your feedback has been submitted successfully.</p>
           </div>
