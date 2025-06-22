@@ -1,45 +1,45 @@
-import React, { useState } from 'react';
-import './FeedbackModal.css';
+import React, { useState } from "react";
+import "./FeedbackModal.css";
 
 const FeedbackModal = ({ isOpen, onClose, userInfo }) => {
   const [formData, setFormData] = useState({
-    issueType: '',
-    description: '',
-    priority: 'medium',
-    contactEmail: userInfo?.email || '',
-    screenshot: null
+    issueType: "",
+    description: "",
+    priority: "medium",
+    contactEmail: userInfo?.email || "",
+    screenshot: null,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
 
   const issueTypes = [
-    { value: 'bug', label: 'Bug Report' },
-    { value: 'feature_request', label: 'Feature Request' },
-    { value: 'other', label: 'Other' }
+    { value: "bug", label: "Bug Report" },
+    { value: "feature_request", label: "Feature Request" },
+    { value: "other", label: "Other" },
   ];
 
   const priorities = [
-    { value: 'low', label: 'Low - Minor issue' },
-    { value: 'medium', label: 'Medium - Moderate impact' },
-    { value: 'high', label: 'High - Blocking my work' },
-    { value: 'urgent', label: 'Urgent - System broken' }
+    { value: "low", label: "Low - Minor issue" },
+    { value: "medium", label: "Medium - Moderate impact" },
+    { value: "high", label: "High - Blocking my work" },
+    { value: "urgent", label: "Urgent - System broken" },
   ];
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: files ? files[0] : value
+      [name]: files ? files[0] : value,
     }));
   };
 
   const resetForm = () => {
     setFormData({
-      issueType: '',
-      description: '',
-      priority: 'medium',
-      contactEmail: userInfo?.email || '',
-      screenshot: null
+      issueType: "",
+      description: "",
+      priority: "medium",
+      contactEmail: userInfo?.email || "",
+      screenshot: null,
     });
     setSubmitStatus(null);
   };
@@ -55,46 +55,47 @@ const FeedbackModal = ({ isOpen, onClose, userInfo }) => {
         currentUrl: window.location.href,
         timestamp: new Date().toISOString(),
         screenResolution: `${window.screen.width}x${window.screen.height}`,
-        userType: userInfo?.user_type || 'unknown',
+        userType: userInfo?.user_type || "unknown",
         userEmail: userInfo?.email || null,
         userKey: userInfo?.org_key || null,
-        studentId: userInfo?.student_id || null
+        studentId: userInfo?.student_id || null,
       };
 
       const submitData = new FormData();
-      submitData.append('issueType', formData.issueType);
-      submitData.append('description', formData.description);
-      submitData.append('priority', formData.priority);
-      submitData.append('contactEmail', formData.contactEmail);
-      submitData.append('context', JSON.stringify(contextInfo));
-      submitData.append('userId', userInfo?.id || '');
-      
+      submitData.append("issueType", formData.issueType);
+      submitData.append("description", formData.description);
+      submitData.append("priority", formData.priority);
+      submitData.append("contactEmail", formData.contactEmail);
+      submitData.append("context", JSON.stringify(contextInfo));
+      submitData.append("userId", userInfo?.id || "");
+
       if (formData.screenshot) {
-        submitData.append('screenshot', formData.screenshot);
+        submitData.append("screenshot", formData.screenshot);
       }
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/feedback/submit`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-        },
-        body: submitData
-      });
+      const response = await fetch(
+        `${
+          process.env.REACT_APP_API_URL || "http://localhost:5000"
+        }/api/feedback/submit`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+          body: submitData,
+        }
+      );
 
       const result = await response.json();
 
       if (response.ok) {
-        setSubmitStatus('success');
-        setTimeout(() => {
-          resetForm();
-          onClose();
-        }, 2000);
+        setSubmitStatus("success");
       } else {
-        setSubmitStatus('error');
+        setSubmitStatus("error");
       }
     } catch (error) {
-      console.error('Error submitting feedback:', error);
-      setSubmitStatus('error');
+      console.error("Error submitting feedback:", error);
+      setSubmitStatus("error");
     } finally {
       setIsSubmitting(false);
     }
@@ -109,26 +110,39 @@ const FeedbackModal = ({ isOpen, onClose, userInfo }) => {
 
   return (
     <div className="feedback-modal-overlay" onClick={handleClose}>
-      <div className="feedback-modal" onClick={e => e.stopPropagation()}>
+      <div className="feedback-modal" onClick={(e) => e.stopPropagation()}>
         <div className="feedback-modal-header">
           <h3>Report an Issue or Give Feedback</h3>
-          <button className="feedback-close-button" onClick={handleClose}>×</button>
+          <button className="feedback-close-button" onClick={handleClose}>
+            ×
+          </button>
         </div>
 
-        {submitStatus === 'success' && (
+        {submitStatus === "success" && (
           <div className="feedback-success-message">
+            <button
+              className="feedback-close-button success-close"
+              onClick={handleClose}
+              type="button"
+              title="Close"
+            >
+              ×
+            </button>
             <div className="success-icon">✓</div>
             <p>Thank you! Your feedback has been submitted successfully.</p>
           </div>
         )}
 
-        {submitStatus === 'error' && (
+        {submitStatus === "error" && (
           <div className="feedback-error-message">
-            <p>Sorry, there was an error. Please try again or email lchelle.best@gmail.com</p>
+            <p>
+              Sorry, there was an error. Please try again or email
+              lchelle.best@gmail.com
+            </p>
           </div>
         )}
 
-        {submitStatus !== 'success' && (
+        {submitStatus !== "success" && (
           <form className="feedback-form" onSubmit={handleSubmit}>
             <div className="feedback-form-row">
               <div className="feedback-form-group">
@@ -141,8 +155,10 @@ const FeedbackModal = ({ isOpen, onClose, userInfo }) => {
                   required
                 >
                   <option value="">Select issue type...</option>
-                  {issueTypes.map(type => (
-                    <option key={type.value} value={type.value}>{type.label}</option>
+                  {issueTypes.map((type) => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -155,8 +171,10 @@ const FeedbackModal = ({ isOpen, onClose, userInfo }) => {
                   value={formData.priority}
                   onChange={handleInputChange}
                 >
-                  {priorities.map(priority => (
-                    <option key={priority.value} value={priority.value}>{priority.label}</option>
+                  {priorities.map((priority) => (
+                    <option key={priority.value} value={priority.value}>
+                      {priority.label}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -203,11 +221,22 @@ const FeedbackModal = ({ isOpen, onClose, userInfo }) => {
             </div>
 
             <div className="feedback-form-actions">
-              <button type="button" className="feedback-cancel-button" onClick={handleClose} disabled={isSubmitting}>
+              <button
+                type="button"
+                className="feedback-cancel-button"
+                onClick={handleClose}
+                disabled={isSubmitting}
+              >
                 Cancel
               </button>
-              <button type="submit" className="feedback-submit-button" disabled={isSubmitting || !formData.issueType || !formData.description}>
-                {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
+              <button
+                type="submit"
+                className="feedback-submit-button"
+                disabled={
+                  isSubmitting || !formData.issueType || !formData.description
+                }
+              >
+                {isSubmitting ? "Submitting..." : "Submit Feedback"}
               </button>
             </div>
           </form>
