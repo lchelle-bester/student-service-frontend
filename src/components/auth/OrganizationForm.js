@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/Login.css";
+import FloatingHelpButton from "../feedback/FloatingHelpButton";
 
 function OrganizationForm() {
   const API_URL =
@@ -71,16 +72,16 @@ function OrganizationForm() {
   };
 
   const showSuccessNotification = (message, details = null) => {
-      setSuccessNotification({
-        show: true,
-        message: message,
-        details: details,
-      });
-    };
+    setSuccessNotification({
+      show: true,
+      message: message,
+      details: details,
+    });
+  };
 
-    const dismissSuccessNotification = () => {
-      setSuccessNotification((prev) => ({ ...prev, show: false }));
-    };
+  const dismissSuccessNotification = () => {
+    setSuccessNotification((prev) => ({ ...prev, show: false }));
+  };
 
   // Enhanced single student validation with comprehensive error detection
   const validateSingleStudentWithFields = (student) => {
@@ -990,6 +991,19 @@ function OrganizationForm() {
           </button>
         </form>
       )}
+      <FloatingHelpButton
+        userInfo={
+          isVerified
+            ? {
+                id: organizationData?.id,
+                email: organizationData?.contact_email,
+                user_type: "organization",
+                org_key: orgKey,
+                full_name: organizationData?.name,
+              }
+            : null
+        }
+      />
     </div>
   );
 }
