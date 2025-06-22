@@ -119,7 +119,6 @@ const FeedbackModal = ({ isOpen, onClose, userInfo }) => {
           <div className="feedback-success-message">
             <div className="success-icon">✓</div>
             <p>Thank you! Your feedback has been submitted successfully.</p>
-            <p>We'll get back to you within 24 hours if needed.</p>
           </div>
         )}
 
@@ -171,11 +170,11 @@ const FeedbackModal = ({ isOpen, onClose, userInfo }) => {
                 value={formData.description}
                 onChange={handleInputChange}
                 placeholder="Please describe the issue, what you were trying to do, and any error messages you saw..."
-                maxLength="1500"
+                maxLength="1000"
                 rows="6"
                 required
               />
-              <small>{formData.description.length}/1500 characters</small>
+              <small>{formData.description.length}/1000 characters</small>
             </div>
 
             <div className="feedback-form-group">
@@ -192,7 +191,7 @@ const FeedbackModal = ({ isOpen, onClose, userInfo }) => {
             </div>
 
             <div className="feedback-form-group">
-              <label htmlFor="contactEmail">Contact email (optional)</label>
+              <label htmlFor="contactEmail">Your email (optional)</label>
               <input
                 type="email"
                 id="contactEmail"
