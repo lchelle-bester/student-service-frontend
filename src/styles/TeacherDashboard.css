@@ -106,6 +106,29 @@
     box-sizing: border-box;
 }
 
+/* Ensure number input spinners are visible and functional */
+.form-group input[type="number"] {
+    -webkit-appearance: auto;
+    -moz-appearance: auto;
+    appearance: auto;
+}
+
+.form-group input[type="number"]::-webkit-outer-spin-button,
+.form-group input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: auto;
+    opacity: 1;
+    margin: 0;
+    height: auto;
+}
+
+/* Specific styling for hours input to ensure spinner visibility */
+input[name="numberOfHours"],
+input[name="hours"] {
+    -webkit-appearance: auto !important;
+    -moz-appearance: auto !important;
+    appearance: auto !important;
+}
+
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
