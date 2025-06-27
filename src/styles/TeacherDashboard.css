@@ -1,7 +1,9 @@
-/* Enhanced Mobile Responsive Styles for Teacher Dashboard */
-/* Add these styles to your existing src/styles/TeacherDashboard.css file */
+/* src/styles/TeacherDashboard.css - Complete rewrite with mobile improvements */
 
-/* Base dashboard container improvements */
+/* ===============================
+   BASE STYLES
+   =============================== */
+
 .dashboard-container {
     padding: 20px;
     max-width: 1400px;
@@ -12,7 +14,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
     flex-wrap: wrap;
     gap: 15px;
 }
@@ -20,33 +22,55 @@
 .dashboard-header h1 {
     font-size: 1.5rem;
     margin: 0;
-    min-width: 0; /* Allows text to shrink */
+    min-width: 0;
+    color: #333;
 }
 
-/* Main content grid - stack on mobile */
+.logout-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.logout-button:hover {
+    background-color: #c82333;
+}
+
+/* ===============================
+   DASHBOARD CONTENT GRID
+   =============================== */
+
 .dashboard-content {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 30px;
 }
 
-/* Individual sections */
 .log-hours-section,
 .search-section {
     background-color: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    min-width: 0; /* Prevents overflow */
+    min-width: 0;
 }
 
 .log-hours-section h2,
 .search-section h2 {
     font-size: 1.25rem;
     margin-bottom: 20px;
+    color: #333;
 }
 
-/* Form improvements for mobile */
+/* ===============================
+   FORM STYLES
+   =============================== */
+
 .service-form {
     display: flex;
     flex-direction: column;
@@ -58,6 +82,10 @@
     flex-direction: column;
     gap: 8px;
     margin-bottom: 20px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
 }
 
 .form-group label {
@@ -72,7 +100,7 @@
     padding: 12px;
     border: 2px solid #e9ecef;
     border-radius: 8px;
-    font-size: 16px; /* Prevents zoom on iOS */
+    font-size: 16px;
     transition: all 0.2s ease;
     width: 100%;
     box-sizing: border-box;
@@ -86,15 +114,206 @@
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 
-/* Form row responsive behavior */
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Form row layout for side-by-side fields */
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
+    gap: 20px;
     margin-bottom: 20px;
 }
 
-/* Submit button improvements */
+.form-row .form-group {
+    margin-bottom: 0;
+}
+
+/* ===============================
+   STUDENT SECTIONS & VALIDATION
+   =============================== */
+
+.student-section {
+    position: relative;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.student-section.valid {
+    border-color: #e9ecef;
+    background-color: #ffffff;
+}
+
+.student-section.has-errors {
+    border-color: #dc3545;
+    background-color: #fff5f5;
+}
+
+/* Field error styling */
+.field-error {
+    border-color: #dc3545 !important;
+    background-color: #fff5f5;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.field-error:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* Field error message styling */
+.field-error-message {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 5px;
+    padding: 6px 10px;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 1.3;
+    font-weight: 500;
+    animation: slideDown 0.3s ease;
+}
+
+.field-error-icon {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Inline error styling (for student not found) */
+.student-not-found-error,
+.inline-error {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 5px;
+    padding: 8px 12px;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 4px;
+    font-size: 13px;
+    line-height: 1.4;
+    animation: slideDown 0.3s ease;
+}
+
+.student-not-found-icon,
+.inline-error-icon {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.student-not-found-text,
+.inline-error-text {
+    flex: 1;
+}
+
+/* ===============================
+   ADDITIONAL STUDENTS
+   =============================== */
+
+.additional-students-heading {
+    margin: 20px 0 15px 0;
+    color: #333;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #007bff;
+}
+
+.additional-student {
+    position: relative;
+    margin-bottom: 15px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.additional-student.has-errors {
+    border-color: #dc3545;
+    background-color: #fff5f5;
+}
+
+.remove-student-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.remove-student-button:hover {
+    background-color: #c82333;
+    transform: scale(1.1);
+}
+
+.additional-student-fields {
+    display: grid;
+    grid-template-columns: 1fr 150px;
+    gap: 15px;
+    align-items: start;
+}
+
+/* Add student button */
+.add-student-section {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.add-student-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.add-student-button:hover {
+    background-color: #218838;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* ===============================
+   SUBMIT BUTTON
+   =============================== */
+
 .submit-button {
     background-color: #007bff;
     color: white;
@@ -106,7 +325,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     width: 100%;
-    min-height: 48px; /* Ensures touch-friendly size */
+    min-height: 48px;
 }
 
 .submit-button:hover:not(:disabled) {
@@ -122,7 +341,14 @@
     box-shadow: none;
 }
 
-/* Search input improvements */
+/* ===============================
+   SEARCH SECTION
+   =============================== */
+
+.search-container {
+    margin-bottom: 20px;
+}
+
 .search-input {
     width: 100%;
     padding: 12px 16px;
@@ -139,7 +365,6 @@
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 
-/* Student card improvements */
 .student-card {
     border: 1px solid #e9ecef;
     border-radius: 8px;
@@ -181,8 +406,215 @@
 }
 
 /* ===============================
-   TABLET BREAKPOINT (768px)
+   MESSAGES & NOTIFICATIONS
    =============================== */
+
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 12px 16px;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    white-space: pre-line;
+    line-height: 1.4;
+}
+
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 12px 16px;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.loading {
+    text-align: center;
+    padding: 50px;
+    color: #666;
+    font-size: 18px;
+}
+
+/* ===============================
+   SUCCESS NOTIFICATION CELEBRATION
+   =============================== */
+
+.success-notification-celebration {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 380px;
+    width: 90%;
+    animation: celebrationSlideIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.celebration-content {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(16, 185, 129, 0.4);
+    color: white;
+    padding: 24px 20px 20px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.celebration-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 6px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.celebration-close:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    transform: scale(1.1);
+}
+
+.celebration-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px auto;
+    animation: celebrationIconPulse 2s infinite;
+}
+
+.celebration-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.celebration-message {
+    font-size: 16px;
+    margin: 0 0 16px 0;
+    opacity: 0.95;
+    line-height: 1.4;
+}
+
+.celebration-students {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 0;
+}
+
+.celebration-student-name {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: celebrationStudentPop 0.4s ease-out;
+}
+
+/* Confetti elements */
+.confetti {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: confettiFall 3s infinite;
+}
+
+.confetti-1 { left: 15%; background: rgba(255, 255, 255, 0.9); animation-delay: 0s; }
+.confetti-2 { left: 30%; background: rgba(254, 240, 138, 0.9); animation-delay: 0.5s; }
+.confetti-3 { left: 45%; background: rgba(167, 243, 208, 0.9); animation-delay: 1s; }
+.confetti-4 { left: 60%; background: rgba(196, 181, 253, 0.9); animation-delay: 1.5s; }
+.confetti-5 { left: 75%; background: rgba(252, 165, 165, 0.9); animation-delay: 2s; }
+.confetti-6 { left: 85%; background: rgba(255, 255, 255, 0.9); animation-delay: 2.5s; }
+
+/* ===============================
+   ANIMATIONS
+   =============================== */
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes celebrationSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateX(100%) scale(0.8) rotate(10deg);
+    }
+    60% {
+        transform: translateX(-10%) scale(1.05) rotate(-2deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1) rotate(0deg);
+    }
+}
+
+@keyframes celebrationIconPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+}
+
+@keyframes celebrationStudentPop {
+    0% {
+        opacity: 0;
+        transform: scale(0.5) translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(300px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* ===============================
+   TABLET RESPONSIVENESS (768px)
+   =============================== */
+
 @media (max-width: 768px) {
     .dashboard-container {
         padding: 15px 10px;
@@ -227,34 +659,57 @@
         width: 100%;
         padding: 12px;
     }
+    
+    /* Additional student fields stack */
+    .additional-student-fields {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    /* Success notification adjustments */
+    .success-notification-celebration {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+        max-width: none;
+    }
 }
 
 /* ===============================
-   MOBILE BREAKPOINT (480px)
+   MOBILE RESPONSIVENESS (480px) - OPTION 1 IMPLEMENTATION
    =============================== */
+
 @media (max-width: 480px) {
     .dashboard-container {
         padding: 10px 8px;
     }
     
-    /* Header adjustments for small mobile */
+    /* OPTION 1: Top-right smaller logout button */
     .dashboard-header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
-        margin-bottom: 15px;
+        flex-direction: row; /* Keep horizontal layout */
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: nowrap; /* Prevent wrapping */
     }
     
     .dashboard-header h1 {
         font-size: 1.25rem;
-        text-align: center;
+        text-align: left;
+        flex: 1;
+        min-width: 0; /* Allows text to truncate if needed */
+        margin: 0;
     }
     
     .logout-button {
-        padding: 10px 16px;
-        font-size: 14px;
-        align-self: center;
-        min-width: 120px;
+        padding: 8px 12px;
+        font-size: 13px;
+        white-space: nowrap;
+        flex-shrink: 0;
+        min-width: auto;
+        min-height: 36px; /* Touch-friendly but smaller */
     }
     
     /* Section improvements for mobile */
@@ -286,8 +741,9 @@
     .form-group textarea,
     .form-group select {
         padding: 14px 12px;
-        font-size: 16px; /* Prevents zoom */
+        font-size: 16px; /* Prevents zoom on iOS */
         border-radius: 6px;
+        min-height: 44px; /* Touch-friendly */
     }
     
     .form-group textarea {
@@ -312,6 +768,7 @@
         padding: 14px 16px;
         font-size: 16px;
         border-radius: 6px;
+        min-height: 44px;
     }
     
     /* Student card mobile optimization */
@@ -319,6 +776,10 @@
         padding: 12px;
         margin-bottom: 10px;
         border-radius: 6px;
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        gap: 12px;
     }
     
     .student-info h3 {
@@ -335,40 +796,63 @@
         padding: 12px 16px;
         font-size: 14px;
         min-height: 44px;
+        width: 100%;
     }
     
-    /* Loading and error states */
-    .loading,
-    .error-message {
-        padding: 12px;
+    /* Additional students mobile adjustments */
+    .additional-student-fields {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .remove-student-button {
+        width: 28px;
+        height: 28px;
         font-size: 14px;
-        text-align: center;
-        border-radius: 6px;
-        margin: 10px 0;
+        top: 8px;
+        right: 8px;
     }
     
-    .error-message {
-        background-color: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
+    /* Field error message mobile adjustments */
+    .field-error-message {
+        font-size: 11px;
+        padding: 5px 8px;
     }
     
     /* Success notification mobile adjustments */
-    .success-message {
-        background-color: #d4edda;
-        color: #155724;
-        padding: 12px;
-        border-radius: 6px;
-        border: 1px solid #c3e6cb;
-        margin-bottom: 15px;
-        text-align: center;
-        font-size: 14px;
+    .celebration-content {
+        padding: 20px 16px 16px 16px;
+    }
+    
+    .celebration-icon {
+        width: 52px;
+        height: 52px;
+        margin-bottom: 12px;
+    }
+    
+    .celebration-title {
+        font-size: 20px;
+    }
+    
+    .celebration-message {
+        font-size: 15px;
+        margin-bottom: 14px;
+    }
+    
+    .celebration-students {
+        gap: 6px;
+    }
+    
+    .celebration-student-name {
+        font-size: 13px;
+        padding: 5px 10px;
     }
 }
 
 /* ===============================
    EXTRA SMALL MOBILE (360px)
    =============================== */
+
 @media (max-width: 360px) {
     .dashboard-container {
         padding: 8px 5px;
@@ -376,6 +860,12 @@
     
     .dashboard-header h1 {
         font-size: 1.1rem;
+    }
+    
+    .logout-button {
+        padding: 6px 10px;
+        font-size: 12px;
+        min-height: 32px;
     }
     
     .log-hours-section,
@@ -393,17 +883,36 @@
         padding: 14px 20px;
         min-height: 48px;
     }
+    
+    .celebration-content {
+        padding: 18px 14px 14px 14px;
+    }
+    
+    .celebration-title {
+        font-size: 18px;
+    }
+    
+    .celebration-message {
+        font-size: 14px;
+    }
+    
+    .celebration-student-name {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
 }
 
 /* ===============================
-   TOUCH AND ACCESSIBILITY
+   ACCESSIBILITY & PERFORMANCE
    =============================== */
 
 /* Ensure all interactive elements are touch-friendly */
 @media (pointer: coarse) {
     .submit-button,
     .view-details-button,
-    .logout-button {
+    .logout-button,
+    .add-student-button,
+    .remove-student-button {
         min-height: 44px;
         min-width: 44px;
     }
@@ -434,6 +943,15 @@
         border-color: #000;
         box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.3);
     }
+    
+    .celebration-content {
+        border: 2px solid #059669;
+    }
+    
+    .celebration-student-name {
+        background: rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
 }
 
 /* Reduced motion preferences */
@@ -442,11 +960,31 @@
     .view-details-button,
     .form-group input,
     .form-group textarea,
-    .form-group select {
+    .form-group select,
+    .add-student-button,
+    .remove-student-button {
         transition: none;
     }
     
-    .submit-button:hover:not(:disabled) {
+    .submit-button:hover:not(:disabled),
+    .add-student-button:hover {
         transform: none;
+    }
+    
+    .success-notification-celebration {
+        animation: none;
+    }
+    
+    .celebration-icon {
+        animation: none;
+    }
+    
+    .celebration-student-name {
+        animation: none;
+    }
+    
+    .confetti {
+        animation: none;
+        display: none;
     }
 }
