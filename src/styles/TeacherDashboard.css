@@ -83,11 +83,11 @@
     background-color: #c82333;
 }
 
+/* FIXED: Add student button section - removed dashed border and reduced spacing */
 .add-student-section {
     text-align: center;
-    padding: 15px 0;
-    border-top: 2px dashed #e9ecef;
-    margin-top: 10px;
+    margin: 15px 0 20px 0; /* Reduced margins for better spacing */
+    /* Removed: border-top, padding that was causing excessive white space */
 }
 
 .add-student-btn {
@@ -566,10 +566,10 @@
   }
 }
 
-/* Add student button */
+/* FIXED: Add student button with proper spacing */
 .add-student-section {
   text-align: center;
-  margin: 20px 0;
+  margin: 15px 0 20px 0; /* Controlled spacing - no excessive padding or borders */
 }
 
 .add-student-button {
@@ -645,7 +645,7 @@
   line-height: 1.4;
 }
 
-/* Submit button styling */
+/* FIXED: Submit button styling with proper spacing */
 .submit-button {
   background-color: #007bff;
   color: white;
@@ -657,6 +657,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   width: 100%;
+  margin-top: 10px; /* Small controlled margin above submit button */
 }
 
 .submit-button:hover:not(:disabled) {
