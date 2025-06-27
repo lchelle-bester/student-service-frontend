@@ -311,13 +311,32 @@ input[name="hours"] {
     text-align: center;
     margin: 15px 0; /* Reduced from 20px to 15px */
     padding: 0; /* Removed padding that was creating extra space */
+    border: none; /* Ensure no borders */
+    border-top: none !important; /* Force remove any inherited border-top */
+    position: relative;
     /* Removed border-top that was creating the dashed line */
 }
 
+/* Remove any pseudo-elements that might be creating the line */
+.add-student-section::before,
+.add-student-section::after {
+    display: none !important;
+    content: none !important;
+    border: none !important;
+}
+
+/* Also target any potential parent containers */
+.service-form .add-student-section {
+    border-top: none !important;
+    margin-top: 15px !important;
+    padding-top: 0 !important;
+}
+
+/* Also remove any potential borders from the button itself */
 .add-student-button {
     background-color: #28a745;
     color: white;
-    border: none;
+    border: none !important; /* Force no border on button */
     padding: 12px 24px;
     border-radius: 6px;
     cursor: pointer;
