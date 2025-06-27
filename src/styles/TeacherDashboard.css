@@ -309,7 +309,9 @@ input[name="hours"] {
 /* Add student button */
 .add-student-section {
     text-align: center;
-    margin: 20px 0;
+    margin: 15px 0; /* Reduced from 20px to 15px */
+    padding: 0; /* Removed padding that was creating extra space */
+    /* Removed border-top that was creating the dashed line */
 }
 
 .add-student-button {
