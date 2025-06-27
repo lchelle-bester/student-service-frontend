@@ -693,7 +693,43 @@ function TeacherDashboard() {
       </header>
 
       <div className="dashboard-content">
-        {/* Left section: Enhanced with field-level validation */}
+             {/* Left section: Search Students (UNCHANGED) */}
+        <section className="search-section">
+          <h2>Search For Students</h2>
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Search by name..."
+              value={searchQuery}
+              onChange={handleSearch}
+              className="search-input"
+            />
+          </div>
+
+          {isLoading && <div className="loading">Searching...</div>}
+
+          <div className="search-results">
+            {searchResults.map((student) => (
+              <div key={student.id} className="student-card">
+                <div className="student-info">
+                  <h3>{student.full_name}</h3>
+                  <p>Grade: {student.grade}</p>
+                  <p>Total Hours: {student.total_hours}</p>
+                </div>
+                <button
+                  className="view-details-button"
+                  onClick={() => fetchStudentDetails(student.id)}
+                >
+                  View Details
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+
+
+
+        {/* Right section: Enhanced with field-level validation */}
         <section className="log-hours-section">
           <h2>Log School Service Hours</h2>
 
@@ -1088,40 +1124,6 @@ function TeacherDashboard() {
               )}
             </div>
           )}
-        </section>
-
-        {/* Right section: Search Students (UNCHANGED) */}
-        <section className="search-section">
-          <h2>Search For Students</h2>
-          <div className="search-container">
-            <input
-              type="text"
-              placeholder="Search by name..."
-              value={searchQuery}
-              onChange={handleSearch}
-              className="search-input"
-            />
-          </div>
-
-          {isLoading && <div className="loading">Searching...</div>}
-
-          <div className="search-results">
-            {searchResults.map((student) => (
-              <div key={student.id} className="student-card">
-                <div className="student-info">
-                  <h3>{student.full_name}</h3>
-                  <p>Grade: {student.grade}</p>
-                  <p>Total Hours: {student.total_hours}</p>
-                </div>
-                <button
-                  className="view-details-button"
-                  onClick={() => fetchStudentDetails(student.id)}
-                >
-                  View Details
-                </button>
-              </div>
-            ))}
-          </div>
         </section>
       </div>
 
