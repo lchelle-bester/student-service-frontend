@@ -7,7 +7,7 @@ import FloatingHelpButton from "../feedback/FloatingHelpButton";
 function OrganizationForm() {
   const API_URL =
     process.env.REACT_APP_API_URL ||
-    "https://student-service-backend.onrender.com";
+    "https://api.studentservicediary.co.za";
   const navigate = useNavigate();
   const [orgKey, setOrgKey] = useState("");
   const [error, setError] = useState("");
@@ -774,7 +774,7 @@ function OrganizationForm() {
                   value={serviceForm.hours}
                   onChange={handleServiceFormChange}
                   min="0.5"
-                  max="10"
+                  max={orgKey === 'HEO77' ? "50" : "10"}
                   step="0.5"
                   className={
                     hasFieldError("main", 0, "hours") ? "field-error" : ""
@@ -913,7 +913,7 @@ function OrganizationForm() {
                           )
                         }
                         min="0.5"
-                        max="10"
+                        max={orgKey === 'HEO77' ? "50" : "10"}
                         step="0.5"
                         className={
                           hasFieldError("additional", index, "hours")
