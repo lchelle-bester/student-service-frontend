@@ -52,7 +52,7 @@ function TeacherDashboard() {
 
   const API_URL =
     process.env.REACT_APP_API_URL ||
-    "https://student-service-backend.onrender.com";
+    "https://api.studentservicediary.co.za";
   const navigate = useNavigate();
   const TOKEN_KEY = "authToken";
 

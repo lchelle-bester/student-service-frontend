@@ -75,7 +75,7 @@ const FeedbackModal = ({ isOpen, onClose, userInfo }) => {
 
       const response = await fetch(
         `${
-          process.env.REACT_APP_API_URL || "http://localhost:5000"
+          process.env.REACT_APP_API_URL || "https://api.studentservicediary.co.za"
         }/api/feedback/submit`,
         {
           method: "POST",

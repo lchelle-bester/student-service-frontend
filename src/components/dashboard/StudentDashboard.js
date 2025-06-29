@@ -9,7 +9,7 @@ const formatHours = (hours) => {
 function StudentDashboard() {
   const API_URL =
     process.env.REACT_APP_API_URL ||
-    "https://student-service-backend.onrender.com";
+    "https://api.studentservicediary.co.za";
 
   const [studentData, setStudentData] = useState({
     name: "",
