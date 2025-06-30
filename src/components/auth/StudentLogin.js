@@ -6,7 +6,6 @@ import '../../styles/Login.css';
 function StudentLogin() {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -16,7 +15,7 @@ function StudentLogin() {
         setError('');
 
         try {
-            const response = await authService.studentLogin(email, password);
+            const response = await authService.studentLogin(email);
             if (response.token && response.user) {
                 localStorage.setItem('authToken', response.token);
                 localStorage.setItem('userData', JSON.stringify(response.user));
@@ -30,56 +29,46 @@ function StudentLogin() {
     };
 
     return (
-        <div className="login-form-container">
-            <h2>Student Login</h2>
-            {error && <div className="error-message">{error}</div>}
+    <div className="login-form-container">
+        <h2>Student Login</h2>
+        <p style={{ textAlign: 'center', color: '#666', marginBottom: '20px' }}>
+            Enter your school email address to access your service hours
+        </p>
+        {error && <div className="error-message">{error}</div>}
+        
+        <form onSubmit={handleSubmit} className="login-form">
+            <div className="form-group">
+                <label htmlFor="email">School Email Address:</label>
+                <input
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your school email"
+                    disabled={isLoading}
+                    required
+                />
+            </div>
+
+            <button
+                type="submit"
+                className="submit-button"
+                disabled={isLoading}
+            >
+                {isLoading ? 'Logging in...' : 'Log In'}
+            </button>
             
-            <form onSubmit={handleSubmit} className="login-form">
-                <div className="form-group">
-                    <label htmlFor="email">Email:</label>
-                    <input
-                        type="email"
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your email"
-                        disabled={isLoading}
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="password">Password:</label>
-                    <input
-                        type="password"
-                        id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter your password"
-                        disabled={isLoading}
-                        required
-                    />
-                </div>
-
-                <button
-                    type="submit"
-                    className="submit-button"
-                    disabled={isLoading}
-                >
-                    {isLoading ? 'Logging in...' : 'Log In'}
-                </button>
-                
-                <button
-                    type="button"
-                    className="back-button"
-                    onClick={() => navigate('/')}
-                    disabled={isLoading}
-                >
-                    Back
-                </button>
-            </form>
-        </div>
-    );
+            <button
+                type="button"
+                className="back-button"
+                onClick={() => navigate('/')}
+                disabled={isLoading}
+            >
+                Back
+            </button>
+        </form>
+    </div>
+);
 }
 
 export default StudentLogin;

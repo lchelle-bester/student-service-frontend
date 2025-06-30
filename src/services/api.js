@@ -56,14 +56,14 @@ export const authService = {
 
     },
 
-    studentLogin: async (email, password) => {
+    studentLogin: async (email) => {
         console.log('Starting student login with:', { email });
         const requestOptions = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ email})
         };
         console.log('Request options:', requestOptions);
         return apiCall('/auth/login/student', requestOptions);
