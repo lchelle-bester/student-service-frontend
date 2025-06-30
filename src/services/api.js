@@ -1,5 +1,5 @@
 // src/services/api.js
-const API_BASE_URL = 'https://student-service-backend.onrender.com';
+const API_BASE_URL = 'https://api.studentservicediary.co.za';
 
 const apiCall = async (endpoint, options = {}) => {
     const fullUrl = API_BASE_URL.endsWith('/') 
