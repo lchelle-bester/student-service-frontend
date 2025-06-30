@@ -31,9 +31,6 @@ function StudentLogin() {
     return (
     <div className="login-form-container">
         <h2>Student Login</h2>
-        <p style={{ textAlign: 'center', color: '#666', marginBottom: '20px' }}>
-            Enter your school email address to access your service hours
-        </p>
         {error && <div className="error-message">{error}</div>}
         
         <form onSubmit={handleSubmit} className="login-form">
