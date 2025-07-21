@@ -15,13 +15,17 @@ function StudentLogin() {
         setError('');
 
         try {
-            const response = await authService.studentLogin(email);
+            const normalizedEmail = email.toLowerCase().trim(); 
+            console.log('Attempting login with:', normalizedEmail);
+
+            const response = await authService.studentLogin(normalizedEmail);
             if (response.token && response.user) {
                 localStorage.setItem('authToken', response.token);
                 localStorage.setItem('userData', JSON.stringify(response.user));
                 navigate('/student-dashboard');
             }
         } catch (error) {
+            console.log('Login error details:', error);
             setError(error.message || 'Login failed');
         } finally {
             setIsLoading(false);
