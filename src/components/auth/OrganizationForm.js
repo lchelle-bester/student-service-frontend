@@ -83,54 +83,59 @@ function OrganizationForm() {
     setSuccessNotification((prev) => ({ ...prev, show: false }));
   };
 
-  // Enhanced single student validation with comprehensive error detection
-  const validateSingleStudentWithFields = (student) => {
-    const { fullName, hours, studentNumber } = student;
-    let nameError = null;
-    let hoursError = null;
+// Update this function in your OrganizationForm.js file
+// Replace the existing validateSingleStudentWithFields function with this:
 
-    // Comprehensive name validation
-    if (!fullName) {
-      nameError = "Full name is required";
-    } else if (fullName.length < 3) {
-      nameError = "Must be at least 3 characters";
+const validateSingleStudentWithFields = (student) => {
+  const { fullName, hours, studentNumber } = student;
+  let nameError = null;
+  let hoursError = null;
+
+  // Get the max hours limit based on organization
+  const maxHours = orgKey === 'HEO77' ? 50 : 10;
+
+  // Comprehensive name validation
+  if (!fullName) {
+    nameError = "Full name is required";
+  } else if (fullName.length < 3) {
+    nameError = "Must be at least 3 characters";
+  } else {
+    const nameParts = fullName.split(/\s+/);
+    if (nameParts.length < 2) {
+      nameError = "Include both first and last name";
     } else {
-      const nameParts = fullName.split(/\s+/);
-      if (nameParts.length < 2) {
-        nameError = "Include both first and last name";
+      if (nameParts[0].length < 2) {
+        nameError = "First name too short";
+      } else if (nameParts[nameParts.length - 1].length < 2) {
+        nameError = "Surname too short";
       } else {
-        if (nameParts[0].length < 2) {
-          nameError = "First name too short";
-        } else if (nameParts[nameParts.length - 1].length < 2) {
-          nameError = "Surname too short";
-        } else {
-          // Check for valid characters
-          const namePattern =
-            /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+$/;
-          if (!namePattern.test(fullName)) {
-            nameError = "Contains invalid characters";
-          }
+        // Check for valid characters
+        const namePattern =
+          /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+$/;
+        if (!namePattern.test(fullName)) {
+          nameError = "Contains invalid characters";
         }
       }
     }
+  }
 
-    // Comprehensive hours validation
-    if (!hours) {
-      hoursError = "Hours are required";
-    } else {
-      const hoursNum = parseFloat(hours);
-      if (isNaN(hoursNum) || hoursNum < 0.5 || hoursNum > 10) {
-        hoursError = "Must be between 0.5 and 10";
-      } else if ((hoursNum * 10) % 5 !== 0) {
-        hoursError = "Must be in half hour increments";
-      }
+  // Comprehensive hours validation with dynamic limit
+  if (!hours) {
+    hoursError = "Hours are required";
+  } else {
+    const hoursNum = parseFloat(hours);
+    if (isNaN(hoursNum) || hoursNum < 0.5 || hoursNum > maxHours) {
+      hoursError = `Must be between 0.5 and ${maxHours}`;
+    } else if ((hoursNum * 10) % 5 !== 0) {
+      hoursError = "Must be in half hour increments";
     }
+  }
 
-    return {
-      nameError,
-      hoursError,
-    };
+  return {
+    nameError,
+    hoursError,
   };
+};
 
   // Unified validation that handles ALL students through field-level tracking
   const validateAllStudentsWithFieldTracking = () => {
