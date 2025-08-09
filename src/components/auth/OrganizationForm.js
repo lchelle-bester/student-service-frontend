@@ -273,7 +273,6 @@ function OrganizationForm() {
     if (name === "dateCompleted") {
       const selectedDate = new Date(value);
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
       if (selectedDate <= today) {
         e.target.setCustomValidity("");
       }
@@ -392,7 +391,6 @@ function OrganizationForm() {
     if (serviceForm.dateCompleted) {
       const selectedDate = new Date(serviceForm.dateCompleted);
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
 
       if (selectedDate > today) {
         e.target.dateCompleted.setCustomValidity(
@@ -602,7 +600,7 @@ function OrganizationForm() {
                 </ul>
                 <p>
                   For additional help or a new key, please contact support at
-                  lchelle.best@gmail.com
+                  lchelle@studentservicediary.co.za
                 </p>
               </div>
             </>
