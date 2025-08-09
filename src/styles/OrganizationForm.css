@@ -59,6 +59,12 @@
     gap: 15px;
 }
 
+.inline-error-text {
+  color: white !important;
+  font-size: 12px;
+  margin-left: 5px;
+}
+
 .student-row {
     display: grid;
     grid-template-columns: auto 1fr 1fr 100px auto;
