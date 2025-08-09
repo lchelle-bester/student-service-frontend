@@ -6,8 +6,7 @@ import FloatingHelpButton from "../feedback/FloatingHelpButton";
 
 function OrganizationForm() {
   const API_URL =
-    process.env.REACT_APP_API_URL ||
-    "https://api.studentservicediary.co.za";
+    process.env.REACT_APP_API_URL || "https://api.studentservicediary.co.za";
   const navigate = useNavigate();
   const [orgKey, setOrgKey] = useState("");
   const [error, setError] = useState("");
@@ -17,6 +16,7 @@ function OrganizationForm() {
   const [showHelp, setShowHelp] = useState(false);
   const [additionalStudents, setAdditionalStudents] = useState([]);
   const [studentNotFoundError, setStudentNotFoundError] = useState(false);
+  const [batchErrors, setBatchErrors] = useState([]);
 
   const [successNotification, setSuccessNotification] = useState({
     show: false,
@@ -83,59 +83,59 @@ function OrganizationForm() {
     setSuccessNotification((prev) => ({ ...prev, show: false }));
   };
 
-// Update this function in your OrganizationForm.js file
-// Replace the existing validateSingleStudentWithFields function with this:
+  // Update this function in your OrganizationForm.js file
+  // Replace the existing validateSingleStudentWithFields function with this:
 
-const validateSingleStudentWithFields = (student) => {
-  const { fullName, hours, studentNumber } = student;
-  let nameError = null;
-  let hoursError = null;
+  const validateSingleStudentWithFields = (student) => {
+    const { fullName, hours, studentNumber } = student;
+    let nameError = null;
+    let hoursError = null;
 
-  // Get the max hours limit based on organization
-  const maxHours = orgKey === 'HEO77' ? 50 : 10;
+    // Get the max hours limit based on organization
+    const maxHours = orgKey === "HEO77" ? 50 : 10;
 
-  // Comprehensive name validation
-  if (!fullName) {
-    nameError = "Full name is required";
-  } else if (fullName.length < 3) {
-    nameError = "Must be at least 3 characters";
-  } else {
-    const nameParts = fullName.split(/\s+/);
-    if (nameParts.length < 2) {
-      nameError = "Include both first and last name";
+    // Comprehensive name validation
+    if (!fullName) {
+      nameError = "Full name is required";
+    } else if (fullName.length < 3) {
+      nameError = "Must be at least 3 characters";
     } else {
-      if (nameParts[0].length < 2) {
-        nameError = "First name too short";
-      } else if (nameParts[nameParts.length - 1].length < 2) {
-        nameError = "Surname too short";
+      const nameParts = fullName.split(/\s+/);
+      if (nameParts.length < 2) {
+        nameError = "Include both first and last name";
       } else {
-        // Check for valid characters
-        const namePattern =
-          /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+$/;
-        if (!namePattern.test(fullName)) {
-          nameError = "Contains invalid characters";
+        if (nameParts[0].length < 2) {
+          nameError = "First name too short";
+        } else if (nameParts[nameParts.length - 1].length < 2) {
+          nameError = "Surname too short";
+        } else {
+          // Check for valid characters
+          const namePattern =
+            /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+$/;
+          if (!namePattern.test(fullName)) {
+            nameError = "Contains invalid characters";
+          }
         }
       }
     }
-  }
 
-  // Comprehensive hours validation with dynamic limit
-  if (!hours) {
-    hoursError = "Hours are required";
-  } else {
-    const hoursNum = parseFloat(hours);
-    if (isNaN(hoursNum) || hoursNum < 0.5 || hoursNum > maxHours) {
-      hoursError = `Must be between 0.5 and ${maxHours}`;
-    } else if ((hoursNum * 10) % 5 !== 0) {
-      hoursError = "Must be in half hour increments";
+    // Comprehensive hours validation with dynamic limit
+    if (!hours) {
+      hoursError = "Hours are required";
+    } else {
+      const hoursNum = parseFloat(hours);
+      if (isNaN(hoursNum) || hoursNum < 0.5 || hoursNum > maxHours) {
+        hoursError = `Must be between 0.5 and ${maxHours}`;
+      } else if ((hoursNum * 10) % 5 !== 0) {
+        hoursError = "Must be in half hour increments";
+      }
     }
-  }
 
-  return {
-    nameError,
-    hoursError,
+    return {
+      nameError,
+      hoursError,
+    };
   };
-};
 
   // Unified validation that handles ALL students through field-level tracking
   const validateAllStudentsWithFieldTracking = () => {
@@ -496,7 +496,12 @@ const validateSingleStudentWithFields = (student) => {
               additionalStudents: [],
             });
           } else {
-            alert(`Some errors occurred:\n${data.errors.join("\n")}`);
+            setBatchErrors(data.errors || []);
+
+            // Clear batch errors after 8 seconds
+            setTimeout(() => {
+              setBatchErrors([]);
+            }, 8000);
           }
         } else {
           if (response.status === 404 && data.message === "Student not found") {
@@ -700,6 +705,18 @@ const validateSingleStudentWithFields = (student) => {
             </div>
           )}
 
+          {/* Batch Error Display */}
+          {batchErrors.length > 0 && (
+            <div className="batch-errors">
+              <h4>Some students could not be processed:</h4>
+              <ul>
+                {batchErrors.map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <div className="organization-info">
             <h3>Verified Organisation</h3>
             <p className="organization-name">{organizationData.name}</p>
@@ -777,7 +794,7 @@ const validateSingleStudentWithFields = (student) => {
                   value={serviceForm.hours}
                   onChange={handleServiceFormChange}
                   min="0.5"
-                  max={orgKey === 'HEO77' ? "50" : "10"}
+                  max={orgKey === "HEO77" ? "50" : "10"}
                   step="0.5"
                   className={
                     hasFieldError("main", 0, "hours") ? "field-error" : ""
@@ -916,7 +933,7 @@ const validateSingleStudentWithFields = (student) => {
                           )
                         }
                         min="0.5"
-                        max={orgKey === 'HEO77' ? "50" : "10"}
+                        max={orgKey === "HEO77" ? "50" : "10"}
                         step="0.5"
                         className={
                           hasFieldError("additional", index, "hours")
