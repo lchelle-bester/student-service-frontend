@@ -17,6 +17,7 @@ function OrganizationForm() {
   const [additionalStudents, setAdditionalStudents] = useState([]);
   const [studentNotFoundError, setStudentNotFoundError] = useState(false);
   const [batchErrors, setBatchErrors] = useState([]);
+  const [individualBatchErrors, setIndividualBatchErrors] = useState({});
 
   const [successNotification, setSuccessNotification] = useState({
     show: false,
@@ -248,6 +249,14 @@ function OrganizationForm() {
       }));
     }
 
+    // Clear individual batch errors when user starts typing
+    if (name === "studentFullName" && individualBatchErrors.mainStudent) {
+      setIndividualBatchErrors((prev) => ({
+        ...prev,
+        mainStudent: undefined,
+      }));
+    }
+
     // Your existing real-time validation clearing logic (preserved)
     if (name === "studentFullName") {
       const trimmedValue = value.trim();
@@ -291,6 +300,14 @@ function OrganizationForm() {
         i === index ? { ...student, [field]: value } : student
       )
     );
+
+    // Clear individual batch error for this student
+    if (individualBatchErrors[`additional_${index}`]) {
+      setIndividualBatchErrors((prev) => ({
+        ...prev,
+        [`additional_${index}`]: undefined,
+      }));
+    }
 
     // Clear field-specific error when user starts typing
     if (hasFieldError("additional", index, field)) {
@@ -406,9 +423,6 @@ function OrganizationForm() {
       }
       e.target.dateCompleted.setCustomValidity("");
     }
-
-    // REMOVED: The old customErrors array and alert system that was causing browser notifications
-    // REPLACED: With unified field-level validation only
 
     try {
       const hasAdditionalStudents = additionalStudents.length > 0;
@@ -763,8 +777,24 @@ function OrganizationForm() {
                     fontWeight: "500",
                   }}
                 >
-                  No student found with this name. Please check the spelling
-                  & try again.
+                  No student found with this name. Please check the spelling &
+                  try again.
+                </div>
+              )}
+
+              {individualBatchErrors.mainStudent && (
+                <div
+                  style={{
+                    backgroundColor: "#dc3545",
+                    color: "white",
+                    padding: "12px",
+                    borderRadius: "4px",
+                    marginTop: "8px",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                  }}
+                >
+                  {individualBatchErrors.mainStudent}
                 </div>
               )}
             </div>
@@ -928,6 +958,22 @@ function OrganizationForm() {
                         }
                         required
                       />
+
+                      {individualBatchErrors[`additional_${index}`] && (
+                        <div
+                          style={{
+                            backgroundColor: "#dc3545",
+                            color: "white",
+                            padding: "12px",
+                            borderRadius: "4px",
+                            marginTop: "8px",
+                            fontSize: "14px",
+                            fontWeight: "500",
+                          }}
+                        >
+                          ❌ {individualBatchErrors[`additional_${index}`]}
+                        </div>
+                      )}
 
                       {hasFieldError("additional", index, "hours") && (
                         <div className="field-error-message">
