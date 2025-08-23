@@ -610,7 +610,7 @@ function OrganizationForm() {
                 </ul>
                 <p>
                   For additional help or a new key, please contact support at
-                  lchelle@studentservicediary.co.za
+                  lchelle.best@gmail.com
                 </p>
               </div>
             </>
@@ -705,18 +705,6 @@ function OrganizationForm() {
             </div>
           )}
 
-          {/* Batch Error Display */}
-          {batchErrors.length > 0 && (
-            <div className="batch-errors">
-              <h4>Some students could not be processed:</h4>
-              <ul>
-                {batchErrors.map((error, index) => (
-                  <li key={index}>{error}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
           <div className="organization-info">
             <h3>Verified Organisation</h3>
             <p className="organization-name">{organizationData.name}</p>
@@ -764,21 +752,19 @@ function OrganizationForm() {
               )}
 
               {studentNotFoundError && (
-                <div className="inline-error">
-                  <div className="inline-error-icon">
-                    <svg
-                      width="12"
-                      height="12"
-                      fill="white"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <span className="inline-error-text">
-                    No student found with this name. Please check the spelling
-                    and try again.
-                  </span>
+                <div
+                  style={{
+                    backgroundColor: "#dc3545",
+                    color: "white",
+                    padding: "12px",
+                    borderRadius: "4px",
+                    marginTop: "8px",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                  }}
+                >
+                  No student found with this name. Please check the spelling
+                  and try again.
                 </div>
               )}
             </div>
