@@ -764,7 +764,7 @@ function OrganizationForm() {
                   }}
                 >
                   No student found with this name. Please check the spelling
-                  and try again.
+                  & try again.
                 </div>
               )}
             </div>
