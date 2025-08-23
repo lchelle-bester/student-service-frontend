@@ -25,8 +25,8 @@ function LoginSelection() {
     return (
         <div className="login-container">
             <div className="logo-section">
-                <h1>Curro Student Service Diary</h1>
-                <p>Welcome to Curro Hillcrest's Service Management System</p>
+                <h1>Student Service Diary</h1>
+                <p>Student Community & School Service Management System</p>
             </div>
 
             <div className="selection-section">
