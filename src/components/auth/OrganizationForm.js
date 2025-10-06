@@ -305,8 +305,8 @@ function OrganizationForm() {
     }));
   };
 
-  // Enhanced: Map backend errors to specific student fields
-  const mapBackendErrorsToFields = (errors) => {
+  // Enhanced: Map backend errors to specific student fields and remove successful students
+  const mapBackendErrorsToFields = (errors, totalStudents) => {
     const newFieldErrors = {
       mainStudent: { fullName: null, hours: null },
       additionalStudents: [...Array(additionalStudents.length)].map(() => ({
@@ -315,11 +315,16 @@ function OrganizationForm() {
       })),
     };
 
+    // Track which student indices have errors
+    const studentIndicesWithErrors = new Set();
+
     errors.forEach((errorMsg) => {
       const match = errorMsg.match(/Student (\d+):\s*(.+)/);
       if (match) {
         const studentNum = parseInt(match[1]);
         const message = match[2];
+        
+        studentIndicesWithErrors.add(studentNum);
         
         // Student 1 is the main student
         if (studentNum === 1) {
@@ -348,6 +353,46 @@ function OrganizationForm() {
     });
 
     setFieldErrors(newFieldErrors);
+
+    // Remove successfully logged students
+    // If main student (student 1) was successful, clear it
+    if (!studentIndicesWithErrors.has(1)) {
+      setServiceForm(prev => ({
+        ...prev,
+        studentFullName: "",
+        hours: "",
+      }));
+    }
+
+    // Remove successful additional students
+    const updatedAdditionalStudents = additionalStudents.filter((_, index) => {
+      const studentNumber = index + 2; // Additional students start at 2
+      return studentIndicesWithErrors.has(studentNumber);
+    });
+
+    setAdditionalStudents(updatedAdditionalStudents);
+
+    // Update field errors to match remaining students
+    const updatedFieldErrors = {
+      mainStudent: studentIndicesWithErrors.has(1) ? newFieldErrors.mainStudent : { fullName: null, hours: null },
+      additionalStudents: updatedAdditionalStudents.map((_, index) => {
+        // Find the original index of this student
+        let originalIndex = 0;
+        let remainingCount = 0;
+        for (let i = 0; i < additionalStudents.length; i++) {
+          if (studentIndicesWithErrors.has(i + 2)) {
+            if (remainingCount === index) {
+              originalIndex = i;
+              break;
+            }
+            remainingCount++;
+          }
+        }
+        return newFieldErrors.additionalStudents[originalIndex] || { fullName: null, hours: null };
+      }),
+    };
+
+    setFieldErrors(updatedFieldErrors);
   };
 
   const handleSubmitHours = async (e) => {
@@ -486,12 +531,15 @@ function OrganizationForm() {
 
         if (response.ok && data.success) {
           if (data.errorCount === 0) {
+            // All students successful - get their names from the results
+            const successfulStudentNames = data.results.map(result => result.studentName);
+            
             showSuccessNotification(
               `You've successfully logged hours for ${data.successCount} student(s)!`,
               {
                 type: "batch",
                 count: data.successCount,
-                students: allStudents.map((s) => `${s.firstName} ${s.surname}`),
+                students: successfulStudentNames,
               }
             );
 
@@ -508,19 +556,27 @@ function OrganizationForm() {
               additionalStudents: [],
             });
           } else {
-            // Map backend errors to specific student fields
-            mapBackendErrorsToFields(data.errors || []);
+            // Partial success - extract successful student names from results
+            const successfulStudentNames = data.results 
+              ? data.results.map(result => result.studentName)
+              : [];
+
+            // Map backend errors to specific student fields AND remove successful students
+            mapBackendErrorsToFields(data.errors || [], data.totalStudents);
             setBatchErrors(data.errors || []);
 
-            // Show summary message
-            showSuccessNotification(
-              `${data.successCount} student(s) logged successfully. ${data.errorCount} error(s) - please review highlighted fields.`,
-              {
-                type: "partial",
-                successCount: data.successCount,
-                errorCount: data.errorCount,
-              }
-            );
+            // Show success notification with names of successfully logged students
+            if (successfulStudentNames.length > 0) {
+              showSuccessNotification(
+                `${data.successCount} student(s) logged successfully. ${data.errorCount} error(s) - please review highlighted fields.`,
+                {
+                  type: "partial",
+                  successCount: data.successCount,
+                  errorCount: data.errorCount,
+                  students: successfulStudentNames,
+                }
+              );
+            }
 
             // Clear batch errors after 10 seconds
             setTimeout(() => {
@@ -678,7 +734,9 @@ function OrganizationForm() {
           <h3>Log Community Service Hours</h3>
           
           {successNotification.show && (
-            <div className="success-notification-celebration">
+            <div className={`success-notification-celebration ${
+              successNotification.details?.type === 'partial' ? 'partial-success' : ''
+            }`}>
               <div className="celebration-content">
                 <div className="confetti confetti-1"></div>
                 <div className="confetti confetti-2"></div>
