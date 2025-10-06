@@ -1,4 +1,4 @@
-// src/components/auth/OrganizationForm.js - Fixed version with unified validation
+// src/components/auth/OrganizationForm.js - Enhanced with per-student error handling
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/Login.css";
@@ -17,7 +17,6 @@ function OrganizationForm() {
   const [additionalStudents, setAdditionalStudents] = useState([]);
   const [studentNotFoundError, setStudentNotFoundError] = useState(false);
   const [batchErrors, setBatchErrors] = useState([]);
-  const [individualBatchErrors, setIndividualBatchErrors] = useState({});
 
   const [successNotification, setSuccessNotification] = useState({
     show: false,
@@ -25,7 +24,7 @@ function OrganizationForm() {
     details: null,
   });
 
-  // Enhanced error tracking state for field-level validation
+  // Enhanced error tracking with backend error mapping
   const [fieldErrors, setFieldErrors] = useState({
     mainStudent: {
       fullName: null,
@@ -34,7 +33,6 @@ function OrganizationForm() {
     additionalStudents: [],
   });
 
-  // State for service hours form (original structure preserved)
   const [serviceForm, setServiceForm] = useState({
     studentFullName: "",
     hours: "",
@@ -42,7 +40,6 @@ function OrganizationForm() {
     description: "",
   });
 
-  // Original working verification function (unchanged)
   const handleVerify = async () => {
     setIsLoading(true);
     try {
@@ -84,18 +81,13 @@ function OrganizationForm() {
     setSuccessNotification((prev) => ({ ...prev, show: false }));
   };
 
-  // Update this function in your OrganizationForm.js file
-  // Replace the existing validateSingleStudentWithFields function with this:
-
   const validateSingleStudentWithFields = (student) => {
-    const { fullName, hours, studentNumber } = student;
+    const { fullName, hours } = student;
     let nameError = null;
     let hoursError = null;
 
-    // Get the max hours limit based on organization
     const maxHours = orgKey === "HEO77" ? 50 : 10;
 
-    // Comprehensive name validation
     if (!fullName) {
       nameError = "Full name is required";
     } else if (fullName.length < 3) {
@@ -110,7 +102,6 @@ function OrganizationForm() {
         } else if (nameParts[nameParts.length - 1].length < 2) {
           nameError = "Surname too short";
         } else {
-          // Check for valid characters
           const namePattern =
             /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ\s'.-]+$/;
           if (!namePattern.test(fullName)) {
@@ -120,7 +111,6 @@ function OrganizationForm() {
       }
     }
 
-    // Comprehensive hours validation with dynamic limit
     if (!hours) {
       hoursError = "Hours are required";
     } else {
@@ -132,13 +122,9 @@ function OrganizationForm() {
       }
     }
 
-    return {
-      nameError,
-      hoursError,
-    };
+    return { nameError, hoursError };
   };
 
-  // Unified validation that handles ALL students through field-level tracking
   const validateAllStudentsWithFieldTracking = () => {
     const newFieldErrors = {
       mainStudent: { fullName: null, hours: null },
@@ -147,11 +133,9 @@ function OrganizationForm() {
 
     let hasAnyErrors = false;
 
-    // Validate main student
     const mainStudentErrors = validateSingleStudentWithFields({
       fullName: serviceForm.studentFullName.trim(),
       hours: serviceForm.hours,
-      studentNumber: 1,
     });
 
     newFieldErrors.mainStudent.fullName = mainStudentErrors.nameError;
@@ -161,12 +145,10 @@ function OrganizationForm() {
       hasAnyErrors = true;
     }
 
-    // Validate ALL additional students through the same system
     additionalStudents.forEach((student, index) => {
       const studentErrors = validateSingleStudentWithFields({
         fullName: student.fullName.trim(),
         hours: student.hours,
-        studentNumber: index + 2,
       });
 
       newFieldErrors.additionalStudents[index] = {
@@ -179,13 +161,10 @@ function OrganizationForm() {
       }
     });
 
-    // Update field error state
     setFieldErrors(newFieldErrors);
-
     return hasAnyErrors;
   };
 
-  // Helper functions for error state checking
   const hasFieldError = (studentType, studentIndex, fieldName) => {
     if (studentType === "main") {
       return fieldErrors.mainStudent[fieldName] !== null;
@@ -221,7 +200,6 @@ function OrganizationForm() {
     }
   };
 
-  // Enhanced form change handler with intelligent error clearing
   const handleServiceFormChange = (e) => {
     const { name, value } = e.target;
 
@@ -234,7 +212,6 @@ function OrganizationForm() {
       setStudentNotFoundError(false);
     }
 
-    // Clear field-specific errors when user starts typing
     if (name === "studentFullName" && hasFieldError("main", 0, "fullName")) {
       setFieldErrors((prev) => ({
         ...prev,
@@ -249,15 +226,6 @@ function OrganizationForm() {
       }));
     }
 
-    // Clear individual batch errors when user starts typing
-    if (name === "studentFullName" && individualBatchErrors.mainStudent) {
-      setIndividualBatchErrors((prev) => ({
-        ...prev,
-        mainStudent: undefined,
-      }));
-    }
-
-    // Your existing real-time validation clearing logic (preserved)
     if (name === "studentFullName") {
       const trimmedValue = value.trim();
       const nameParts = trimmedValue.split(/\s+/);
@@ -293,7 +261,6 @@ function OrganizationForm() {
     }
   };
 
-  // Enhanced additional student change handler
   const handleAdditionalStudentChange = (index, field, value) => {
     setAdditionalStudents((prev) =>
       prev.map((student, i) =>
@@ -301,15 +268,6 @@ function OrganizationForm() {
       )
     );
 
-    // Clear individual batch error for this student
-    if (individualBatchErrors[`additional_${index}`]) {
-      setIndividualBatchErrors((prev) => ({
-        ...prev,
-        [`additional_${index}`]: undefined,
-      }));
-    }
-
-    // Clear field-specific error when user starts typing
     if (hasFieldError("additional", index, field)) {
       setFieldErrors((prev) => {
         const newAdditionalErrors = [...prev.additionalStudents];
@@ -347,12 +305,57 @@ function OrganizationForm() {
     }));
   };
 
-  // STREAMLINED: Submit handler with unified validation (no more dual systems!)
+  // Enhanced: Map backend errors to specific student fields
+  const mapBackendErrorsToFields = (errors) => {
+    const newFieldErrors = {
+      mainStudent: { fullName: null, hours: null },
+      additionalStudents: [...Array(additionalStudents.length)].map(() => ({
+        fullName: null,
+        hours: null,
+      })),
+    };
+
+    errors.forEach((errorMsg) => {
+      const match = errorMsg.match(/Student (\d+):\s*(.+)/);
+      if (match) {
+        const studentNum = parseInt(match[1]);
+        const message = match[2];
+        
+        // Student 1 is the main student
+        if (studentNum === 1) {
+          if (message.includes("not found")) {
+            newFieldErrors.mainStudent.fullName = message;
+          } else if (message.includes("Hours") || message.includes("hour")) {
+            newFieldErrors.mainStudent.hours = message;
+          } else {
+            newFieldErrors.mainStudent.fullName = message;
+          }
+        } 
+        // Additional students (2+)
+        else if (studentNum > 1) {
+          const additionalIndex = studentNum - 2;
+          if (additionalIndex >= 0 && additionalIndex < additionalStudents.length) {
+            if (message.includes("not found")) {
+              newFieldErrors.additionalStudents[additionalIndex].fullName = message;
+            } else if (message.includes("Hours") || message.includes("hour")) {
+              newFieldErrors.additionalStudents[additionalIndex].hours = message;
+            } else {
+              newFieldErrors.additionalStudents[additionalIndex].fullName = message;
+            }
+          }
+        }
+      }
+    });
+
+    setFieldErrors(newFieldErrors);
+  };
+
   const handleSubmitHours = async (e) => {
     e.preventDefault();
     setStudentNotFoundError(false);
+    setBatchErrors([]);
 
-    // Your existing HTML5 validation for main student (preserved)
+    // HTML5 validation for main student
     if (serviceForm.studentFullName.trim()) {
       const nameParts = serviceForm.studentFullName.trim().split(/\s+/);
       if (nameParts.length < 2) {
@@ -381,7 +384,6 @@ function OrganizationForm() {
       e.target.studentFullName.setCustomValidity("");
     }
 
-    // Your existing validation for other main student fields (preserved)
     if (serviceForm.hours) {
       const hours = parseFloat(serviceForm.hours);
       if (!isNaN(hours) && (hours * 10) % 5 !== 0) {
@@ -428,11 +430,9 @@ function OrganizationForm() {
       const hasAdditionalStudents = additionalStudents.length > 0;
 
       if (hasAdditionalStudents) {
-        // UNIFIED VALIDATION: Use only our field-level error system
         const hasValidationErrors = validateAllStudentsWithFieldTracking();
 
         if (hasValidationErrors) {
-          // Scroll to first error field for better UX
           const firstErrorField = document.querySelector(".field-error");
           if (firstErrorField) {
             firstErrorField.scrollIntoView({
@@ -441,16 +441,14 @@ function OrganizationForm() {
             });
             setTimeout(() => firstErrorField.focus(), 300);
           }
-          return; // Stop submission if any errors exist
+          return;
         }
 
-        // Clear all field errors since validation passed
         setFieldErrors({
           mainStudent: { fullName: null, hours: null },
           additionalStudents: [],
         });
 
-        // Your existing batch submission logic (unchanged)
         const allStudents = [
           {
             firstName: serviceForm.studentFullName.trim().split(/\s+/)[0],
@@ -510,12 +508,35 @@ function OrganizationForm() {
               additionalStudents: [],
             });
           } else {
+            // Map backend errors to specific student fields
+            mapBackendErrorsToFields(data.errors || []);
             setBatchErrors(data.errors || []);
 
-            // Clear batch errors after 8 seconds
+            // Show summary message
+            showSuccessNotification(
+              `${data.successCount} student(s) logged successfully. ${data.errorCount} error(s) - please review highlighted fields.`,
+              {
+                type: "partial",
+                successCount: data.successCount,
+                errorCount: data.errorCount,
+              }
+            );
+
+            // Clear batch errors after 10 seconds
             setTimeout(() => {
               setBatchErrors([]);
-            }, 8000);
+            }, 10000);
+
+            // Scroll to first error
+            setTimeout(() => {
+              const firstErrorField = document.querySelector(".field-error");
+              if (firstErrorField) {
+                firstErrorField.scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }
+            }, 500);
           }
         } else {
           if (response.status === 404 && data.message === "Student not found") {
@@ -525,7 +546,6 @@ function OrganizationForm() {
           }
         }
       } else {
-        // Individual submission logic (unchanged)
         setFieldErrors({
           mainStudent: { fullName: null, hours: null },
           additionalStudents: [],
@@ -584,7 +604,6 @@ function OrganizationForm() {
     <div className="login-form-container">
       <h2>Student Service Diary</h2>
       {!isVerified ? (
-        // Original verification form (unchanged)
         <form
           className="login-form"
           onSubmit={(e) => {
@@ -657,11 +676,10 @@ function OrganizationForm() {
       ) : (
         <form className="login-form" onSubmit={handleSubmitHours}>
           <h3>Log Community Service Hours</h3>
-          {/* Green Celebration Success Notification */}
+          
           {successNotification.show && (
             <div className="success-notification-celebration">
               <div className="celebration-content">
-                {/* Animated confetti */}
                 <div className="confetti confetti-1"></div>
                 <div className="confetti confetti-2"></div>
                 <div className="confetti confetti-3"></div>
@@ -669,7 +687,6 @@ function OrganizationForm() {
                 <div className="confetti confetti-5"></div>
                 <div className="confetti confetti-6"></div>
 
-                {/* Close button */}
                 <button
                   type="button"
                   className="celebration-close"
@@ -679,7 +696,6 @@ function OrganizationForm() {
                   ×
                 </button>
 
-                {/* Success icon with animation */}
                 <div className="celebration-icon">
                   <svg
                     width="32"
@@ -691,15 +707,12 @@ function OrganizationForm() {
                   </svg>
                 </div>
 
-                {/* Title */}
                 <h4 className="celebration-title">Awesome Work!</h4>
 
-                {/* Custom message */}
                 <p className="celebration-message">
                   {successNotification.message}
                 </p>
 
-                {/* Student names display */}
                 {successNotification.details &&
                   successNotification.details.students && (
                     <div className="celebration-students">
@@ -724,13 +737,11 @@ function OrganizationForm() {
             <p className="organization-name">{organizationData.name}</p>
           </div>
 
-          {/* RESTRUCTURED: Main student section with ALL related fields grouped together */}
           <div
             className={`student-section ${
               studentSectionHasErrors("main", 0) ? "has-errors" : "valid"
             }`}
           >
-            {/* Student name field with proper spacing */}
             <div className="form-group">
               <label htmlFor="studentFullName">Student's Full Name:</label>
               <input
@@ -781,25 +792,8 @@ function OrganizationForm() {
                   try again.
                 </div>
               )}
-
-              {individualBatchErrors.mainStudent && (
-                <div
-                  style={{
-                    backgroundColor: "#dc3545",
-                    color: "white",
-                    padding: "12px",
-                    borderRadius: "4px",
-                    marginTop: "8px",
-                    fontSize: "14px",
-                    fontWeight: "500",
-                  }}
-                >
-                  {individualBatchErrors.mainStudent}
-                </div>
-              )}
             </div>
 
-            {/* Hours and Date with consistent spacing */}
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="hours">Number of Hours:</label>
@@ -851,7 +845,6 @@ function OrganizationForm() {
               </div>
             </div>
 
-            {/* MOVED: Description field INSIDE the main student section for visual grouping */}
             <div className="form-group">
               <label htmlFor="description">Description:</label>
               <textarea
@@ -869,7 +862,6 @@ function OrganizationForm() {
             </div>
           </div>
 
-          {/* CLEANED UP: Additional students section with proper spacing and no empty headers */}
           {additionalStudents.length > 0 && (
             <>
               <h4 className="additional-students-heading">
@@ -885,7 +877,6 @@ function OrganizationForm() {
                       : "valid"
                   }`}
                 >
-                  {/* SIMPLIFIED: Remove empty header space, just show remove button in top-right */}
                   <button
                     type="button"
                     onClick={() => removeStudent(index)}
@@ -959,22 +950,6 @@ function OrganizationForm() {
                         required
                       />
 
-                      {individualBatchErrors[`additional_${index}`] && (
-                        <div
-                          style={{
-                            backgroundColor: "#dc3545",
-                            color: "white",
-                            padding: "12px",
-                            borderRadius: "4px",
-                            marginTop: "8px",
-                            fontSize: "14px",
-                            fontWeight: "500",
-                          }}
-                        >
-                          ❌ {individualBatchErrors[`additional_${index}`]}
-                        </div>
-                      )}
-
                       {hasFieldError("additional", index, "hours") && (
                         <div className="field-error-message">
                           <div className="field-error-icon">
@@ -999,7 +974,6 @@ function OrganizationForm() {
             </>
           )}
 
-          {/* Add student button with proper spacing */}
           {additionalStudents.length < 49 && (
             <div className="add-student-section">
               <button
