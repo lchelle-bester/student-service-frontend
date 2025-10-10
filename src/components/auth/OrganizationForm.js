@@ -1,8 +1,9 @@
-// src/components/auth/OrganizationForm.js - Enhanced with per-student error handling
+// src/components/auth/OrganizationForm.js - Complete with Student Search Integration
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/Login.css";
 import FloatingHelpButton from "../feedback/FloatingHelpButton";
+import StudentNameSearch from "../StudentNameSearch";
 
 function OrganizationForm() {
   const API_URL =
@@ -24,7 +25,6 @@ function OrganizationForm() {
     details: null,
   });
 
-  // Enhanced error tracking with backend error mapping
   const [fieldErrors, setFieldErrors] = useState({
     mainStudent: {
       fullName: null,
@@ -79,6 +79,46 @@ function OrganizationForm() {
 
   const dismissSuccessNotification = () => {
     setSuccessNotification((prev) => ({ ...prev, show: false }));
+  };
+
+  // Handle student selection from search
+  const handleStudentSelect = (studentName, studentIndex = null) => {
+    if (studentIndex === null) {
+      // Main student
+      setServiceForm(prev => ({
+        ...prev,
+        studentFullName: studentName
+      }));
+      setStudentNotFoundError(false);
+      
+      // Clear field error
+      setFieldErrors(prev => ({
+        ...prev,
+        mainStudent: { ...prev.mainStudent, fullName: null }
+      }));
+    } else {
+      // Additional student
+      setAdditionalStudents(prev =>
+        prev.map((student, i) =>
+          i === studentIndex ? { ...student, fullName: studentName } : student
+        )
+      );
+      
+      // Clear field error for this additional student
+      setFieldErrors(prev => {
+        const newAdditionalErrors = [...prev.additionalStudents];
+        if (newAdditionalErrors[studentIndex]) {
+          newAdditionalErrors[studentIndex] = {
+            ...newAdditionalErrors[studentIndex],
+            fullName: null
+          };
+        }
+        return {
+          ...prev,
+          additionalStudents: newAdditionalErrors
+        };
+      });
+    }
   };
 
   const validateSingleStudentWithFields = (student) => {
@@ -305,7 +345,6 @@ function OrganizationForm() {
     }));
   };
 
-  // Enhanced: Map backend errors to specific student fields and remove successful students
   const mapBackendErrorsToFields = (errors, totalStudents) => {
     const newFieldErrors = {
       mainStudent: { fullName: null, hours: null },
@@ -315,7 +354,6 @@ function OrganizationForm() {
       })),
     };
 
-    // Track which student indices have errors
     const studentIndicesWithErrors = new Set();
 
     errors.forEach((errorMsg) => {
@@ -326,7 +364,6 @@ function OrganizationForm() {
         
         studentIndicesWithErrors.add(studentNum);
         
-        // Student 1 is the main student
         if (studentNum === 1) {
           if (message.includes("not found")) {
             newFieldErrors.mainStudent.fullName = message;
@@ -336,7 +373,6 @@ function OrganizationForm() {
             newFieldErrors.mainStudent.fullName = message;
           }
         } 
-        // Additional students (2+)
         else if (studentNum > 1) {
           const additionalIndex = studentNum - 2;
           if (additionalIndex >= 0 && additionalIndex < additionalStudents.length) {
@@ -354,8 +390,6 @@ function OrganizationForm() {
 
     setFieldErrors(newFieldErrors);
 
-    // Remove successfully logged students
-    // If main student (student 1) was successful, clear it
     if (!studentIndicesWithErrors.has(1)) {
       setServiceForm(prev => ({
         ...prev,
@@ -364,19 +398,16 @@ function OrganizationForm() {
       }));
     }
 
-    // Remove successful additional students
     const updatedAdditionalStudents = additionalStudents.filter((_, index) => {
-      const studentNumber = index + 2; // Additional students start at 2
+      const studentNumber = index + 2;
       return studentIndicesWithErrors.has(studentNumber);
     });
 
     setAdditionalStudents(updatedAdditionalStudents);
 
-    // Update field errors to match remaining students
     const updatedFieldErrors = {
       mainStudent: studentIndicesWithErrors.has(1) ? newFieldErrors.mainStudent : { fullName: null, hours: null },
       additionalStudents: updatedAdditionalStudents.map((_, index) => {
-        // Find the original index of this student
         let originalIndex = 0;
         let remainingCount = 0;
         for (let i = 0; i < additionalStudents.length; i++) {
@@ -400,7 +431,6 @@ function OrganizationForm() {
     setStudentNotFoundError(false);
     setBatchErrors([]);
 
-    // HTML5 validation for main student
     if (serviceForm.studentFullName.trim()) {
       const nameParts = serviceForm.studentFullName.trim().split(/\s+/);
       if (nameParts.length < 2) {
@@ -531,7 +561,6 @@ function OrganizationForm() {
 
         if (response.ok && data.success) {
           if (data.errorCount === 0) {
-            // All students successful - get their names from the results
             const successfulStudentNames = data.results.map(result => result.studentName);
             
             showSuccessNotification(
@@ -556,16 +585,13 @@ function OrganizationForm() {
               additionalStudents: [],
             });
           } else {
-            // Partial success - extract successful student names from results
             const successfulStudentNames = data.results 
               ? data.results.map(result => result.studentName)
               : [];
 
-            // Map backend errors to specific student fields AND remove successful students
             mapBackendErrorsToFields(data.errors || [], data.totalStudents);
             setBatchErrors(data.errors || []);
 
-            // Show success notification with names of successfully logged students
             if (successfulStudentNames.length > 0) {
               showSuccessNotification(
                 `${data.successCount} student(s) logged successfully. ${data.errorCount} error(s) - please review highlighted fields.`,
@@ -578,12 +604,10 @@ function OrganizationForm() {
               );
             }
 
-            // Clear batch errors after 10 seconds
             setTimeout(() => {
               setBatchErrors([]);
             }, 10000);
 
-            // Scroll to first error
             setTimeout(() => {
               const firstErrorField = document.querySelector(".field-error");
               if (firstErrorField) {
@@ -835,20 +859,36 @@ function OrganizationForm() {
               )}
 
               {studentNotFoundError && (
-                <div
-                  style={{
-                    backgroundColor: "#dc3545",
-                    color: "white",
-                    padding: "12px",
-                    borderRadius: "4px",
-                    marginTop: "8px",
-                    fontSize: "14px",
-                    fontWeight: "500",
-                  }}
-                >
-                  No student found with this name. Please check the spelling &
-                  try again.
-                </div>
+                <>
+                  <div
+                    style={{
+                      backgroundColor: "#dc3545",
+                      color: "white",
+                      padding: "12px",
+                      borderRadius: "4px",
+                      marginTop: "8px",
+                      fontSize: "14px",
+                      fontWeight: "500",
+                    }}
+                  >
+                    No student found with this name. Please check the spelling &
+                    try again.
+                  </div>
+                  <StudentNameSearch
+                    onSelectStudent={handleStudentSelect}
+                    currentValue={serviceForm.studentFullName}
+                    placeholder="Search by first name, surname, or both..."
+                  />
+                </>
+              )}
+
+              {!studentNotFoundError && hasFieldError("main", 0, "fullName") && 
+                getFieldError("main", 0, "fullName")?.includes("not found") && (
+                <StudentNameSearch
+                  onSelectStudent={handleStudentSelect}
+                  currentValue={serviceForm.studentFullName}
+                  placeholder="Search by first name, surname, or both..."
+                />
               )}
             </div>
 
@@ -982,6 +1022,16 @@ function OrganizationForm() {
                             {getFieldError("additional", index, "fullName")}
                           </span>
                         </div>
+                      )}
+
+                      {hasFieldError("additional", index, "fullName") && 
+                        getFieldError("additional", index, "fullName")?.includes("not found") && (
+                        <StudentNameSearch
+                          onSelectStudent={handleStudentSelect}
+                          currentValue={student.fullName}
+                          placeholder="Search by first name, surname, or both..."
+                          studentIndex={index}
+                        />
                       )}
                     </div>
 
