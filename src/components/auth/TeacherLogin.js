@@ -44,7 +44,7 @@ function TeacherLogin() {
                     <label htmlFor="email">Your Name:</label>
                     <input
                         type="email"
-                        id="email"
+                        id="text"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Enter your first name & surname"

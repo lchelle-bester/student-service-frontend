@@ -42,7 +42,7 @@ function StudentLogin() {
                 <label htmlFor="email">Your first name & surname:</label>
                 <input
                     type="text"
-                    id="email"
+                    id="text"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your first name & surname"
