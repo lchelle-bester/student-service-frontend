@@ -39,13 +39,13 @@ function StudentLogin() {
         
         <form onSubmit={handleSubmit} className="login-form">
             <div className="form-group">
-                <label htmlFor="email">School Email Address:</label>
+                <label htmlFor="email">Your first name & surname:</label>
                 <input
-                    type="email"
+                    type="text"
                     id="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your school email"
+                    placeholder="Enter your first name & surname"
                     disabled={isLoading}
                     required
                 />

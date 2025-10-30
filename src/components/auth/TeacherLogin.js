@@ -41,13 +41,13 @@ function TeacherLogin() {
             
             <form onSubmit={handleSubmit} className="login-form">
                 <div className="form-group">
-                    <label htmlFor="email">School Email:</label>
+                    <label htmlFor="email">Your Name:</label>
                     <input
                         type="email"
                         id="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your school email"
+                        placeholder="Enter your first name & surname"
                         disabled={isLoading}
                         required
                     />
