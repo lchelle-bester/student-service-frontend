@@ -46,18 +46,19 @@ const apiCall = async (endpoint, options = {}) => {
 };
 
 export const authService = {
-    teacherLogin: async (email, password) => {
-        console.log('Starting teacher login with:', { email });
-        const requestOptions = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
-        };
-        console.log('Request options:', requestOptions);
-        return apiCall('/auth/login/teacher', requestOptions);
-    },
+    teacherLogin: async (name, password) => {
+    const normalizedName = name.toLowerCase().trim();
+    console.log('Starting teacher login with normalized name:', normalizedName);
+
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: normalizedName, password }),
+    };
+    console.log('Request options:', requestOptions);
+    return apiCall('/auth/login/teacher', requestOptions);
+},
+
 
     // 🧠 UPDATED: Students now log in with full name (case & space insensitive)
     studentLogin: async (name) => {

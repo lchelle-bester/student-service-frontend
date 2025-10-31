@@ -1,28 +1,29 @@
-// src/components/auth/TeacherLogin.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '../../services/api';  // This line is crucial - it imports our authentication service
+import { authService } from '../../services/api';
 
 function TeacherLogin() {
     const navigate = useNavigate();
-    const [email, setEmail] = useState('');
+    const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    // TeacherLogin.js
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
-        
+
         try {
-            const response = await authService.teacherLogin(email, password);
+            const normalizedName = name.toLowerCase().trim();
+            console.log('Attempting teacher login with:', normalizedName);
+
+            const response = await authService.teacherLogin(normalizedName, password);
             if (response.token && response.user) {
                 localStorage.setItem('authToken', response.token);
                 localStorage.setItem('userData', JSON.stringify({
                     ...response.user,
-                    type: 'teacher'  // Make sure to store the user type
+                    type: 'teacher'
                 }));
                 navigate('/teacher-dashboard');
             }
@@ -38,15 +39,15 @@ function TeacherLogin() {
         <div className="login-form-container">
             <h2>Teacher Login</h2>
             {error && <div className="error-message">{error}</div>}
-            
+
             <form onSubmit={handleSubmit} className="login-form">
                 <div className="form-group">
-                    <label htmlFor="email">Your Name:</label>
+                    <label htmlFor="name">Your Name:</label>
                     <input
                         type="text"
-                        id="text"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        id="name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                         placeholder="Enter your first name & surname"
                         disabled={isLoading}
                         required
@@ -66,16 +67,16 @@ function TeacherLogin() {
                     />
                 </div>
 
-                <button 
-                    type="submit" 
+                <button
+                    type="submit"
                     className="submit-button"
                     disabled={isLoading}
                 >
                     {isLoading ? 'Logging in...' : 'Log In'}
                 </button>
-                
-                <button 
-                    type="button" 
+
+                <button
+                    type="button"
                     className="back-button"
                     onClick={() => navigate('/')}
                     disabled={isLoading}
