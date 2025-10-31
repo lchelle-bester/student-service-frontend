@@ -43,7 +43,7 @@ function TeacherLogin() {
                 <div className="form-group">
                     <label htmlFor="email">Your Name:</label>
                     <input
-                        type="email"
+                        type="text"
                         id="text"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
